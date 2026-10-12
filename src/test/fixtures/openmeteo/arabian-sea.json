@@ -1,0 +1,116 @@
+{
+  "forecast": {
+    "latitude": 15,
+    "longitude": 65,
+    "generationtime_ms": 0.05,
+    "utc_offset_seconds": 14400,
+    "timezone": "Etc/GMT-4",
+    "timezone_abbreviation": "GMT+4",
+    "elevation": 10,
+    "current_units": {
+      "time": "iso8601",
+      "interval": "seconds",
+      "temperature_2m": "°C"
+    },
+    "current": {
+      "time": "2026-09-06T00:45",
+      "interval": 900,
+      "temperature_2m": 29,
+      "relative_humidity_2m": 82,
+      "apparent_temperature": 33.6,
+      "dew_point_2m": 25.6,
+      "precipitation": 0,
+      "rain": 0,
+      "showers": 0,
+      "snowfall": 0,
+      "weather_code": 3,
+      "cloud_cover": 95,
+      "pressure_msl": 1008.4,
+      "wind_speed_10m": 24,
+      "wind_gusts_10m": 33,
+      "wind_direction_10m": 240,
+      "is_day": 0
+    },
+    "hourly_units": {
+      "time": "iso8601",
+      "uv_index": "",
+      "temperature_2m": "°C",
+      "precipitation_probability": "%"
+    },
+    "hourly": {
+      "time": [
+        "2026-09-06T00:00",
+        "2026-09-06T01:00",
+        "2026-09-06T02:00",
+        "2026-09-06T03:00",
+        "2026-09-06T04:00",
+        "2026-09-06T05:00",
+        "2026-09-06T06:00",
+        "2026-09-06T07:00",
+        "2026-09-06T08:00",
+        "2026-09-06T09:00",
+        "2026-09-06T10:00",
+        "2026-09-06T11:00",
+        "2026-09-06T12:00",
+        "2026-09-06T13:00",
+        "2026-09-06T14:00",
+        "2026-09-06T15:00",
+        "2026-09-06T16:00",
+        "2026-09-06T17:00",
+        "2026-09-06T18:00",
+        "2026-09-06T19:00",
+        "2026-09-06T20:00",
+        "2026-09-06T21:00",
+        "2026-09-06T22:00",
+        "2026-09-06T23:00"
+      ],
+      "uv_index": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "temperature_2m": [
+        29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29
+      ],
+      "precipitation_probability": [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    "daily_units": {
+      "time": "iso8601",
+      "sunrise": "iso8601",
+      "sunset": "iso8601"
+    },
+    "daily": {
+      "time": ["2026-09-06"],
+      "sunrise": ["2026-09-06T06:02"],
+      "sunset": ["2026-09-06T18:27"],
+      "uv_index_max": [0],
+      "temperature_2m_max": [31],
+      "temperature_2m_min": [26]
+    }
+  },
+  "airQuality": {
+    "latitude": 15,
+    "longitude": 65,
+    "utc_offset_seconds": 14400,
+    "timezone": "Etc/GMT-4",
+    "current": {
+      "time": "2026-09-06T00:00",
+      "interval": 3600,
+      "european_aqi": 22,
+      "us_aqi": 40,
+      "pm2_5": 8,
+      "pm10": 22,
+      "ozone": 60,
+      "uv_index": 0,
+      "dust": 6
+    }
+  },
+  "marine": {
+    "latitude": 15,
+    "longitude": 65,
+    "timezone": "Etc/GMT-4",
+    "current": {
+      "time": "2026-09-06T00:45",
+      "interval": 3600,
+      "wave_height": 2.4,
+      "sea_surface_temperature": 28.9,
+      "wind_wave_height": 0.9
+    }
+  }
+}

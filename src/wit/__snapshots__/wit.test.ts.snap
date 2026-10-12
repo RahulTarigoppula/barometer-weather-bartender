@@ -1,0 +1,79 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`flattened output rules > pin, then guard: every fixture line 1`] = `
+[
+  {
+    "closer": "One, then home. I am not asking.",
+    "drink": "«AGGRESSIVELY ICED» Mojito, and do not argue.",
+    "jab": "This is not humidity, it is a hug you did not ask for. Even the shadows look clammy.",
+    "place": "In Mumbai, India.",
+    "serve": "With ice, and a straw you will resent.",
+    "time": "00:45 local · dew point 24.4°",
+  },
+  {
+    "closer": "This is the last one. I say that every night.",
+    "drink": "One Hot Buttered Rum, «SCALDING. DO NOT GO OUTSIDE.»",
+    "hedge": "Or so the radar claims.",
+    "jab": "−48.7°. That is not weather, that is a dare. Throw boiling water in the air and it lands as a rumour.",
+    "place": "In Yakutsk, Russia.",
+    "serve": "Hot, with steam you can see from the door.",
+    "time": "03:10 local · dew point −44.2°",
+  },
+  {
+    "closer": "No rush. The day is half over anyway.",
+    "drink": "«HOT, NO ARGUMENTS» Hot Toddy.",
+    "jab": "Rain, and 2.1°. The gutters are singing and nobody asked them to.",
+    "place": "In Reykjavík, Iceland. The capital, so I'll be extra precise about it.",
+    "serve": "In a mug that is load-bearing.",
+    "time": "14:30 local · dew point 2.8°",
+  },
+  {
+    "closer": "The workday can wait.",
+    "drink": "Margarita. «SERVED IN A BUCKET». No substitutions.",
+    "jab": "The thermometer reads 45.8° and is not exaggerating. Flip-flops are fusing with the tarmac.",
+    "place": "In Dubai, United Arab Emirates.",
+    "serve": "So cold the glass will bite.",
+    "time": "12:30 local · dew point 15.4°",
+  },
+  {
+    "closer": "I am pouring this into the ocean from here. Consider it delivered.",
+    "drink": "«SERVED IN A BUCKET» Dark 'n' Stormy, and do not argue.",
+    "jab": "Feels like 33.6°, dew point 25.6°. Breathing here counts as drinking.",
+    "place": "You are in the Arabian Sea. I am pouring this from a very long way off.",
+    "serve": "So cold the glass will bite.",
+    "time": "00:45 local · dew point 25.6°",
+  },
+  {
+    "closer": "The clock here is a guess with a timezone attached. Drink anyway.",
+    "drink": "Hot Buttered Rum, «SCALDING. DO NOT GO OUTSIDE.»",
+    "jab": "Arctic: −66.1°. The wind is sharpening its knives on your face.",
+    "place": "~11 km from Amundsen–Scott South Pole Station, Antarctica.",
+    "serve": "In a mug that is load-bearing.",
+    "time": "07:15 local, give or take · dew point −63.0°",
+  },
+  {
+    "closer": "No rush. The day is half over anyway.",
+    "drink": "One Dark 'n' Stormy, «DO NOT GO OUTSIDE.»",
+    "jab": "Thunder, wind and hail, all at once. The candles are out on the counter, just in case.",
+    "place": "In Denver, United States of America.",
+    "serve": "So cold the glass will bite.",
+    "time": "16:40 local · dew point 17.3°",
+  },
+  {
+    "closer": "Drink faster — the light will not wait.",
+    "drink": "«ICED» Gin & Tonic.",
+    "jab": "24.3° and nobody is complaining but me. You could have a picnic. You won't, but you could.",
+    "place": "In Lisbon, Portugal. A capital city, and still no excuse.",
+    "serve": "Ice first. Questions never.",
+    "time": "19:35 local · dew point 15.8°",
+  },
+  {
+    "closer": "It is brunch. That covers everything.",
+    "drink": "«CHILLED» Bloody Mary.",
+    "jab": "Feels like 10.9°; a light-jacket kind of day. Not hot, not cold, just there. Like a houseplant.",
+    "place": "In Oslo, Norway. The capital. I expected better from the capital.",
+    "serve": "Cold enough to make a point.",
+    "time": "10:40 local · dew point 6.7°",
+  },
+]
+`;

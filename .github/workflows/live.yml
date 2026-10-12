@@ -1,0 +1,25 @@
+# Weekly probe: Open-Meteo still answers with CORS, and the deployed bar still serves.
+# GitHub disables scheduled workflows after 60 days of repo inactivity — re-enable from the Actions tab.
+name: live-probe
+
+on:
+  schedule: [{ cron: '17 6 * * 1' }] # Mondays 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:live -- --project=desktop
+        env:
+          BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/

@@ -1,0 +1,7 @@
+{
+  "status": 429,
+  "body": {
+    "error": true,
+    "reason": "Minutely API request limit exceeded"
+  }
+}

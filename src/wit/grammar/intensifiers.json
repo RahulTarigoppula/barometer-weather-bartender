@@ -1,0 +1,13 @@
+{
+  "iced": {
+    "frozen": ["FROZEN", "FROZEN SOLID", "A SLUSHIE. YOU EARNED IT."],
+    "iced": ["ICED", "AGGRESSIVELY ICED", "SERVED IN A BUCKET"],
+    "chilled": ["CHILLED", "PROPERLY COLD", "STRAIGHT FROM THE ICE WELL"]
+  },
+  "hot": {
+    "neat": ["NEAT", "NEAT, DOUBLE", "THE BOTTLE. KEEP IT."],
+    "warm": ["WARM", "WARM, NO ARGUMENTS", "BOTH HANDS. NOW."],
+    "hot": ["HOT", "HOT, NO ARGUMENTS", "SCALDING. DO NOT GO OUTSIDE."]
+  },
+  "storm": { "storm": ["INDOORS", "INDOORS. NOW.", "DO NOT GO OUTSIDE."] }
+}

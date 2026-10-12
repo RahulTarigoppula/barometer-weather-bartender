@@ -1,0 +1,102 @@
+{
+  "forecast": {
+    "latitude": 64.13,
+    "longitude": -21.9,
+    "generationtime_ms": 0.05,
+    "utc_offset_seconds": 0,
+    "timezone": "Atlantic/Reykjavik",
+    "timezone_abbreviation": "LMT",
+    "elevation": 10,
+    "current_units": {
+      "time": "iso8601",
+      "interval": "seconds",
+      "temperature_2m": "°C"
+    },
+    "current": {
+      "time": "2026-09-06T14:30",
+      "interval": 900,
+      "temperature_2m": 6,
+      "relative_humidity_2m": 80,
+      "apparent_temperature": 2.1,
+      "dew_point_2m": 2.8,
+      "precipitation": 0.6,
+      "rain": 0.6,
+      "showers": 0,
+      "snowfall": 0,
+      "weather_code": 61,
+      "cloud_cover": 100,
+      "pressure_msl": 1008.4,
+      "wind_speed_10m": 21,
+      "wind_gusts_10m": 38,
+      "wind_direction_10m": 240,
+      "is_day": 1
+    },
+    "hourly_units": {
+      "time": "iso8601",
+      "uv_index": "",
+      "temperature_2m": "°C",
+      "precipitation_probability": "%"
+    },
+    "hourly": {
+      "time": [
+        "2026-09-06T00:00",
+        "2026-09-06T01:00",
+        "2026-09-06T02:00",
+        "2026-09-06T03:00",
+        "2026-09-06T04:00",
+        "2026-09-06T05:00",
+        "2026-09-06T06:00",
+        "2026-09-06T07:00",
+        "2026-09-06T08:00",
+        "2026-09-06T09:00",
+        "2026-09-06T10:00",
+        "2026-09-06T11:00",
+        "2026-09-06T12:00",
+        "2026-09-06T13:00",
+        "2026-09-06T14:00",
+        "2026-09-06T15:00",
+        "2026-09-06T16:00",
+        "2026-09-06T17:00",
+        "2026-09-06T18:00",
+        "2026-09-06T19:00",
+        "2026-09-06T20:00",
+        "2026-09-06T21:00",
+        "2026-09-06T22:00",
+        "2026-09-06T23:00"
+      ],
+      "uv_index": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "temperature_2m": [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
+      "precipitation_probability": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    "daily_units": {
+      "time": "iso8601",
+      "sunrise": "iso8601",
+      "sunset": "iso8601"
+    },
+    "daily": {
+      "time": ["2026-09-06"],
+      "sunrise": ["2026-09-06T06:25"],
+      "sunset": ["2026-09-06T20:12"],
+      "uv_index_max": [2],
+      "temperature_2m_max": [8],
+      "temperature_2m_min": [3]
+    }
+  },
+  "airQuality": {
+    "latitude": 64.13,
+    "longitude": -21.9,
+    "utc_offset_seconds": 0,
+    "timezone": "Atlantic/Reykjavik",
+    "current": {
+      "time": "2026-09-06T14:00",
+      "interval": 3600,
+      "european_aqi": 12,
+      "us_aqi": 20,
+      "pm2_5": 3,
+      "pm10": 7,
+      "ozone": 60,
+      "uv_index": 2,
+      "dust": 0
+    }
+  }
+}

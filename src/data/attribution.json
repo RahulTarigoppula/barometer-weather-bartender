@@ -1,0 +1,94 @@
+[
+  {
+    "name": "Open-Meteo (forecast, air quality, marine, geocoding)",
+    "licence": "CC BY 4.0",
+    "use": "Weather data — “Weather data by Open-Meteo.com”, non-commercial free tier",
+    "url": "https://open-meteo.com/"
+  },
+  {
+    "name": "CAMS ENSEMBLE (Copernicus)",
+    "licence": "CC BY 4.0",
+    "use": "Air quality, via Open-Meteo",
+    "url": "https://atmosphere.copernicus.eu/"
+  },
+  { "name": "DWD", "licence": "CC BY 4.0", "use": "Marine data, via Open-Meteo", "url": "https://www.dwd.de/" },
+  {
+    "name": "Natural Earth",
+    "licence": "Public domain",
+    "use": "Offline reverse geocoding: countries, populated places, marine polygons, land",
+    "url": "https://www.naturalearthdata.com/"
+  },
+  {
+    "name": "NASA Earth Observatory — Blue Marble & Black Marble",
+    "licence": "Public domain",
+    "use": "Globe day and night textures (no endorsement implied)",
+    "url": "https://earthobservatory.nasa.gov/"
+  },
+  {
+    "name": "three-globe example textures",
+    "licence": "MIT",
+    "use": "First-paint day texture (NASA-derived)",
+    "url": "https://github.com/vasturiano/three-globe"
+  },
+  {
+    "name": "rasmusab/iba-cocktails",
+    "licence": "MIT",
+    "use": "IBA recipe quantities; method text rewritten in-house",
+    "url": "https://github.com/rasmusab/iba-cocktails"
+  },
+  {
+    "name": "alfg/opendrinks",
+    "licence": "MIT",
+    "use": "Recipe quantities incl. alcohol-free entries; method text rewritten in-house",
+    "url": "https://github.com/alfg/opendrinks"
+  },
+  {
+    "name": "Righteous, Space Grotesk, JetBrains Mono",
+    "licence": "SIL OFL 1.1",
+    "use": "Typefaces, self-hosted via Fontsource",
+    "url": "https://fontsource.org/"
+  },
+  { "name": "three.js", "licence": "MIT", "use": "The WebGL globe", "url": "https://threejs.org/" },
+  {
+    "name": "d3-geo, kdbush, geokdbush",
+    "licence": "ISC",
+    "use": "Spherical point-in-polygon and nearest town",
+    "url": "https://github.com/d3/d3-geo"
+  },
+  {
+    "name": "suncalc",
+    "licence": "BSD-2-Clause",
+    "use": "Golden hour and sunset times",
+    "url": "https://github.com/mourner/suncalc"
+  },
+  {
+    "name": "tracery-grammar, seedrandom",
+    "licence": "ISC / MIT",
+    "use": "The bartender's voice, deterministic per click",
+    "url": "https://github.com/v21/tracery"
+  },
+  {
+    "name": "React, Zustand, Dexie",
+    "licence": "MIT / Apache-2.0",
+    "use": "UI, state and the Tab",
+    "url": "https://react.dev/"
+  },
+  {
+    "name": "Lucide",
+    "licence": "ISC",
+    "use": "Icons in the Back Office and search only",
+    "url": "https://lucide.dev/"
+  },
+  {
+    "name": "Capacitor",
+    "licence": "MIT",
+    "use": "Android shell and native plugins",
+    "url": "https://capacitorjs.com/"
+  },
+  {
+    "name": "Sounds",
+    "licence": "Original (MIT)",
+    "use": "Every bar sound is synthesised live with Web Audio — no recordings",
+    "url": "https://developer.mozilla.org/docs/Web/API/Web_Audio_API"
+  }
+]

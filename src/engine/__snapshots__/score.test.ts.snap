@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`pin, then guard > nine fixtures × {bar, barista} 1`] = `
+[
+  "mumbai: mojito [caipirinha, espresso-martini] AGGRESSIVELY ICED | virgin-mojito [salted-lime-soda, espresso-tonic]",
+  "yakutsk: hot-buttered-rum [mulled-wine, hot-toddy] SCALDING. DO NOT GO OUTSIDE. | hot-chocolate [spiced-apple-warmer, ginger-honey-warmer]",
+  "reykjavik: hot-toddy [irish-coffee, old-fashioned] HOT, NO ARGUMENTS | hot-lemon-ginger [masala-chai, virgin-stormy]",
+  "dubai-noon: margarita [frozen-daiquiri, paloma] SERVED IN A BUCKET | virgin-margarita [frozen-limeade, virgin-paloma]",
+  "arabian-sea: dark-n-stormy [mojito, painkiller] SERVED IN A BUCKET | virgin-stormy [virgin-painkiller, virgin-mojito]",
+  "south-pole: hot-buttered-rum [mulled-wine, hot-whisky-mac] SCALDING. DO NOT GO OUTSIDE. | hot-chocolate [spiced-apple-warmer, ginger-honey-warmer]",
+  "denver-hail: dark-n-stormy [hot-whisky-mac, hot-toddy] DO NOT GO OUTSIDE. | virgin-stormy [ginger-honey-warmer, cucumber-tonic]",
+  "lisbon-golden: gin-tonic [painkiller, moscow-mule] ICED | cucumber-tonic [virgin-painkiller, ginger-switchel]",
+  "oslo-brunch: bloody-mary [mimosa, michelada] CHILLED | sunrise-fizz [virgin-mary, ginger-switchel]",
+]
+`;

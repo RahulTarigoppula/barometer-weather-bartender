@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#1A0F0A" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src 'self' https://api.open-meteo.com https://air-quality-api.open-meteo.com https://marine-api.open-meteo.com https://geocoding-api.open-meteo.com %VITE_WIT_PROXY%; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <title>The Globe Bar — Barometer</title>
+    <meta name="description" content="Spin the planet, tap anywhere, and a judgmental bartender reads that spot's real-time weather and slides you the one drink you need to survive it." />
+    <link rel="icon" href="%BASE_URL%icons/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="%BASE_URL%icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="%BASE_URL%icons/apple-touch-icon-180.png" />
+    <style>
+      html, body { background: #1a0f0a; margin: 0; }
+      @media (prefers-color-scheme: light) { html, body { background: #efe3cc; } }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <p style="color:#f3e6c8;font-family:system-ui;padding:2rem">The Globe Bar needs JavaScript to pour. The bartender apologises, insincerely.</p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
