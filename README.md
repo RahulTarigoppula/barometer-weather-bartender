@@ -1,16 +1,20 @@
 # Mausam ka Mahaul
 
-*The vibe of the weather — read the sky, beat the jam, pour the right drink.*
+*The vibe of the weather. Read the sky, beat the jam, pour the right drink.*
 
 **Live:** https://rahultarigoppula.github.io/barometer-weather-bartender/
 
-## The story — and why
+## The story, and why
 
 In India nobody steps out without asking *"mausam kaisa hai?"* — how's the weather? The answer decides the day: whether the monsoon will flood the underpass, whether Delhi's air needs a mask, whether the evening commute will crawl, and whether the night ends with cutting chai and pakoras or something stronger on a rooftop.
 
 **Mausam** is the weather. **Mahaul** is the mood it creates — the feeling in the air, on the roads and at the table. Weather apps give you numbers; this one reads the *mahaul*: the sky and the air first, then the roads, then the drink and the snack that weather calls for, at the budget you actually have.
 
 It began as **Barometer**, a joke about a judgmental bartender who reads the weather. It grew into the thing you open before leaving home — so it got an Indian name. (The repository keeps its original name so links never break.)
+
+### The opening film
+
+Every visit opens with a 38-second story, drawn live in canvas 2D (no video, no music) and skippable at any moment: the known universe, a dive into the Milky Way ("you are here"), the Sun and its planets, the one planet that breathes, a fall through the clouds onto India, the Western Ghats at dawn as the slopes turn blue with Neelakurinji, the monsoon arriving with a mother's "Chhata le ja, baarish hogi", dusk, and the name. Night returns, and the app is underneath. After it, zoom out from the globe and you can travel back out to the known universe.
 
 ## What it does
 

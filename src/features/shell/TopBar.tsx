@@ -42,9 +42,11 @@ export function TopBar(): ReactElement {
       <a className="brand" href="#/" aria-label="Mausam ka Mahaul home">
         <span className="brand__mark" aria-hidden="true" />
         <span className="brand__name">
-          mausam<span className="hide-sm"> ka mahaul</span>
+          Mausam<span className="hide-sm"> ka Mahaul</span>
         </span>
-        <span className="brand__tag hide-sm">the vibe of the weather</span>
+        <span className="brand__tag hide-sm" lang="hi">
+          मौसम का माहौल
+        </span>
       </a>
       <div className="topbar__search">
         <Search />

@@ -12,11 +12,14 @@ import {
 } from 'lucide-react';
 import { type ReactElement, useEffect, useState } from 'react';
 import { useReduced } from '../../app/useReduced';
-import { euAqiBand, uvBand } from '../../engine/comfort';
+import { DRINKS } from '../../data/menu';
+import { usAqiBand, uvBand } from '../../engine/comfort';
 import { fmtDuration } from '../../engine/daypart';
-import { tipsFor } from '../../engine/outlook';
+import { served } from '../../engine/index';
+import { mahaulBrief, tipsFor } from '../../engine/outlook';
 import { fmtDate } from '../../engine/receipt';
 import { RING } from '../../engine/tags';
+import { LEVEL_LABEL, roadOutlook } from '../../engine/traffic';
 import type { Verdict } from '../../engine/types';
 import { fmtTemp, fmtTempShort, windLabel, windValue } from '../../engine/units';
 import { LAYERS, windowWeather } from '../../engine/window';
@@ -34,14 +37,12 @@ function clockPlus(localTime: string, minutes: number): string {
   return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
 }
 
-const AQI_LABEL: Record<string, string> = {
-  good: 'Good',
-  fair: 'Fair',
+const UV_LABEL: Record<string, string> = {
+  low: 'Low',
   moderate: 'Moderate',
-  poor: 'Poor',
-  'very-poor': 'Very poor',
-  'extremely-poor': 'Severe',
-  unknown: 'No reading',
+  high: 'High',
+  'very-high': 'Very high',
+  extreme: 'Extreme',
 };
 
 interface TileProps {
@@ -137,7 +138,8 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
   const f = v.features;
   const Icon = iconFor(f.wmo, f.isDay);
   const t = (c: number): string => fmtTemp(c, units.temp);
-  const aqi = euAqiBand(f.euAqi);
+  const aqi = usAqiBand(f.usAqi);
+  const { menu, gentler } = useSettings();
   const uv = uvBand(f.uv);
   const sunrise = clockPlus(v.localTime, f.minutesToSunrise);
   const sunset = clockPlus(v.localTime, f.minutesToSunset);
@@ -155,6 +157,31 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
       ? v.place.nearestCity.name
       : v.place.label;
   const tips = tipsFor(f, v.forecast?.hours);
+  const india = v.place.country?.iso2 === 'IN';
+  const road =
+    v.place.kind === 'land'
+      ? roadOutlook({
+          lat: v.lat,
+          lng: v.lng,
+          hour: f.localHour,
+          minute: f.localMinute,
+          weekday: f.localWeekday,
+          tags: v.tags,
+          india,
+        })
+      : null;
+  const eases = road?.advice.match(/Eases by (\d{2}:\d{2})/)?.[1] ?? null;
+  const brief = mahaulBrief({
+    place: name,
+    condition: wmoLabel(f.wmo),
+    temp: fmtTempShort(f.tempC, units.temp),
+    feels: fmtTempShort(f.apparentC, units.temp),
+    isDay: f.isDay,
+    localHour: f.localHour,
+    tips,
+    roads: road ? { level: LEVEL_LABEL[road.level], eases } : null,
+    drink: served(v, DRINKS, menu, 0, gentler).drink.name,
+  });
   return (
     <>
       <Ambient v={v} />
@@ -170,6 +197,7 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
         {country && <p className="weather__country">{v.place.label === country ? '' : country}</p>}
         {note === 'stale' && <p className="chip chip--warn">Offline. Showing the last reading for this spot</p>}
       </header>
+      <p className="mahaul">{brief}</p>
       <div className="weather__now">
         <Icon className="weather__icon" size={88} strokeWidth={1.25} aria-hidden="true" />
         <div>
@@ -201,17 +229,11 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
         <Tile
           icon={Gauge}
           label="Air quality"
-          value={f.euAqi === null ? 'n/a' : String(Math.round(f.euAqi))}
-          note={`${AQI_LABEL[aqi] ?? ''}${f.usAqi === null ? '' : ` · US ${Math.round(f.usAqi)}`}`}
-          tone={aqi}
+          value={f.usAqi === null ? 'n/a' : String(Math.round(f.usAqi))}
+          note={`${aqi.label} · US AQI`}
+          tone={aqi.tone}
         />
-        <Tile
-          icon={Sun}
-          label="UV index"
-          value={String(Math.round(f.uv))}
-          note={uv.replace('-', ' ')}
-          tone={`uv-${uv}`}
-        />
+        <Tile icon={Sun} label="UV index" value={String(Math.round(f.uv))} note={UV_LABEL[uv]} tone={`uv-${uv}`} />
         <Tile
           icon={Umbrella}
           label="Rain chance"

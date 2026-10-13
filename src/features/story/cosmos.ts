@@ -1,12 +1,13 @@
 import { ease, ramp, SCENES, type Scene, type SceneId } from './timeline';
 
 /**
- * The story's camera, in plain canvas 2D: a deep field of galaxies, a dive into the Milky Way, the
- * Sun and its planets, a pan to the third one, a textured Earth that turns to India, and life on it.
+ * The story's camera, in plain canvas 2D. One continuous descent: a deep field of galaxies, the
+ * Milky Way, the Sun, the Earth turning to India, a dive through the clouds, and the Western Ghats
+ * from dawn, through the monsoon, to dusk and night.
  *
- * Built for 60 fps on a laptop and at least 24 fps on a mid-range phone: every expensive thing is
- * drawn once into a cache (starfield, nebulae, galaxy sprites, the Milky Way, the Earth sphere, the
- * forest) and blitted per frame; live stars are batched by colour; the pixel ratio is capped at 1.5.
+ * Built for 60 fps on a laptop and at least 24 fps on a mid-range phone: everything expensive is
+ * painted once into a cache (starfield, nebulae, galaxy sprites and glow, the Earth sphere, the
+ * hills, the blooms, the clouds) and blitted per frame; the pixel ratio is capped at 1.5.
  */
 
 const at = Object.fromEntries(SCENES.map((s) => [s.id, s])) as Record<SceneId, Scene>;
@@ -35,6 +36,10 @@ function canvasOf(wpx: number, hpx: number): [HTMLCanvasElement, CanvasRendering
   return [c, c.getContext('2d')];
 }
 
+type RGB = [number, number, number];
+const mix = (a: RGB, b: RGB, k: number): RGB => [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)];
+const css = (c: RGB, a = 1): string => `rgba(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])},${a})`;
+
 // ───────────── the Milky Way ─────────────
 interface Batch {
   style: string;
@@ -47,7 +52,6 @@ const R0 = 0.08;
 const PITCH = 0.3;
 const armTheta = (r: number): number => Math.log(r / R0) / PITCH;
 
-/** ~4,700 stars in colour/size batches. */
 function makeGalaxy(): Batch[] {
   const rnd = rng(7);
   const gauss = (): number => (rnd() + rnd() + rnd() - 1.5) / 1.5;
@@ -86,13 +90,11 @@ function makeGalaxy(): Batch[] {
   }));
 }
 
-// Where the Sun sits in the galaxy: two-thirds out, on the first arm.
 const SUN_R = 0.62;
 const SUN_TH = armTheta(SUN_R);
 const GALAXY_SPIN = 0.05;
 const TILT_G = 0.55;
 
-/** Draws the galaxy (radius 1 → `scale` px) with a rotation, a camera focus and a star size. */
 function paintGalaxy(
   c: CanvasRenderingContext2D,
   galaxy: Batch[],
@@ -142,7 +144,6 @@ interface FieldGalaxy {
   spin: number;
 }
 
-/** Six little galaxy sprites: four spirals and two ellipticals in different colours. */
 function makeSprites(): HTMLCanvasElement[] {
   const out: HTMLCanvasElement[] = [];
   const looks: [string, string, number][] = [
@@ -156,10 +157,15 @@ function makeSprites(): HTMLCanvasElement[] {
     const [cv, c] = canvasOf(N, N);
     if (c) {
       const rnd = rng(100 + i);
-      const glow = c.createRadialGradient(N / 2, N / 2, 0, N / 2, N / 2, N * 0.22);
+      const glow = c.createRadialGradient(N / 2, N / 2, 0, N / 2, N / 2, N * 0.24);
       glow.addColorStop(0, `rgba(${core},0.95)`);
       glow.addColorStop(1, `rgba(${core},0)`);
       c.fillStyle = glow;
+      c.fillRect(0, 0, N, N);
+      const haze = c.createRadialGradient(N / 2, N / 2, 0, N / 2, N / 2, N * 0.48);
+      haze.addColorStop(0, `rgba(${arm},0.18)`);
+      haze.addColorStop(1, `rgba(${arm},0)`);
+      c.fillStyle = haze;
       c.fillRect(0, 0, N, N);
       for (let k = 0; k < 520; k++) {
         const r = 0.05 + 0.42 * rnd() ** 0.8;
@@ -191,7 +197,7 @@ function makeSprites(): HTMLCanvasElement[] {
 
 function makeField(): FieldGalaxy[] {
   const rnd = rng(11);
-  return Array.from({ length: 340 }, () => ({
+  return Array.from({ length: 360 }, () => ({
     x: (rnd() - 0.5) * 3.4,
     y: (rnd() - 0.5) * 2.2,
     size: 0.006 + rnd() ** 3 * 0.05,
@@ -202,11 +208,10 @@ function makeField(): FieldGalaxy[] {
   }));
 }
 
-// The Milky Way in the deep field, and how big it is there (radius in field units).
 const MW = { x: 0.22, y: 0.1, r: 0.03 };
-const FIELD_SCALE = 0.5; // field unit → S px
-const GALAXY_SCALE = 0.46; // galaxy radius → S px at the start of the galaxy scene
-const DIVE = GALAXY_SCALE / (MW.r * FIELD_SCALE); // zoom at which the sprite matches the galaxy
+const FIELD_SCALE = 0.5;
+const GALAXY_SCALE = 0.46;
+const DIVE = GALAXY_SCALE / (MW.r * FIELD_SCALE);
 
 // ───────────── the planets ─────────────
 const PLANETS = [
@@ -221,37 +226,23 @@ const PLANETS = [
 ] as const;
 const TILT = 0.42;
 
-// ───────────── the forest ─────────────
-interface Seg {
-  x0: number;
-  y0: number;
-  x1: number;
-  y1: number;
-  d: number;
-}
+// ───────────── the Ghats ─────────────
 interface Tree {
-  segs: Seg[];
-  leaves: { x: number; y: number; r: number; c: number }[];
+  segs: { x0: number; y0: number; x1: number; y1: number; d: number }[];
+  tips: { x: number; y: number }[];
   depth: number;
 }
 
-/** A seeded branching tree in local units: base at (0,0), growing up (negative y), trunk length 1. */
 function makeTree(seed: number, depth: number, spread: number): Tree {
   const rnd = rng(seed);
-  const segs: Seg[] = [];
-  const leaves: Tree['leaves'] = [];
+  const segs: Tree['segs'] = [];
+  const tips: Tree['tips'] = [];
   const grow = (x: number, y: number, ang: number, len: number, d: number): void => {
     const x1 = x + Math.cos(ang) * len;
     const y1 = y + Math.sin(ang) * len;
     segs.push({ x0: x, y0: y, x1, y1, d });
     if (d >= depth) {
-      for (let i = 0; i < 6; i++)
-        leaves.push({
-          x: x1 + (rnd() - 0.5) * 0.3,
-          y: y1 + (rnd() - 0.5) * 0.24,
-          r: 0.022 + rnd() * 0.03,
-          c: Math.floor(rnd() * 4),
-        });
+      tips.push({ x: x1, y: y1 });
       return;
     }
     const kids = d < 2 ? 2 : rnd() < 0.3 ? 3 : 2;
@@ -261,11 +252,35 @@ function makeTree(seed: number, depth: number, spread: number): Tree {
     }
   };
   grow(0, 0, -Math.PI / 2 + (rnd() - 0.5) * 0.1, 1, 0);
-  return { segs, leaves, depth };
+  return { segs, tips, depth };
 }
 
+/** Sky colours through the day: [top, horizon]. */
+const SKY: Record<'dawn' | 'day' | 'storm' | 'dusk' | 'night', [RGB, RGB]> = {
+  dawn: [
+    [58, 84, 140],
+    [255, 186, 140],
+  ],
+  day: [
+    [88, 140, 210],
+    [200, 225, 240],
+  ],
+  storm: [
+    [44, 52, 66],
+    [104, 116, 130],
+  ],
+  dusk: [
+    [38, 30, 78],
+    [236, 120, 90],
+  ],
+  night: [
+    [2, 4, 10],
+    [10, 18, 40],
+  ],
+};
+
 /** The camera time at which the Earth fills the frame: where "zoom out to the universe" starts. */
-export const EARTH_T = at.earth.start + 3.4;
+export const EARTH_T = at.earth.start + 3.7;
 /** The camera time of the widest view of the known universe. */
 export const UNIVERSE_T = 0.4;
 
@@ -283,18 +298,12 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
   const galaxy = makeGalaxy();
   const sprites = makeSprites();
   const field = makeField();
-  const trees = [
-    { tree: makeTree(21, 8, 0.34), x: 0.05, hh: 0.44 },
-    { tree: makeTree(34, 8, 0.32), x: 0.95, hh: 0.4 },
-    { tree: makeTree(55, 7, 0.42), x: 0.2, hh: 0.2 },
-    { tree: makeTree(89, 7, 0.4), x: 0.8, hh: 0.22 },
-  ];
+  const handoffRot = -at.galaxy.start * GALAXY_SPIN * motion;
 
-  // The Milky Way as the deep field sees it: the real star map, pre-rendered at the hand-off angle.
+  // The Milky Way as the deep field sees it, and its soft glow (a tiny render, scaled up = blur).
   const MW_PX = 512;
   const [mwSprite, mwc] = canvasOf(MW_PX, MW_PX);
-  const handoffRot = -at.galaxy.start * GALAXY_SPIN * motion;
-  if (mwc) {
+  if (mwc)
     paintGalaxy(mwc, galaxy, {
       cx: MW_PX / 2,
       cy: MW_PX / 2,
@@ -306,18 +315,80 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
       w: MW_PX,
       h: MW_PX,
     });
+  const GL_PX = 96;
+  const [glowSrc, glc] = canvasOf(GL_PX, GL_PX);
+  // Downsampled twice so that, scaled back up, it is a smooth haze rather than blocky dots.
+  const [glow, gls] = canvasOf(20, 20);
+  if (glc)
+    paintGalaxy(glc, galaxy, {
+      cx: GL_PX / 2,
+      cy: GL_PX / 2,
+      scale: GL_PX * 0.47,
+      rot: handoffRot,
+      fx: 0,
+      fy: 0,
+      grow: 2.2,
+      w: GL_PX,
+      h: GL_PX,
+    });
+  if (gls) {
+    const [mid, mc] = canvasOf(40, 40);
+    mc?.drawImage(glowSrc, 0, 0, 40, 40);
+    gls.drawImage(mid, 0, 0, 20, 20);
   }
 
-  // The Earth texture, downscaled once to a 1024×512 canvas (cheap to sample from every frame).
+  // Clouds: one soft puff sprite.
+  const [cloud, cc] = canvasOf(160, 100);
+  if (cc) {
+    const rnd = rng(31);
+    for (let i = 0; i < 14; i++) {
+      const x = 30 + rnd() * 100;
+      const y = 30 + rnd() * 40;
+      const r = 18 + rnd() * 26;
+      const g = cc.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, 'rgba(255,255,255,0.55)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      cc.fillStyle = g;
+      cc.fillRect(0, 0, 160, 100);
+    }
+  }
+
+  // Monsoon clouds: heavier, darker, flatter at the base.
+  const [stormCloud, scx] = canvasOf(200, 110);
+  if (scx) {
+    const rnd = rng(47);
+    for (let i = 0; i < 18; i++) {
+      const x = 30 + rnd() * 140;
+      const y = 30 + rnd() * 45;
+      const r = 22 + rnd() * 30;
+      const g = scx.createRadialGradient(x, y - r * 0.2, 0, x, y, r);
+      g.addColorStop(0, 'rgba(120,130,148,0.75)');
+      g.addColorStop(0.6, 'rgba(78,88,104,0.55)');
+      g.addColorStop(1, 'rgba(60,68,82,0)');
+      scx.fillStyle = g;
+      scx.fillRect(0, 0, 200, 110);
+    }
+  }
+
   let tex: HTMLCanvasElement | null = null;
   const img = new Image();
   img.onload = () => {
-    const [c, cc] = canvasOf(1024, 512);
-    cc?.drawImage(img, 0, 0, 1024, 512);
+    const [c, x] = canvasOf(1024, 512);
+    x?.drawImage(img, 0, 0, 1024, 512);
     tex = c;
     sphereKey = '';
   };
   img.src = opts.texture;
+  // The 4K Blue Marble, fetched a moment later, keeps India sharp during the dive.
+  let hiTex: HTMLImageElement | null = null;
+  const hiTimer = window.setTimeout(() => {
+    const hi = new Image();
+    hi.onload = () => {
+      hiTex = hi;
+    };
+    hi.src = opts.texture.replace('earth-day.jpg', 'blue-marble-4k.webp');
+  }, 1200);
+  void hiTimer;
 
   let w = 0;
   let h = 0;
@@ -326,9 +397,113 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
   const starLayer = document.createElement('canvas');
   const nebula = document.createElement('canvas');
   const sphere = document.createElement('canvas');
-  const flora = document.createElement('canvas');
   let sphereKey = '';
-  let floraKey = '';
+  /** Five hill layers, far to near, each a little wider than the screen for the dolly. */
+  let hills: HTMLCanvasElement[] = [];
+  let blooms: HTMLCanvasElement[] = [];
+  const MARGIN = 80;
+
+  function paintHills(): void {
+    const W = w + MARGIN * 2;
+    const rnd = rng(61);
+    const tones: RGB[] = [
+      [126, 146, 182],
+      [92, 118, 150],
+      [56, 92, 98],
+      [30, 70, 60],
+      [12, 34, 26],
+    ];
+    const trees = [makeTree(201, 6, 0.42), makeTree(202, 6, 0.38), makeTree(203, 5, 0.46)];
+    hills = [];
+    blooms = [];
+    for (let L = 0; L < 5; L++) {
+      const [c, x] = canvasOf(W * dpr, h * dpr);
+      const [b, bx] = canvasOf(W * dpr, h * dpr);
+      hills.push(c);
+      blooms.push(b);
+      if (!x || !bx) continue;
+      x.scale(dpr, dpr);
+      bx.scale(dpr, dpr);
+      const base = h * (0.5 + L * 0.085);
+      const amp = h * (0.09 - L * 0.008);
+      const f1 = 1.5 + rnd() * 1.5;
+      const f2 = 4 + rnd() * 3;
+      const p1 = rnd() * TAU;
+      const p2 = rnd() * TAU;
+      const ridge = (px: number): number =>
+        base - amp * (0.6 * Math.sin((px / W) * TAU * f1 * 0.5 + p1) + 0.4 * Math.sin((px / W) * TAU * f2 * 0.5 + p2));
+      const tone = tones[L] as RGB;
+      const grad = x.createLinearGradient(0, base - amp, 0, h);
+      grad.addColorStop(0, css(tone));
+      grad.addColorStop(1, css(mix(tone, [8, 14, 20], 0.5)));
+      x.fillStyle = grad;
+      x.beginPath();
+      x.moveTo(0, h);
+      for (let px = 0; px <= W; px += 6) x.lineTo(px, ridge(px));
+      x.lineTo(W, h);
+      x.closePath();
+      x.fill();
+      // Mist at the foot of each ridge.
+      const mist = x.createLinearGradient(0, base + amp * 0.2, 0, base + h * 0.12);
+      mist.addColorStop(0, 'rgba(220,230,240,0)');
+      mist.addColorStop(1, `rgba(220,230,240,${0.16 - L * 0.025})`);
+      x.fillStyle = mist;
+      x.fillRect(0, base, W, h * 0.14);
+      // Trees along the nearer ridges.
+      if (L >= 2) {
+        const n = L === 4 ? 26 : 40;
+        const size = h * (L === 4 ? 0.07 : L === 3 ? 0.045 : 0.03);
+        const dark = css(mix(tone, [0, 0, 0], 0.45));
+        x.strokeStyle = dark;
+        x.fillStyle = dark;
+        x.lineCap = 'round';
+        for (let i = 0; i < n; i++) {
+          const tx = rnd() * W;
+          const ty = ridge(tx) + 3;
+          const s = (size * (0.6 + rnd() * 0.7)) / 3;
+          const tree = trees[i % trees.length] as Tree;
+          for (const seg of tree.segs) {
+            x.lineWidth = Math.max(0.5, s * 0.12 * 0.7 ** seg.d);
+            x.beginPath();
+            x.moveTo(tx + seg.x0 * s, ty + seg.y0 * s);
+            x.lineTo(tx + seg.x1 * s, ty + seg.y1 * s);
+            x.stroke();
+          }
+          x.beginPath();
+          for (const tip of tree.tips) {
+            const r = s * (0.18 + rnd() * 0.12);
+            x.moveTo(tx + tip.x * s + r, ty + tip.y * s);
+            x.arc(tx + tip.x * s, ty + tip.y * s, r, 0, TAU);
+          }
+          x.fill();
+        }
+      }
+      // Neelakurinji: the middle slopes turn blue-violet when it blooms.
+      if (L >= 1 && L <= 3) {
+        // The wash: whole slopes turn blue, the way the Nilgiris do in a kurinji year.
+        const wash = bx.createLinearGradient(0, base - amp, 0, base + h * 0.16);
+        wash.addColorStop(0, 'rgba(118,108,236,0.62)');
+        wash.addColorStop(0.55, 'rgba(140,110,230,0.32)');
+        wash.addColorStop(1, 'rgba(140,110,230,0)');
+        bx.fillStyle = wash;
+        bx.beginPath();
+        bx.moveTo(0, h);
+        for (let px = 0; px <= W; px += 6) bx.lineTo(px, ridge(px) + 2);
+        bx.lineTo(W, h);
+        bx.closePath();
+        bx.fill();
+        const n = Math.round((W * h) / (L === 3 ? 700 : 1200));
+        for (let i = 0; i < n; i++) {
+          const px = rnd() * W;
+          const top = ridge(px);
+          const py = top + 4 + rnd() ** 1.6 * h * 0.1;
+          const r = (L === 3 ? 2.2 : 1.5) + rnd() * 1.8;
+          bx.fillStyle = rnd() < 0.7 ? 'rgba(150,140,255,0.85)' : 'rgba(200,160,255,0.8)';
+          bx.fillRect(px, py, r, r);
+        }
+      }
+    }
+  }
 
   const resize = (): void => {
     dpr = Math.min(1.5, window.devicePixelRatio || 1);
@@ -337,15 +512,14 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
     S = Math.min(w, h);
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
-    for (const c of [starLayer, nebula, flora]) {
+    for (const c of [starLayer, nebula]) {
       c.width = canvas.width;
       c.height = canvas.height;
     }
     const sc = starLayer.getContext('2d');
     if (sc) {
       const rnd = rng(42);
-      sc.fillStyle = '#02040a';
-      sc.fillRect(0, 0, starLayer.width, starLayer.height);
+      sc.clearRect(0, 0, starLayer.width, starLayer.height);
       const n = Math.round((w * h) / 2000);
       for (let i = 0; i < n; i++) {
         sc.fillStyle = `rgba(220,230,255,${(0.2 + rnd() * 0.6).toFixed(2)})`;
@@ -357,6 +531,7 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
     if (nc) {
       const rnd = rng(77);
       const tints = ['120,80,255', '40,140,255', '255,90,170', '40,200,190', '255,150,60'];
+      nc.clearRect(0, 0, nebula.width, nebula.height);
       for (let i = 0; i < 9; i++) {
         const x = rnd() * nebula.width;
         const y = rnd() * nebula.height;
@@ -369,7 +544,7 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
       }
     }
     sphereKey = '';
-    floraKey = '';
+    hills = [];
   };
   resize();
 
@@ -377,8 +552,8 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
   function drawUniverse(t: number, clock: number, alpha: number): void {
     if (alpha <= 0.002) return;
     const u = at.universe;
-    const k = ease(ramp(t, u.start + 1.2, u.end));
-    const zoom = Math.exp(Math.log(DIVE) * k) * (1 + 0.04 * ramp(t, u.start, u.start + 1.2));
+    const k = ease(ramp(t, u.start + 1.1, u.end));
+    const zoom = Math.exp(Math.log(DIVE) * k) * (1 + 0.05 * ramp(t, u.start, u.start + 1.1));
     const scale = S * FIELD_SCALE * zoom;
     const fx = MW.x * k;
     const fy = MW.y * k;
@@ -390,20 +565,23 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
       const Y = cy + (g.y - fy) * scale;
       const s = g.size * scale * 2;
       if (X < -s || Y < -s || X > w + s || Y > h + s || s < 0.8) continue;
-      const sprite = sprites[g.sprite] as HTMLCanvasElement;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.translate(X, Y);
       ctx.rotate(g.rot + clock * g.spin * motion);
       ctx.scale(1, g.incl);
-      ctx.drawImage(sprite, -s / 2, -s / 2, s, s);
+      ctx.drawImage(sprites[g.sprite] as HTMLCanvasElement, -s / 2, -s / 2, s, s);
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    // The Milky Way itself, which the camera dives into.
     const mx = cx + (MW.x - fx) * scale;
     const my = cy + (MW.y - fy) * scale;
-    const ms = (MW.r * scale) / 0.94; // the sprite holds radius 1 at 0.47 of its width
+    const ms = (MW.r * scale) / 0.94;
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = alpha * 0.55;
+    ctx.drawImage(glow, mx - ms, my - ms, ms * 2, ms * 2);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = alpha;
     ctx.drawImage(mwSprite, mx - ms, my - ms, ms * 2, ms * 2);
-    const tag = ramp(t, u.start + 1.6, u.start + 2.4) * (1 - ramp(t, u.end - 1.6, u.end - 0.8));
+    const tag = ramp(t, u.start + 1.5, u.start + 2.2) * (1 - ramp(t, u.end - 1.4, u.end - 0.7));
     if (tag > 0) {
       ctx.globalAlpha = alpha * tag;
       ctx.strokeStyle = 'rgba(255,197,138,0.8)';
@@ -423,12 +601,25 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
   function drawGalaxy(t: number, clock: number, alpha: number): void {
     if (alpha <= 0.002) return;
     const g = at.galaxy;
-    const k = ease(ramp(t, g.start + 1.4, g.end + 0.4));
+    const k = ease(ramp(t, g.start + 1.3, g.end + 0.4));
     const zoom = Math.exp(Math.log(40) * k);
     const rot = -clock * GALAXY_SPIN * motion;
     const sx = Math.cos(SUN_TH + rot) * SUN_R;
     const sy = Math.sin(SUN_TH + rot) * SUN_R;
     const scale = S * GALAXY_SCALE * zoom;
+    const gx = w / 2 - sx * k * scale;
+    const gy = h / 2 - sy * k * scale * TILT_G;
+    // The glow, rotated with the disc (it was painted at the hand-off angle).
+    const gs = scale / 0.94;
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = alpha * 0.5 * (1 - k * 0.7);
+    ctx.translate(gx, gy);
+    ctx.scale(1, TILT_G);
+    ctx.rotate(rot - handoffRot);
+    ctx.scale(1, 1 / TILT_G);
+    ctx.drawImage(glow, -gs, -gs, gs * 2, gs * 2);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = alpha;
     paintGalaxy(ctx, galaxy, {
       cx: w / 2,
@@ -441,17 +632,16 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
       w,
       h,
     });
-    // Our star: "you are here".
     const mark = ramp(t, g.start + 0.3, g.start + 1) * alpha;
     if (mark > 0) {
       const X = w / 2 + (sx - sx * k) * scale;
       const Y = h / 2 + (sy - sy * k) * scale * TILT_G;
       const r = 4 + 10 * k;
-      const glow = ctx.createRadialGradient(X, Y, 0, X, Y, r * 3);
-      glow.addColorStop(0, `rgba(255,236,190,${mark})`);
-      glow.addColorStop(1, 'rgba(255,200,120,0)');
+      const sg = ctx.createRadialGradient(X, Y, 0, X, Y, r * 3);
+      sg.addColorStop(0, `rgba(255,236,190,${mark})`);
+      sg.addColorStop(1, 'rgba(255,200,120,0)');
       ctx.globalAlpha = 1;
-      ctx.fillStyle = glow;
+      ctx.fillStyle = sg;
       ctx.fillRect(X - r * 3, Y - r * 3, r * 6, r * 6);
       if (k < 0.35) {
         ctx.globalAlpha = mark * (1 - k / 0.35);
@@ -473,13 +663,13 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
   function drawSolar(t: number, clock: number, alpha: number): void {
     if (alpha <= 0.002) return;
     const sol = at.solar;
-    const pl = at.planets;
+    const e = at.earth;
     const ts = clock - sol.start;
     const earthA = planetAngle(2, ts);
     const ex = Math.cos(earthA) * PLANETS[2].orbit;
     const ey = Math.sin(earthA) * PLANETS[2].orbit * TILT;
-    const arrive = ease(ramp(t, sol.start - 0.3, sol.start + 2.6));
-    const close = ease(ramp(t, pl.start + 0.3, pl.end + 0.2));
+    const arrive = ease(ramp(t, sol.start - 0.3, sol.start + 2.2));
+    const close = ease(ramp(t, e.start - 0.6, e.start + 2.2));
     const zoom = lerp(0.35, 1, arrive) * Math.exp(Math.log(6) * close);
     const scale = S * 1.05 * zoom;
     const ox = w / 2 - ex * close * scale;
@@ -508,7 +698,7 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
       ctx.fillStyle = sun;
       ctx.fillRect(ox - sunR, oy - sunR, sunR * 2, sunR * 2);
     }
-    const labels = ramp(t, sol.start + 1.6, sol.start + 2.6) * (1 - ramp(t, pl.end - 1.2, pl.end));
+    const labels = ramp(t, sol.start + 1.2, sol.start + 2) * (1 - ramp(t, e.start, e.start + 0.6));
     const size = Math.round(Math.max(11, S * 0.016));
     const order = PLANETS.map((p, i) => {
       const a = planetAngle(i, ts);
@@ -552,10 +742,11 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
     ctx.globalAlpha = 1;
   }
 
-  // ── Earth ──
+  // ── Earth, and the dive into India ──
   function renderSphere(D: number, lng0: number): void {
-    const key = `${D}|${lng0.toFixed(2)}`;
-    if (key === sphereKey || !tex) return;
+    const key = `${D}|${lng0.toFixed(2)}|${D > 1000 && hiTex ? 1 : 0}`;
+    const src: HTMLCanvasElement | HTMLImageElement | null = D > 1000 && hiTex ? hiTex : tex;
+    if (key === sphereKey || !src) return;
     sphereKey = key;
     sphere.width = D;
     sphere.height = D;
@@ -569,9 +760,9 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
     sc.clip();
     sc.fillStyle = '#0b2a5a';
     sc.fillRect(0, 0, D, D);
-    const iw = tex.width;
-    const ih = tex.height;
-    const N = D > 360 ? 40 : 24;
+    const iw = src === hiTex && hiTex ? hiTex.naturalWidth : (tex as HTMLCanvasElement).width;
+    const ih = src === hiTex && hiTex ? hiTex.naturalHeight : (tex as HTMLCanvasElement).height;
+    const N = D > 360 ? 48 : 26;
     const cell = D / N;
     for (let j = 0; j < N; j++) {
       const y0 = -R + j * cell;
@@ -593,12 +784,12 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
         let u0 = ((((lng0 + d0 + 180) / 360) % 1) + 1) % 1;
         u0 *= iw;
         if (u0 + uw > iw) u0 = iw - uw;
-        sc.drawImage(tex, u0, v0, uw, Math.max(1, v1 - v0), R + x0, R + y0, cell + 0.8, cell + 0.8);
+        sc.drawImage(src, u0, v0, uw, Math.max(1, v1 - v0), R + x0, R + y0, cell + 0.8, cell + 0.8);
       }
     }
     const shade = sc.createRadialGradient(R * 0.65, R * 0.65, R * 0.2, R, R, R * 1.05);
     shade.addColorStop(0, 'rgba(0,0,0,0)');
-    shade.addColorStop(0.7, 'rgba(2,4,10,0.25)');
+    shade.addColorStop(0.7, 'rgba(2,4,10,0.22)');
     shade.addColorStop(1, 'rgba(2,4,10,0.85)');
     sc.fillStyle = shade;
     sc.fillRect(0, 0, D, D);
@@ -608,22 +799,23 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
   function drawEarth(t: number, clock: number, alpha: number): void {
     if (alpha <= 0.002) return;
     const e = at.earth;
-    const grow = ease(ramp(t, e.start, e.start + 3.2));
-    // Life arrives: the planet lifts and makes room for the forest.
-    const lift = ease(ramp(t, at.life.start - 0.3, at.life.start + 1.6));
-    const R = lerp(0.05, 0.34, grow) * lerp(1, 0.78, lift) * S;
+    const d = at.descent;
+    const grow = ease(ramp(t, e.start + 1.6, e.start + 3.6));
+    const dive = ease(ramp(t, d.start + 0.2, d.end + 0.2));
+    const R = lerp(0.05, 0.34, grow) * S * Math.exp(Math.log(10) * dive);
     const x = w / 2;
-    const y = lerp(h / 2, h * 0.36, lift);
-    const turn = ease(ramp(t, e.start, e.end + 1));
-    // Longitude snaps to 0.25° steps so the cached sphere is reused once the turn has finished.
+    const y = h / 2 + R * Math.sin(22 * DEG) * dive;
+    const turn = ease(ramp(t, e.start + 1.6, d.start + 0.15));
     const lng0 = motion ? Math.round(lerp(-10, 79, turn) * 4) / 4 : 79;
     ctx.globalAlpha = alpha;
     const atmo = ctx.createRadialGradient(x, y, R * 0.96, x, y, R * 1.18);
     atmo.addColorStop(0, 'rgba(110,175,255,0.55)');
     atmo.addColorStop(1, 'rgba(110,175,255,0)');
     ctx.fillStyle = atmo;
-    ctx.fillRect(x - R * 1.18, y - R * 1.18, R * 2.36, R * 2.36);
-    const D = Math.max(48, Math.min(1100, Math.ceil((2 * R * dpr) / 24) * 24));
+    if (R < S * 1.2) ctx.fillRect(x - R * 1.18, y - R * 1.18, R * 2.36, R * 2.36);
+    const cap = hiTex ? 2048 : 1100;
+    // Growing: 24 px steps. Diving: one render at full resolution, then reused while the camera falls.
+    const D = dive > 0 ? cap : Math.max(48, Math.min(cap, Math.ceil((2 * Math.min(R, 1.6 * S) * dpr) / 24) * 24));
     renderSphere(D, lng0);
     if (tex) ctx.drawImage(sphere, x - R, y - R, R * 2, R * 2);
     else {
@@ -632,164 +824,212 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
       ctx.arc(x, y, R, 0, TAU);
       ctx.fill();
     }
-    const mark = ramp(t, at.memory.start, at.memory.start + 1.2);
+    // India: the target of the dive.
+    const mark = ramp(t, d.start, d.start + 0.5) * (1 - ramp(t, d.start + 1.4, d.start + 2.2));
     if (mark > 0) {
-      const ix = x + R * Math.cos(22 * DEG) * Math.sin((79 - lng0) * DEG);
       const iy = y - R * Math.sin(22 * DEG);
-      const pulse = 1 + 0.25 * Math.sin(clock * 3) * motion;
-      const gr = R * 0.22 * pulse;
-      const glow = ctx.createRadialGradient(ix, iy, 0, ix, iy, gr);
-      glow.addColorStop(0, `rgba(255,153,51,${0.55 * mark})`);
-      glow.addColorStop(1, 'rgba(255,153,51,0)');
-      ctx.fillStyle = glow;
-      ctx.fillRect(ix - gr, iy - gr, gr * 2, gr * 2);
-      ctx.fillStyle = `rgba(255,201,120,${mark})`;
+      const pulse = 1 + 0.25 * Math.sin(clock * 4) * motion;
+      const gr = Math.min(S * 0.12, R * 0.2) * pulse;
+      const g = ctx.createRadialGradient(x, iy, 0, x, iy, gr);
+      g.addColorStop(0, `rgba(255,153,51,${0.6 * mark})`);
+      g.addColorStop(1, 'rgba(255,153,51,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(x - gr, iy - gr, gr * 2, gr * 2);
+    }
+    // Through the clouds.
+    const thru = ramp(t, d.start + 0.8, d.start + 2) * (1 - ramp(t, d.end, d.end + 0.6));
+    if (thru > 0) {
+      const rnd = rng(13);
+      for (let i = 0; i < 26; i++) {
+        const a = rnd() * TAU;
+        const r0 = rnd();
+        const dist = (r0 + dive * 1.6) * S * 0.6;
+        const cxp = w / 2 + Math.cos(a) * dist;
+        const cyp = h / 2 + Math.sin(a) * dist * 0.7;
+        const s = S * (0.25 + rnd() * 0.3) * (1 + dive * 2);
+        ctx.globalAlpha = thru * (0.5 + rnd() * 0.4);
+        ctx.drawImage(cloud, cxp - s / 2, cyp - s * 0.3, s, s * 0.62);
+      }
+      ctx.globalAlpha = thru * ramp(t, d.end - 0.9, d.end - 0.1) * 0.9;
+      ctx.fillStyle = '#e6edf5';
+      ctx.fillRect(0, 0, w, h);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ── the Western Ghats: dawn, bloom, monsoon, dusk, night ──
+  function skyAt(t: number): [RGB, RGB] {
+    const g = at.ghats;
+    const m = at.monsoon;
+    const ti = at.title;
+    const a = at.app;
+    const k1 = ramp(t, g.start, g.start + 2.5); // dawn → day
+    const k2 = ramp(t, m.start - 0.3, m.start + 1); // → storm
+    const k3 = ramp(t, ti.start - 0.4, ti.start + 1.4); // → dusk
+    const k4 = ramp(t, a.start - 0.5, a.end - 1.2); // → night
+    let top = mix(SKY.dawn[0], SKY.day[0], k1);
+    let hor = mix(SKY.dawn[1], SKY.day[1], k1);
+    top = mix(top, SKY.storm[0], k2);
+    hor = mix(hor, SKY.storm[1], k2);
+    top = mix(top, SKY.dusk[0], k3);
+    hor = mix(hor, SKY.dusk[1], k3);
+    top = mix(top, SKY.night[0], k4);
+    hor = mix(hor, SKY.night[1], k4);
+    return [top, hor];
+  }
+
+  function drawGhats(t: number, clock: number, alpha: number): void {
+    if (alpha <= 0.002) return;
+    if (hills.length === 0) paintHills();
+    const g = at.ghats;
+    const m = at.monsoon;
+    const a = at.app;
+    const [top, hor] = skyAt(t);
+    ctx.globalAlpha = alpha;
+    const sky = ctx.createLinearGradient(0, 0, 0, h * 0.75);
+    sky.addColorStop(0, css(top));
+    sky.addColorStop(1, css(hor));
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, w, h);
+    // Night returns: the stars come back over the hills.
+    const night = ramp(t, a.start, a.end - 1);
+    if (night > 0) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalAlpha = alpha * night;
+      ctx.drawImage(starLayer, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.globalAlpha = alpha;
+    }
+    // The sun climbs at dawn, hides in the monsoon, sets at dusk.
+    const rise = ease(ramp(t, g.start, g.end));
+    const hide = 1 - ramp(t, m.start - 0.2, m.start + 0.8);
+    const setK = ramp(t, at.title.start, at.title.end);
+    const sunA = Math.max(hide, setK * (1 - ramp(t, a.start, a.start + 1.5)));
+    if (sunA > 0.01) {
+      const sx = setK > 0 && hide < 0.5 ? w * 0.7 : w * 0.32;
+      const sy = setK > 0 && hide < 0.5 ? lerp(h * 0.42, h * 0.6, setK) : lerp(h * 0.6, h * 0.3, rise);
+      const sr = S * 0.05;
+      const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr * 6);
+      sg.addColorStop(0, 'rgba(255,240,200,0.95)');
+      sg.addColorStop(0.15, 'rgba(255,210,140,0.6)');
+      sg.addColorStop(1, 'rgba(255,170,90,0)');
+      ctx.globalAlpha = alpha * sunA;
+      ctx.fillStyle = sg;
+      ctx.fillRect(sx - sr * 6, sy - sr * 6, sr * 12, sr * 12);
+      ctx.globalAlpha = alpha;
+    }
+    // The hills, far to near, with a slow dolly; the blooms spread across the slopes.
+    const local = clock - g.start;
+    const bloom = ease(ramp(t, g.start + 1.2, g.start + 4.2));
+    for (let L = 0; L < hills.length; L++) {
+      const off = MARGIN - Math.max(-MARGIN, Math.min(MARGIN, local * (L + 1) * 3 * motion));
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(hills[L] as HTMLCanvasElement, -off * dpr, 0);
+      if (bloom > 0 && blooms[L]) {
+        ctx.globalAlpha = alpha * bloom;
+        ctx.drawImage(blooms[L] as HTMLCanvasElement, -off * dpr, 0);
+        ctx.globalAlpha = alpha;
+      }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // A band of mist drifting between the layers.
+      if (L === 1 || L === 3) {
+        const my = h * (0.6 + L * 0.06);
+        const mg = ctx.createLinearGradient(0, my - h * 0.04, 0, my + h * 0.04);
+        mg.addColorStop(0, 'rgba(230,236,244,0)');
+        mg.addColorStop(0.5, `rgba(230,236,244,${0.12 * (1 - ramp(t, a.start, a.end))})`);
+        mg.addColorStop(1, 'rgba(230,236,244,0)');
+        ctx.fillStyle = mg;
+        ctx.fillRect(0, my - h * 0.04, w, h * 0.08);
+      }
+    }
+    // Birds cross at dawn.
+    const birds = ramp(t, g.start + 0.5, g.start + 1.2) * (1 - ramp(t, g.end - 0.6, g.end));
+    if (birds > 0 && motion) {
+      ctx.globalAlpha = alpha * birds * 0.8;
+      ctx.strokeStyle = '#1b2430';
+      ctx.lineWidth = 1.4;
       ctx.beginPath();
-      ctx.arc(ix, iy, Math.max(2.5, R * 0.018), 0, TAU);
-      ctx.fill();
+      for (let i = 0; i < 7; i++) {
+        const bx = ((local * 45 + i * 60) % (w + 200)) - 100;
+        const by = h * 0.28 + Math.sin(i * 2.1) * h * 0.05 + Math.sin(local * 2 + i) * 4;
+        const s = 6 + (i % 3) * 2;
+        const flap = Math.sin(local * 9 + i) * s * 0.5;
+        ctx.moveTo(bx - s, by - flap);
+        ctx.quadraticCurveTo(bx - s * 0.4, by - s * 0.2, bx, by);
+        ctx.quadraticCurveTo(bx + s * 0.4, by - s * 0.2, bx + s, by - flap);
+      }
+      ctx.stroke();
+    }
+    // The light of the hour over everything.
+    const storm = ramp(t, m.start - 0.3, m.start + 1) * (1 - ramp(t, at.title.start - 0.4, at.title.start + 1));
+    const dusk = ramp(t, at.title.start - 0.4, at.title.start + 1.4) * (1 - ramp(t, a.start, a.end - 1));
+    const dark = ramp(t, a.start - 0.3, a.end - 1);
+    if (storm > 0) {
+      ctx.globalAlpha = alpha * storm * 0.35;
+      ctx.fillStyle = '#28323f';
+      ctx.fillRect(0, 0, w, h);
+    }
+    if (dusk > 0) {
+      ctx.globalAlpha = alpha * dusk * 0.3;
+      ctx.fillStyle = '#3a1f4a';
+      ctx.fillRect(0, 0, w, h);
+    }
+    if (dark > 0) {
+      const night2 = ctx.createLinearGradient(0, h * 0.3, 0, h);
+      night2.addColorStop(0, 'rgba(2,4,10,0)');
+      night2.addColorStop(0.35, 'rgba(2,4,10,0.75)');
+      night2.addColorStop(1, 'rgba(2,4,10,0.9)');
+      ctx.globalAlpha = alpha * dark;
+      ctx.fillStyle = night2;
+      ctx.fillRect(0, h * 0.3, w, h * 0.7);
+    }
+    // Monsoon clouds roll in over the ridge.
+    const clouds = ramp(t, m.start - 0.5, m.start + 1.2) * (1 - ramp(t, at.title.start, at.title.start + 1.5));
+    if (clouds > 0) {
+      const rnd = rng(17);
+      for (let i = 0; i < 16; i++) {
+        const s = S * (0.5 + rnd() * 0.5);
+        const cx = ((rnd() * (w + s) + (clock - m.start) * 18 * motion * (0.6 + rnd())) % (w + s)) - s / 2;
+        const cy = h * (0.02 + rnd() * 0.22);
+        ctx.globalAlpha = alpha * clouds * 0.75;
+        ctx.drawImage(stormCloud, cx - s / 2, cy - s * 0.3, s, s * 0.6);
+      }
+      const deck = ctx.createLinearGradient(0, 0, 0, h * 0.45);
+      deck.addColorStop(0, 'rgba(40,46,58,0.85)');
+      deck.addColorStop(1, 'rgba(40,46,58,0)');
+      ctx.globalAlpha = alpha * clouds;
+      ctx.fillStyle = deck;
+      ctx.fillRect(0, 0, w, h * 0.45);
+    }
+    // One flash of lightning.
+    const flashT = m.start + 2.1;
+    if (motion && t > flashT && t < flashT + 0.35) {
+      const f = 1 - (t - flashT) / 0.35;
+      ctx.globalAlpha = alpha * f * f * 0.35;
+      ctx.fillStyle = '#eef2ff';
+      ctx.fillRect(0, 0, w, h);
     }
     ctx.globalAlpha = 1;
   }
 
-  // ── life ──
-  const LEAF = ['rgba(18,74,44,0.85)', 'rgba(28,104,58,0.8)', 'rgba(46,136,72,0.75)', 'rgba(120,190,110,0.55)'];
-  function renderFlora(g: number): void {
-    const key = `${g.toFixed(2)}|${w}|${h}`;
-    if (key === floraKey) return;
-    floraKey = key;
-    const c = flora.getContext('2d');
-    if (!c) return;
-    c.setTransform(1, 0, 0, 1, 0, 0);
-    c.clearRect(0, 0, flora.width, flora.height);
-    c.setTransform(dpr, 0, 0, dpr, 0, 0);
-    // The hills.
-    const ground = h * 0.93;
-    const haze = c.createLinearGradient(0, h * 0.6, 0, h);
-    haze.addColorStop(0, 'rgba(30,120,90,0)');
-    haze.addColorStop(1, `rgba(30,120,90,${0.35 * g})`);
-    c.fillStyle = haze;
-    c.fillRect(0, h * 0.6, w, h * 0.4);
-    c.fillStyle = '#06130d';
-    c.beginPath();
-    c.moveTo(0, h);
-    c.lineTo(0, ground - h * 0.03);
-    c.quadraticCurveTo(w * 0.25, ground - h * 0.07, w * 0.5, ground - h * 0.01);
-    c.quadraticCurveTo(w * 0.75, ground + h * 0.03, w, ground - h * 0.05);
-    c.lineTo(w, h);
-    c.closePath();
-    c.fill();
-    const hillY = (x: number): number => {
-      const f = x / w;
-      return f < 0.5 ? ground - h * 0.03 - Math.sin(f * Math.PI) * h * 0.02 : ground - h * 0.02 * (f - 0.5) * 2;
-    };
-    // The trees, branch level by branch level.
-    for (const { tree, x, hh } of trees) {
-      const bx = x * w;
-      const by = hillY(bx) + 2;
-      const unit = (hh * h) / 3.1;
-      const df = g * (tree.depth + 1.4);
-      for (let d = 0; d <= tree.depth; d++) {
-        const frac = Math.max(0, Math.min(1, df - d));
-        if (frac <= 0) break;
-        c.strokeStyle = d < 3 ? '#2a1d14' : '#3a2a1c';
-        c.lineWidth = Math.max(0.6, unit * 0.11 * 0.7 ** d);
-        c.lineCap = 'round';
-        c.beginPath();
-        for (const s of tree.segs) {
-          if (s.d !== d) continue;
-          c.moveTo(bx + s.x0 * unit, by + s.y0 * unit);
-          c.lineTo(bx + (s.x0 + (s.x1 - s.x0) * frac) * unit, by + (s.y0 + (s.y1 - s.y0) * frac) * unit);
-        }
-        c.stroke();
-      }
-      const la = ramp(g, 0.62, 1);
-      if (la > 0) {
-        c.globalAlpha = la;
-        for (let ci = 0; ci < 4; ci++) {
-          c.fillStyle = LEAF[ci] as string;
-          c.beginPath();
-          for (const l of tree.leaves) {
-            if (l.c !== ci) continue;
-            const r = l.r * unit * la;
-            c.moveTo(bx + l.x * unit + r, by + l.y * unit);
-            c.arc(bx + l.x * unit, by + l.y * unit, r, 0, TAU);
-          }
-          c.fill();
-        }
-        c.globalAlpha = 1;
-      }
-    }
-    // Neelakurinji: violet-blue blooms along the hills.
-    const fa = ramp(g, 0.75, 1);
-    if (fa > 0) {
-      const rnd = rng(9);
-      for (let i = 0; i < 140; i++) {
-        const fx = rnd() * w;
-        const fy = hillY(fx) - 2 + rnd() * h * 0.06;
-        const r = (2.2 + rnd() * 3) * Math.max(0.8, S / 700) * fa;
-        const tint = rnd() < 0.7 ? '150,140,255' : '220,150,255';
-        c.fillStyle = `rgba(${tint},${(0.75 * fa).toFixed(2)})`;
-        c.beginPath();
-        for (let p = 0; p < 5; p++) {
-          const a = (p / 5) * TAU + i;
-          c.moveTo(fx + Math.cos(a) * r * 1.5, fy + Math.sin(a) * r * 1.5);
-          c.arc(fx + Math.cos(a) * r, fy + Math.sin(a) * r, r * 0.6, 0, TAU);
-        }
-        c.fill();
-        c.fillStyle = 'rgba(255,230,150,0.9)';
-        c.fillRect(fx - 0.8, fy - 0.8, 1.6, 1.6);
-      }
-    }
-  }
-
-  function drawLife(t: number, clock: number): void {
-    const l = at.life;
-    const a = ramp(t, l.start, l.start + 0.6);
-    if (a <= 0) return;
-    const g = Math.round(ease(ramp(t, l.start + 0.2, l.start + 3.8)) * 100) / 100;
-    renderFlora(g);
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.globalAlpha = a;
-    ctx.drawImage(flora, 0, 0);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    // Fireflies.
-    const fa = ramp(t, l.start + 2, l.start + 3.5) * a;
-    if (fa > 0) {
-      const rnd = rng(5);
-      for (let i = 0; i < 48; i++) {
-        const bx = rnd() * w;
-        const by = h * (0.62 + rnd() * 0.3);
-        const x = bx + Math.sin(clock * 0.6 + i) * 18 * motion;
-        const y = by + Math.cos(clock * 0.45 + i * 1.7) * 12 * motion;
-        const tw = 0.4 + 0.6 * Math.abs(Math.sin(clock * 1.7 + i * 2.3));
-        ctx.globalAlpha = fa * tw * 0.35;
-        ctx.fillStyle = 'rgba(220,255,140,1)';
-        ctx.fillRect(x - 3, y - 3, 6, 6);
-        ctx.globalAlpha = fa * tw;
-        ctx.fillRect(x - 1, y - 1, 2, 2);
-      }
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  /** The monsoon arrives with the memory: one path of slanted streaks. */
+  /** The monsoon itself: one path of slanted streaks. */
   function drawRain(t: number, clock: number): void {
-    const m = at.memory;
-    const a = ramp(t, m.start, m.start + 0.8) * (1 - ramp(t, m.end - 0.4, m.end + 0.8));
+    const m = at.monsoon;
+    const a = ramp(t, m.start, m.start + 0.8) * (1 - ramp(t, m.end - 0.2, m.end + 1));
     if (a <= 0) return;
     const rnd = rng(3);
     const fall = motion ? clock * 900 : 0;
-    ctx.globalAlpha = a * 0.55;
-    ctx.strokeStyle = 'rgba(190,215,255,0.6)';
+    ctx.globalAlpha = a * 0.5;
+    ctx.strokeStyle = 'rgba(200,220,245,0.7)';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    const n = Math.round((w * h) / 9000);
+    const n = Math.round((w * h) / 6000);
     for (let i = 0; i < n; i++) {
       const x0 = rnd() * (w + 200) - 100;
-      const len = 14 + rnd() * 18;
+      const len = 16 + rnd() * 20;
       const y0 = ((((rnd() * (h + 60) + fall * (0.7 + rnd() * 0.6)) % (h + 60)) + h + 60) % (h + 60)) - 30;
       ctx.moveTo(x0, y0);
-      ctx.lineTo(x0 - len * 0.25, y0 + len);
+      ctx.lineTo(x0 - len * 0.22, y0 + len);
     }
     ctx.stroke();
     ctx.globalAlpha = 1;
@@ -799,23 +1039,29 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
     resize,
     draw(t, clock = t) {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.drawImage(starLayer, 0, 0);
-      // Nebulae glow behind the deep field and the galaxy, then fade as we reach the Sun.
-      const neb = 1 - ramp(t, at.solar.start - 0.5, at.solar.start + 1.5);
-      if (neb > 0) {
-        ctx.globalAlpha = neb;
-        ctx.drawImage(nebula, 0, 0);
-        ctx.globalAlpha = 1;
+      ctx.fillStyle = '#02040a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const d = at.descent;
+      const ghats = ramp(t, d.end - 0.5, d.end + 0.4);
+      if (ghats < 1) {
+        ctx.drawImage(starLayer, 0, 0);
+        const neb = 1 - ramp(t, at.solar.start - 0.5, at.solar.start + 1.5);
+        if (neb > 0) {
+          ctx.globalAlpha = neb;
+          ctx.drawImage(nebula, 0, 0);
+          ctx.globalAlpha = 1;
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const u = at.universe;
+        const g = at.galaxy;
+        const e = at.earth;
+        drawUniverse(t, clock, 1 - ramp(t, u.end - 0.7, u.end + 0.2));
+        drawGalaxy(t, clock, ramp(t, u.end - 0.7, u.end + 0.2) * (1 - ramp(t, g.end - 1, g.end + 0.2)));
+        drawSolar(t, clock, ramp(t, g.end - 0.6, g.end + 0.6) * (1 - ramp(t, e.start + 1.6, e.start + 2.4)));
+        drawEarth(t, clock, ramp(t, e.start + 1.6, e.start + 2.4) * (1 - ghats));
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const u = at.universe;
-      const g = at.galaxy;
-      const e = at.earth;
-      drawUniverse(t, clock, 1 - ramp(t, u.end - 0.7, u.end + 0.2));
-      drawGalaxy(t, clock, ramp(t, u.end - 0.7, u.end + 0.2) * (1 - ramp(t, g.end - 1, g.end + 0.2)));
-      drawSolar(t, clock, ramp(t, g.end - 0.6, g.end + 0.6) * (1 - ramp(t, e.start + 0.2, e.start + 1)));
-      drawEarth(t, clock, ramp(t, e.start, e.start + 0.8));
-      drawLife(t, clock);
+      drawGhats(t, clock, ghats);
       drawRain(t, clock);
     },
   };

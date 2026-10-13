@@ -3,8 +3,22 @@ import { useReduced } from '../../app/useReduced';
 import { createCosmos } from './cosmos';
 import { SCENES, sceneAt, TOTAL } from './timeline';
 
-const FADE = 1.2; // the last seconds fade the story into the app
-const CHIPS = ['The weather, right now', 'Today’s tips', 'The right drink, at your budget', 'The roads'];
+const FADE = 1.4; // the last seconds dissolve the story into the app
+const CHIPS = ['The weather, right now', 'What to carry', 'The right drink, at your budget', 'The roads'];
+
+/** Words rise one after another: the line is read, not dumped. */
+function Words({ text, delay = 0, step = 90 }: { text: string; delay?: number; step?: number }): ReactElement {
+  return (
+    <>
+      {text.split(' ').map((word, i) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: words of one immutable line
+        <span key={i} className="story-word" style={{ animationDelay: `${delay + i * step}ms` }}>
+          {word}{' '}
+        </span>
+      ))}
+    </>
+  );
+}
 
 /** The opening story. Full screen, skippable (button or Esc), under forty seconds. */
 export function Story({ onDone }: { onDone: () => void }): ReactElement {
@@ -37,7 +51,6 @@ export function Story({ onDone }: { onDone: () => void }): ReactElement {
       w.__storySeek = (s: number) => {
         t = s;
       };
-      // Average draw cost in ms at a given story time, for performance checks.
       w.__storyBench = (s: number, n = 60) => {
         const t0 = performance.now();
         for (let i = 0; i < n; i++) cosmos.draw(s + i / 60);
@@ -80,15 +93,17 @@ export function Story({ onDone }: { onDone: () => void }): ReactElement {
 
   const scene = SCENES[index] ?? SCENES[0];
   const id = scene?.id;
+  const line = scene?.line ?? '';
+  const sub = scene?.sub ?? '';
   return (
     <div className="story-intro" role="dialog" aria-modal="true" aria-label="Our story" ref={rootRef}>
       <canvas
         ref={canvasRef}
         className="story-intro__canvas"
         role="img"
-        aria-label="From the Milky Way to the Sun, past the planets, down to Earth and India"
+        aria-label="From the known universe to the Milky Way, the Sun, the Earth, and the hills of India in the monsoon"
       />
-      <div className="story-intro__scrim" aria-hidden="true" />
+      <div className="story-intro__vignette" aria-hidden="true" />
       <div className={`story-intro__text story-intro__text--${id}`} key={id} aria-live="polite">
         {id === 'title' ? (
           <>
@@ -96,31 +111,35 @@ export function Story({ onDone }: { onDone: () => void }): ReactElement {
               मौसम का माहौल
             </p>
             <h2 className="story-intro__title">Mausam ka Mahaul</h2>
-            <p className="story-intro__sub">the vibe of the weather</p>
+            <p className="story-intro__sub">
+              <Words text={sub} delay={900} step={70} />
+            </p>
           </>
         ) : (
           <>
-            <p className="story-intro__line" lang={id === 'memory' ? 'hi-Latn' : undefined}>
-              {scene?.line}
+            <p className="story-intro__line" lang={id === 'monsoon' ? 'hi-Latn' : undefined}>
+              <Words text={line} />
             </p>
             {id === 'app' && (
               <ul className="story-intro__chips">
                 {CHIPS.map((c, i) => (
-                  <li key={c} style={{ animationDelay: `${250 + i * 220}ms` }}>
+                  <li key={c} style={{ animationDelay: `${500 + i * 160}ms` }}>
                     {c}
                   </li>
                 ))}
               </ul>
             )}
-            <p className="story-intro__sub">{scene?.sub}</p>
+            <p className="story-intro__sub">
+              <Words text={sub} delay={300 + line.split(' ').length * 90} step={45} />
+            </p>
           </>
         )}
       </div>
       <div className="story-intro__bar" aria-hidden="true">
         <span ref={barRef} />
       </div>
-      <button ref={skipRef} type="button" className="btn story-intro__skip" onClick={finish}>
-        Skip story
+      <button ref={skipRef} type="button" className="story-intro__skip" onClick={finish}>
+        Skip
       </button>
     </div>
   );

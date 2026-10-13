@@ -121,3 +121,19 @@ describe('bands and scales', () => {
     expect(wmoLabel(61)).toBe('light rain');
   });
 });
+
+describe('US AQI bands', () => {
+  it('maps every band and the missing reading', async () => {
+    const { usAqiBand } = await import('./comfort');
+    expect([null, 30, 80, 140, 180, 250, 400].map((a) => usAqiBand(a).label)).toEqual([
+      'No reading',
+      'Good',
+      'Moderate',
+      'Unhealthy for some',
+      'Unhealthy',
+      'Very unhealthy',
+      'Hazardous',
+    ]);
+    expect(usAqiBand(166).tone).toBe('very-poor');
+  });
+});

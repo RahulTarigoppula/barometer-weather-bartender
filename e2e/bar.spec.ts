@@ -207,8 +207,8 @@ test('the story plays from the footer, names the app, and can be skipped', async
   await page.getByRole('button', { name: /Watch our story/ }).click();
   const story = page.getByRole('dialog', { name: 'Our story' });
   await expect(story).toBeVisible();
-  await expect(story).toContainText('The known universe.');
-  await page.getByRole('button', { name: 'Skip story' }).click();
+  await expect(story).toContainText('Space. Time. Beyond counting.');
+  await page.getByRole('button', { name: 'Skip', exact: true }).click();
   await expect(story).toHaveCount(0);
   await expect(page).toHaveURL(/#\/v\/19\.07,72\.88$/);
 });

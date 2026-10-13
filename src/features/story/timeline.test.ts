@@ -2,21 +2,20 @@ import { describe, expect, it } from 'vitest';
 import { ease, ramp, SCENES, sceneAt, TOTAL } from './timeline';
 
 describe('the opening story', () => {
-  it('runs from the known universe down to life on Earth, then the name and the app, in under a minute', () => {
+  it('descends from the known universe to the Ghats in the monsoon, then names itself, in under forty seconds', () => {
     expect(SCENES.map((s) => s.id)).toEqual([
       'universe',
       'galaxy',
       'solar',
-      'planets',
       'earth',
-      'life',
-      'memory',
+      'descent',
+      'ghats',
+      'monsoon',
       'title',
-      'meaning',
       'app',
     ]);
-    expect(TOTAL).toBeGreaterThanOrEqual(35);
-    expect(TOTAL).toBeLessThanOrEqual(50);
+    expect(TOTAL).toBeGreaterThanOrEqual(30);
+    expect(TOTAL).toBeLessThanOrEqual(40);
     for (const s of SCENES) expect(s.end - s.start).toBeGreaterThanOrEqual(3.5);
     expect(SCENES.find((s) => s.id === 'title')?.line).toBe('Mausam ka Mahaul');
   });

@@ -1,5 +1,7 @@
 import '@fontsource-variable/space-grotesk/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght.css';
+import '@fontsource-variable/fraunces/wght.css';
+import '@fontsource-variable/fraunces/wght-italic.css';
 import './styles/tokens.css';
 import './styles/app.css';
 import './styles/outlook.css';

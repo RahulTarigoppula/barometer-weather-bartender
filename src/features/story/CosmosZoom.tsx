@@ -18,13 +18,7 @@ const LEVEL: Record<Level, { name: string; fact: string }> = {
 };
 const levelAt = (z: number): Level => {
   const id = sceneAt(tAt(z)).scene.id;
-  return id === 'universe'
-    ? 'universe'
-    : id === 'galaxy'
-      ? 'galaxy'
-      : id === 'solar' || id === 'planets'
-        ? 'solar'
-        : 'earth';
+  return id === 'universe' ? 'universe' : id === 'galaxy' ? 'galaxy' : id === 'solar' ? 'solar' : 'earth';
 };
 
 /**

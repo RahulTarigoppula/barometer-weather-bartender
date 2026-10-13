@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DRINKS, judgeFixture, loadFixture } from '../test/helpers';
-import { dayName, hourLabel, snackFor, sunArc, tempPath, tipsFor, weekRange } from './outlook';
+import { dayName, hourLabel, mahaulBrief, snackFor, sunArc, tempPath, tipsFor, weekRange } from './outlook';
 import type { Features, HourPoint } from './types';
 
 const drink = (id: string) => {
@@ -110,5 +110,54 @@ describe('forecast shaping', () => {
     ]);
     expect(p.line.startsWith('M0 90')).toBe(true);
     expect(tempPath(hours.slice(0, 1), 10, 10).line).toBe('');
+  });
+});
+
+describe('the mahaul brief', () => {
+  const base = {
+    place: 'New Delhi',
+    condition: 'Clear sky',
+    temp: '27°',
+    feels: '31°',
+    isDay: false,
+    localHour: 21,
+    roads: { level: 'Heavy', eases: '22:00' },
+    drink: 'Mojito',
+  };
+  it('reads the day in a few honest sentences, most urgent advice first', () => {
+    const tips = [{ id: 'mask', label: 'Mask outdoors', detail: '', tone: 'alert' } as const];
+    expect(mahaulBrief({ ...base, tips: [...tips] })).toBe(
+      'Clear sky over New Delhi tonight, 27° that feels like 31°. Mask up outside; the air is unhealthy. Roads are heavy for now, easing by 22:00. Tonight’s pour: Mojito.',
+    );
+  });
+  it('morning, calm, no roads, same feel', () => {
+    const s = mahaulBrief({ ...base, isDay: true, localHour: 8, feels: '27°', tips: [], roads: null });
+    expect(s).toBe(
+      'Clear sky over New Delhi this morning, 27°. Nothing out there to worry about. Today’s pour: Mojito.',
+    );
+    expect(s).not.toMatch(/—/);
+  });
+  it('afternoon and evening wording; roads without an easing hour', () => {
+    expect(
+      mahaulBrief({ ...base, isDay: true, localHour: 14, tips: [], roads: { level: 'Light', eases: null } }),
+    ).toMatch(/this afternoon.*Roads look light\. Today’s pour/);
+    expect(mahaulBrief({ ...base, isDay: true, localHour: 18, tips: [] })).toMatch(/this evening.*Tonight’s pour/);
+  });
+});
+
+describe('the mahaul brief, casing', () => {
+  it('starts with a capital whatever the label casing', () => {
+    const s = mahaulBrief({
+      place: 'Pune',
+      condition: 'light drizzle',
+      temp: '24°',
+      feels: '24°',
+      isDay: true,
+      localHour: 9,
+      tips: [],
+      roads: null,
+      drink: 'Masala Chai',
+    });
+    expect(s.startsWith('Light drizzle over Pune this morning, 24°.')).toBe(true);
   });
 });

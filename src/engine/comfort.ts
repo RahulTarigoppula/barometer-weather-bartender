@@ -82,3 +82,14 @@ export const euAqiBand = (a: number | null): AqiBand =>
             : a <= 100
               ? 'very-poor'
               : 'extremely-poor';
+
+/** US EPA AQI, the scale Indian readers know best: its band (reusing the colour tones) and its words. */
+export function usAqiBand(a: number | null): { tone: AqiBand; label: string } {
+  if (a === null) return { tone: 'unknown', label: 'No reading' };
+  if (a <= 50) return { tone: 'good', label: 'Good' };
+  if (a <= 100) return { tone: 'moderate', label: 'Moderate' };
+  if (a <= 150) return { tone: 'poor', label: 'Unhealthy for some' };
+  if (a <= 200) return { tone: 'very-poor', label: 'Unhealthy' };
+  if (a <= 300) return { tone: 'extremely-poor', label: 'Very unhealthy' };
+  return { tone: 'extremely-poor', label: 'Hazardous' };
+}

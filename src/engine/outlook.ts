@@ -159,3 +159,52 @@ export function tempPath(
   const area = `${line} L${width} ${height} L0 ${height} Z`;
   return { line, area, points };
 }
+
+// ───────────── the mahaul: the day in a few honest sentences ─────────────
+const TIP_PHRASE: Record<TipId, string> = {
+  heat: 'Stay out of the midday sun.',
+  hydrate: 'Keep water close.',
+  mask: 'Mask up outside; the air is unhealthy.',
+  sensitive: 'Go easy outdoors if your lungs are sensitive.',
+  umbrella: 'Carry an umbrella.',
+  sunscreen: 'Wear sunscreen if you head out.',
+  bundle: 'Bundle up properly.',
+  layers: 'Take a layer.',
+  wind: 'It is gusty; hold on to your dupatta.',
+  fog: 'Drive slow in the fog.',
+};
+
+export interface BriefInput {
+  place: string;
+  condition: string;
+  temp: string;
+  feels: string;
+  isDay: boolean;
+  localHour: number;
+  tips: Tip[];
+  /** e.g. "Heavy", with an optional hour it eases ("21:00"); null away from roads. */
+  roads: { level: string; eases: string | null } | null;
+  drink: string;
+}
+
+/** "Clear sky over New Delhi tonight, 27° that feels like 31°. Mask up outside; the air is unhealthy. ..." */
+export function mahaulBrief(b: BriefInput): string {
+  const when = !b.isDay
+    ? 'tonight'
+    : b.localHour < 12
+      ? 'this morning'
+      : b.localHour < 17
+        ? 'this afternoon'
+        : 'this evening';
+  const feels = b.feels === b.temp ? '' : ` that feels like ${b.feels}`;
+  const sky = b.condition.charAt(0).toUpperCase() + b.condition.slice(1).toLowerCase();
+  const out = [`${sky} over ${b.place} ${when}, ${b.temp}${feels}.`];
+  const first = b.tips[0];
+  out.push(first ? TIP_PHRASE[first.id] : 'Nothing out there to worry about.');
+  if (b.roads) {
+    const lvl = b.roads.level.toLowerCase();
+    out.push(b.roads.eases ? `Roads are ${lvl} for now, easing by ${b.roads.eases}.` : `Roads look ${lvl}.`);
+  }
+  out.push(`${when === 'tonight' || when === 'this evening' ? 'Tonight’s' : 'Today’s'} pour: ${b.drink}.`);
+  return out.join(' ');
+}

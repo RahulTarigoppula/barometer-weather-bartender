@@ -1,16 +1,10 @@
-/** The opening story: the known universe, the Milky Way, the Sun, the planets, Earth, life, the name, the app. */
+/**
+ * The opening story, one continuous descent: the known universe, our galaxy, our star, the one
+ * planet that breathes, down through the clouds to India, the Western Ghats in bloom, the monsoon,
+ * the name. Short lines, one idea per beat.
+ */
 
-export type SceneId =
-  | 'universe'
-  | 'galaxy'
-  | 'solar'
-  | 'planets'
-  | 'earth'
-  | 'life'
-  | 'memory'
-  | 'title'
-  | 'meaning'
-  | 'app';
+export type SceneId = 'universe' | 'galaxy' | 'solar' | 'earth' | 'descent' | 'ghats' | 'monsoon' | 'title' | 'app';
 
 export interface Scene {
   id: SceneId;
@@ -21,44 +15,28 @@ export interface Scene {
 }
 
 const LENGTHS: [SceneId, number, string, string][] = [
+  ['universe', 4.5, 'Space. Time. Beyond counting.', 'Hundreds of billions of galaxies, and not one other voice.'],
+  ['galaxy', 4, 'One of them is ours.', 'The Milky Way.'],
+  ['solar', 3.5, 'One ordinary star.', 'Eight worlds. Seven of them silent.'],
+  ['earth', 4, 'And one that breathes.', 'The only place we know where rain becomes forest.'],
+  ['descent', 3.5, 'Closer.', 'A land that waits all year for the rain.'],
   [
-    'universe',
+    'ghats',
     5,
-    'The known universe.',
-    'Hundreds of billions of galaxies across ninety-three billion light-years. Countless bounds of space and time.',
-  ],
-  ['galaxy', 4.5, 'One of them is ours.', 'The Milky Way. A hundred billion suns, and one we call home.'],
-  ['solar', 4, 'A small yellow star.', 'Eight worlds circle it. Seven are rock, ice and silence.'],
-  [
-    'planets',
-    4,
-    'But the third one breathes.',
-    'In all that space and time, it is the only place we know where life began.',
-  ],
-  ['earth', 4.5, 'Earth.', 'Oceans rise as clouds. Clouds come back as rain.'],
-  [
-    'life',
-    5.5,
-    'And from the rain, life.',
-    'Sandalwood and teak. Neelakurinji, which blooms once in twelve years. Wood and leaf found nowhere else in the known universe.',
+    'When it comes, the hills come alive.',
+    'Teak and sandalwood. Neelakurinji, blue once in twelve years. Nowhere else in the known universe.',
   ],
   [
-    'memory',
+    'monsoon',
     4.5,
     '“Chhata le ja, baarish hogi.”',
-    'Take an umbrella, it’s going to rain. Every Indian home has that voice at the door, and it is almost always right.',
+    'Every home has that voice at the door. It is almost always right.',
   ],
-  ['title', 4.5, 'Mausam ka Mahaul', 'मौसम का माहौल · the vibe of the weather'],
-  [
-    'meaning',
-    5,
-    'Mausam is the sky. Mahaul is what it does to us.',
-    'The first rain and the smell of wet earth. Chai and pakoras. A jammed flyover. A rooftop at golden hour.',
-  ],
+  ['title', 5, 'Mausam ka Mahaul', 'Mausam is the sky. Mahaul is what it does to us.'],
   [
     'app',
-    4.5,
-    'So we built a friend who reads the sky for you.',
+    4,
+    'Read the sky before you step out.',
     'Made with love by Rahul, for everyone who was ever told to carry an umbrella.',
   ],
 ];
