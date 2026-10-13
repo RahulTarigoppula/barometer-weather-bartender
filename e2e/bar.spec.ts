@@ -207,7 +207,8 @@ test('the story plays from the footer, names the app, and can be skipped', async
   await page.getByRole('button', { name: /Watch our story/ }).click();
   const story = page.getByRole('dialog', { name: 'Our story' });
   await expect(story).toBeVisible();
-  await expect(story).toContainText('Space. Time. Beyond counting.');
+  await expect(story).toContainText('Every great story opens with a wide shot.');
+  await expect(story).toContainText('I’m Rahul');
   await page.getByRole('button', { name: 'Skip', exact: true }).click();
   await expect(story).toHaveCount(0);
   await expect(page).toHaveURL(/#\/v\/19\.07,72\.88$/);
@@ -232,6 +233,7 @@ test('weather first everywhere: the mahaul line, the page mood, four tiles and m
   await page.goto('./#/v/19.07,72.88');
   await expect(drink(page)).toHaveText('Mojito');
   await expect(page.locator('.mahaul')).toContainText('over Mumbai tonight');
+  await expect(page.locator('.mahaul__genre')).toContainText('Today’s genre');
   await expect(page.locator('html')).toHaveAttribute('data-hour', 'night');
   const tiles = weather(page).locator('.tile');
   await expect(tiles).toHaveCount(4);

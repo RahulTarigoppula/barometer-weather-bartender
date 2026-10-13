@@ -12,9 +12,11 @@ In India nobody steps out without asking *"mausam kaisa hai?"* — how's the wea
 
 It began as **Barometer**, a joke about a judgmental bartender who reads the weather. It grew into the thing you open before leaving home — so it got an Indian name. (The repository keeps its original name so links never break.)
 
-### The opening film
+### The maker, and the opening film
 
-Every visit opens with a 38-second story, drawn live in canvas 2D (no video, no music) and skippable at any moment: the known universe, a dive into the Milky Way ("you are here"), the Sun and its planets, the one planet that breathes, a fall through the clouds onto India, the Western Ghats at dawn as the slopes turn blue with Neelakurinji, the monsoon arriving with a mother's "Chhata le ja, baarish hogi", dusk, and the name. Night returns, and the app is underneath. After it, zoom out from the globe and you can travel back out to the known universe.
+I'm Rahul, a passionate lover of stories in every form: mostly movies and series, manhwa and anime, and above all the all-mighty books and audiobooks. Every story I love knows the setting is half the feeling, so this app treats your day like a story: the **mausam** is the setting, the **mahaul** is the mood, each day gets a genre, and the mahaul line can read itself to you like an audiobook.
+
+Every visit opens with a ~41-second film, drawn live in canvas 2D (no video, no music) and skippable at any moment, told through those forms: a movie's letterboxed wide shot of the known universe, a series' cold open at the Sun, anime's love of skies over Earth, a manhwa's vertical panels as we scroll down through the clouds to India, a book's opening setting in the Western Ghats as Neelakurinji turns the slopes blue, and an audiobook's voice in the monsoon ("Chhata le ja, baarish hogi"). Then the title card, and the app underneath. After it, zoom out from the globe to travel back out to the known universe.
 
 ## What it does
 
@@ -26,7 +28,7 @@ A big 3D planet in deep space opens on **India**. Spin it, tap any place — or 
 4. **The roads** — how busy the city is likely to be right now, minutes for a 10 km trip, and when it eases over the next 12 hours.
 5. **India right now** — twelve cities at a glance (temperature, sky, US AQI; hottest, coolest, worst air), also shown live on the globe labels.
 
-Star a place to keep it one tap away under the globe.
+Star a place to keep it one tap away under the globe. Scrub the next 24 hours and watch the page change with the light; tap "Surprise me" for a place with weather worth a story; touch the weather card; tap the glass to say cheers.
 
 ### About traffic — honestly
 

@@ -23,6 +23,39 @@ export function About(): ReactElement {
           leaving home. India first, the whole planet supported.
         </p>
       </section>
+      <section className="story story--me" aria-label="About the maker">
+        <h3 className="h3">Hi, I’m Rahul</h3>
+        <p>
+          I am a passionate lover of stories, in every form they come in. Mostly movies and series, manhwa and anime,
+          and above all the all-mighty books and audiobooks.
+        </p>
+        <p>
+          Every story I love knows that the setting is half the feeling: the rain in an anime, the fog in a noir, the
+          monsoon in a Hindi film. So this app treats your day like a story too. The <b>mausam</b> is the setting, the{' '}
+          <b>mahaul</b> is the mood, each day gets a genre, and the mahaul line will read itself to you like an
+          audiobook.
+        </p>
+        <p>
+          Made with love, for everyone who was ever told to carry an umbrella. Source on{' '}
+          <a
+            href="https://github.com/RahulTarigoppula/barometer-weather-bartender"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub
+          </a>
+          .
+        </p>
+        <button
+          type="button"
+          className="btn"
+          onClick={() => {
+            window.location.hash = '#/story';
+          }}
+        >
+          Watch the story again
+        </button>
+      </section>
       <p>
         Free, offline-capable and non-commercial. It talks to Open-Meteo for weather and air, and to TomTom only if you
         add your own key for live roads. No analytics, no telemetry, no accounts, no cookies.

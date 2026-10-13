@@ -3,6 +3,7 @@ import { BarBusyError, NowhereError } from '../../api/openMeteo';
 import { getWeather } from '../../api/weather';
 import { play } from '../../audio/sfx';
 import { DRINKS, GRAMMAR } from '../../data/menu';
+import { INDIA_CITIES, SURPRISES, WORLD_PLACES } from '../../data/places';
 import { judge, served } from '../../engine/index';
 import type { PlaceHit, Verdict } from '../../engine/types';
 import { haptic } from '../../platform/haptics';
@@ -62,6 +63,12 @@ function present(v: Verdict, note: 'stale' | 'repoured' | null, slide: boolean):
   announce(v);
 }
 
+/** A deep link to a place we know (a city chip, a surprise) gets its name back, within ~3 km. */
+export function knownName(lat: number, lng: number): string | undefined {
+  const all = [...INDIA_CITIES, ...WORLD_PLACES, ...SURPRISES];
+  return all.find((p) => Math.abs(p.lat - lat) < 0.03 && Math.abs(p.lng - lng) < 0.03)?.name;
+}
+
 /** A place we already know the name of (a chip, a surprise, a saved place) keeps that name. */
 export function named(place: PlaceHit, name?: string): PlaceHit {
   if (!name || place.kind === 'ocean') return place;
@@ -98,7 +105,7 @@ export async function pour(latIn: number, lngIn: number, name?: string): Promise
 
   try {
     const geo = await loadGeo();
-    const place = named(geo.locate(lat, lng), name);
+    const place = named(geo.locate(lat, lng), name ?? knownName(lat, lng));
     const weather = await getWeather(lat, lng, { ocean: place.kind === 'ocean' });
     if (my !== seq) return; // a newer pour won
     const s = useSettings.getState();

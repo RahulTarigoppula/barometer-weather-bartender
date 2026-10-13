@@ -264,3 +264,100 @@
     top: calc(70px + env(safe-area-inset-top));
   }
 }
+
+/* ═══ the forms of story ═══ */
+/* A book's chapter heading. */
+.story-intro__chapter {
+  position: absolute;
+  left: 50%;
+  top: calc(26px + env(safe-area-inset-top));
+  translate: -50% 0;
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(0.8rem, 1.4vw, 0.95rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 214, 170, 0.78);
+  white-space: nowrap;
+  animation: wordIn 900ms var(--ease-out) both;
+}
+/* The movie: letterbox bars at the open. */
+.story-intro__letterbox::before,
+.story-intro__letterbox::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 9vh;
+  background: #000;
+  transition: transform 1.4s var(--ease-in-out);
+  pointer-events: none;
+}
+.story-intro__letterbox::before {
+  top: 0;
+  transform: translateY(-100%);
+}
+.story-intro__letterbox::after {
+  bottom: 0;
+  transform: translateY(100%);
+}
+.story-intro__letterbox.is-on::before,
+.story-intro__letterbox.is-on::after {
+  transform: none;
+}
+/* The manhwa: the frame splits into vertical panels with gutters. */
+.story-intro__panels {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 1fr 1.4fr 1fr;
+  gap: 10px;
+  padding: 10px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 700ms var(--ease-out);
+}
+.story-intro__panels span {
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  border-radius: 4px;
+  box-shadow: 0 0 0 10px rgba(2, 4, 10, 0.92);
+}
+.story-intro__panels.is-on {
+  opacity: 1;
+}
+/* The audiobook: a voice's waveform over the line. */
+.story-intro__wave {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  height: 26px;
+  margin-bottom: 10px;
+}
+.story-intro__wave i {
+  display: block;
+  width: 3px;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #ffd2a1, #ff9933);
+  transform-origin: center;
+  animation: wave 900ms var(--ease-in-out) infinite alternate;
+}
+@keyframes wave {
+  from {
+    transform: scaleY(0.15);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-intro__wave i {
+    animation: none;
+    transform: scaleY(0.5);
+  }
+  .story-intro__chapter {
+    animation-duration: 1ms;
+  }
+}

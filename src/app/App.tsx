@@ -5,7 +5,6 @@ import { Toast } from '../components/ui/Toast';
 import { cellKey } from '../engine/cache';
 import { hourMood } from '../engine/outlook';
 import { windowWeather } from '../engine/window';
-import { DrinkCard } from '../features/drink/DrinkCard';
 import { Footer } from '../features/shell/Footer';
 import { Hero } from '../features/shell/Hero';
 import { TopBar } from '../features/shell/TopBar';
@@ -22,6 +21,7 @@ import { useReduced } from './useReduced';
 
 const TabList = lazy(() => import('../features/tab/TabDrawer').then((m) => ({ default: m.TabList })));
 const BackOffice = lazy(() => import('../features/office/BackOffice').then((m) => ({ default: m.BackOffice })));
+const DrinkCard = lazy(() => import('../features/drink/DrinkCard').then((m) => ({ default: m.DrinkCard })));
 const Forecast = lazy(() => import('../features/weather/Forecast').then((m) => ({ default: m.Forecast })));
 const RoadsCard = lazy(() => import('../features/roads/RoadsCard').then((m) => ({ default: m.RoadsCard })));
 const IndiaNow = lazy(() => import('../features/india/IndiaNow').then((m) => ({ default: m.IndiaNow })));
@@ -211,7 +211,16 @@ export function App(): ReactElement {
             <Suspense fallback={null}>
               <Forecast />
             </Suspense>
-            <DrinkCard />
+            <Suspense
+              fallback={
+                <section className="card drink drink--waiting" aria-busy="true" aria-label="The bartender is choosing">
+                  <div className="skel skel--lg" />
+                  <div className="skel skel--xl" />
+                </section>
+              }
+            >
+              <DrinkCard />
+            </Suspense>
             <Suspense fallback={null}>
               <RoadsCard />
               <IndiaNow />

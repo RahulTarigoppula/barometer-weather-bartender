@@ -1,7 +1,7 @@
 /**
- * The opening story, one continuous descent: the known universe, our galaxy, our star, the one
- * planet that breathes, down through the clouds to India, the Western Ghats in bloom, the monsoon,
- * the name. Short lines, one idea per beat.
+ * The opening story, told the way its author loves stories: a movie's wide shot, a series' cold
+ * open, anime's sky, a manhwa's scroll, a book's setting, an audiobook's voice. One continuous
+ * descent from the known universe to the Western Ghats in the monsoon, then the name.
  */
 
 export type SceneId = 'universe' | 'galaxy' | 'solar' | 'earth' | 'descent' | 'ghats' | 'monsoon' | 'title' | 'app';
@@ -10,40 +10,69 @@ export interface Scene {
   id: SceneId;
   start: number;
   end: number;
+  /** A book's chapter heading for the beat. */
+  chapter: string;
   line: string;
   sub: string;
 }
 
-const LENGTHS: [SceneId, number, string, string][] = [
-  ['universe', 4.5, 'Space. Time. Beyond counting.', 'Hundreds of billions of galaxies, and not one other voice.'],
-  ['galaxy', 4, 'One of them is ours.', 'The Milky Way.'],
-  ['solar', 3.5, 'One ordinary star.', 'Eight worlds. Seven of them silent.'],
-  ['earth', 4, 'And one that breathes.', 'The only place we know where rain becomes forest.'],
-  ['descent', 3.5, 'Closer.', 'A land that waits all year for the rain.'],
+const LENGTHS: [SceneId, number, string, string, string][] = [
+  [
+    'universe',
+    5.5,
+    'Prologue · The wide shot',
+    'Every great story opens with a wide shot.',
+    'Hi, I’m Rahul. I live for stories: movies, series, manhwa, anime, and the all-mighty books and audiobooks.',
+  ],
+  [
+    'galaxy',
+    4,
+    'Chapter 1 · The hero',
+    'Then the camera finds its hero.',
+    'One spiral among hundreds of billions. Ours.',
+  ],
+  [
+    'solar',
+    4,
+    'Chapter 2 · The cold open',
+    'Every good series has a cold open.',
+    'A small yellow star. Eight worlds. Seven of them silent.',
+  ],
+  [
+    'earth',
+    4,
+    'Chapter 3 · The sky',
+    'Anime taught me the sky is a character.',
+    'And only one planet here has weather worth a scene.',
+  ],
+  ['descent', 3.5, 'Chapter 4 · Scroll down', 'Panel by panel, like a manhwa…', '…down through the clouds, to India.'],
   [
     'ghats',
     5,
-    'When it comes, the hills come alive.',
-    'Teak and sandalwood. Neelakurinji, blue once in twelve years. Nowhere else in the known universe.',
+    'Chapter 5 · The setting',
+    'The best books begin with a setting.',
+    'The Western Ghats at dawn. Teak, sandalwood, and Neelakurinji, blue once in twelve years.',
   ],
   [
     'monsoon',
     4.5,
+    'Chapter 6 · The voice',
     '“Chhata le ja, baarish hogi.”',
-    'Every home has that voice at the door. It is almost always right.',
+    'My first favourite audiobook was a voice at the door. It was almost always right.',
   ],
-  ['title', 5, 'Mausam ka Mahaul', 'Mausam is the sky. Mahaul is what it does to us.'],
+  ['title', 5, 'Title card', 'Mausam ka Mahaul', 'Mausam is the setting. Mahaul is the mood. Every story needs both.'],
   [
     'app',
-    4,
-    'Read the sky before you step out.',
-    'Made with love by Rahul, for everyone who was ever told to carry an umbrella.',
+    4.5,
+    'Epilogue · Your day',
+    'So I built the setting for your story.',
+    'Made with love by Rahul, a lifelong lover of stories.',
   ],
 ];
 
-export const SCENES: Scene[] = LENGTHS.reduce<Scene[]>((acc, [id, len, line, sub]) => {
+export const SCENES: Scene[] = LENGTHS.reduce<Scene[]>((acc, [id, len, chapter, line, sub]) => {
   const start = acc.at(-1)?.end ?? 0;
-  acc.push({ id, start, end: start + len, line, sub });
+  acc.push({ id, start, end: start + len, chapter, line, sub });
   return acc;
 }, []);
 

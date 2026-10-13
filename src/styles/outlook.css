@@ -980,3 +980,82 @@ button.drink__glass:focus-visible {
 .chips-row > .chip--surprise {
   flex: 0 0 auto;
 }
+
+/* ═══ the mahaul block: genre, the day in short, and a voice ═══ */
+.mahaul {
+  font-style: normal;
+}
+.mahaul p {
+  margin: 0;
+}
+.mahaul__genre {
+  margin-bottom: 6px !important;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+.mahaul__kicker {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 153, 51, 0.16);
+  color: #ffc58a;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+.mahaul__genre b {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 520;
+  color: var(--ink);
+}
+.mahaul__text {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.02rem, 1.5vw, 1.15rem);
+  font-weight: 360;
+  line-height: 1.5;
+  color: #efe9df;
+}
+.mahaul__listen {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ink-muted);
+  font: 500 var(--text-xs) / 1 var(--font-body);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.mahaul__listen:hover,
+.mahaul__listen[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: rgba(255, 153, 51, 0.6);
+}
+.mahaul__listen:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+@media (max-width: 640px) {
+  .story-intro__chapter {
+    top: calc(68px + env(safe-area-inset-top));
+    font-size: 0.72rem;
+  }
+}
+
+.story--me {
+  border-color: rgba(124, 196, 255, 0.25);
+  background: rgba(124, 196, 255, 0.05);
+}
+.story--me .btn {
+  margin-top: var(--space-2);
+}

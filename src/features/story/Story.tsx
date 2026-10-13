@@ -104,6 +104,20 @@ export function Story({ onDone }: { onDone: () => void }): ReactElement {
         aria-label="From the known universe to the Milky Way, the Sun, the Earth, and the hills of India in the monsoon"
       />
       <div className="story-intro__vignette" aria-hidden="true" />
+      {/* The movie opens letterboxed; the bars lift once the hero is found. */}
+      <div
+        className={`story-intro__letterbox${id === 'universe' || id === 'galaxy' ? ' is-on' : ''}`}
+        aria-hidden="true"
+      />
+      {/* A manhwa's vertical panels for the scroll down through the clouds. */}
+      <div className={`story-intro__panels${id === 'descent' ? ' is-on' : ''}`} aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+      <p className="story-intro__chapter" key={`ch-${id}`} aria-hidden="true">
+        {scene?.chapter}
+      </p>
       <div className={`story-intro__text story-intro__text--${id}`} key={id} aria-live="polite">
         {id === 'title' ? (
           <>
@@ -117,6 +131,14 @@ export function Story({ onDone }: { onDone: () => void }): ReactElement {
           </>
         ) : (
           <>
+            {id === 'monsoon' && (
+              <span className="story-intro__wave" aria-hidden="true">
+                {Array.from({ length: 24 }, (_, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: a fixed row of decorative bars
+                  <i key={i} style={{ animationDelay: `${(i * 73) % 600}ms` }} />
+                ))}
+              </span>
+            )}
             <p className="story-intro__line" lang={id === 'monsoon' ? 'hi-Latn' : undefined}>
               <Words text={line} />
             </p>

@@ -15,12 +15,19 @@ describe('the opening story', () => {
       'app',
     ]);
     expect(TOTAL).toBeGreaterThanOrEqual(30);
-    expect(TOTAL).toBeLessThanOrEqual(40);
+    expect(TOTAL).toBeLessThanOrEqual(42);
     for (const s of SCENES) expect(s.end - s.start).toBeGreaterThanOrEqual(3.5);
     expect(SCENES.find((s) => s.id === 'title')?.line).toBe('Mausam ka Mahaul');
   });
+  it('is told in the author’s own voice, through every kind of story they love', () => {
+    const all = SCENES.map((s) => `${s.line} ${s.sub}`).join(' ');
+    expect(all).toMatch(/I’m Rahul/);
+    for (const form of ['movies', 'series', 'manhwa', 'anime', 'books', 'audiobook'])
+      expect(all.toLowerCase()).toContain(form);
+    expect(SCENES[0]?.chapter).toMatch(/^Prologue/);
+  });
   it('uses no em dashes anywhere in its copy', () => {
-    for (const s of SCENES) expect(`${s.line} ${s.sub}`).not.toMatch(/—/);
+    for (const s of SCENES) expect(`${s.chapter} ${s.line} ${s.sub}`).not.toMatch(/—/);
   });
   it('finds the scene and progress at any time, clamped', () => {
     expect(sceneAt(0).scene.id).toBe('universe');

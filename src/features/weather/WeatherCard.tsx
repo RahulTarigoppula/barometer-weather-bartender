@@ -15,6 +15,7 @@ import { useReduced } from '../../app/useReduced';
 import { DRINKS } from '../../data/menu';
 import { usAqiBand, uvBand } from '../../engine/comfort';
 import { fmtDuration } from '../../engine/daypart';
+import { genreOf } from '../../engine/genre';
 import { served } from '../../engine/index';
 import { hourMood, mahaulBrief, peekLabel, tipsFor } from '../../engine/outlook';
 import { fmtDate } from '../../engine/receipt';
@@ -29,6 +30,7 @@ import { samePlace, useSettings } from '../../state/settings';
 import { type ErrorKind, useBar } from '../../state/store';
 import { backToBar, pour } from '../verdict/pour';
 import { iconFor } from './icons';
+import { Listen } from './Listen';
 import { splash } from './splash';
 
 /** "06:22" from the local clock plus a minute offset. */
@@ -274,6 +276,7 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
         })
       : null;
   const eases = road?.advice.match(/Eases by (\d{2}:\d{2})/)?.[1] ?? null;
+  const genre = genreOf(f, v.tags, india);
   const brief = mahaulBrief({
     place: name,
     condition: wmoLabel(f.wmo),
@@ -302,7 +305,14 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
         {country && <p className="weather__country">{v.place.label === country ? '' : country}</p>}
         {note === 'stale' && <p className="chip chip--warn">Offline. Showing the last reading for this spot</p>}
       </header>
-      <p className="mahaul">{brief}</p>
+      <div className="mahaul">
+        <p className="mahaul__genre">
+          <span className="mahaul__kicker">Today’s genre</span> <b>{genre.name}</b>
+          <span className="mahaul__logline"> · {genre.line}</span>
+        </p>
+        <p className="mahaul__text">{brief}</p>
+        <Listen text={`${brief} Today’s genre: ${genre.name}. ${genre.line}`} />
+      </div>
       <div className="weather__now">
         <Icon className="weather__icon" size={88} strokeWidth={1.25} aria-hidden="true" />
         <div>
