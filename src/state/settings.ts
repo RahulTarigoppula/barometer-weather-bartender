@@ -1,14 +1,16 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import type { Tier } from '../engine/budget';
 import type { Menu } from '../engine/types';
 import type { TempUnit, WindUnit } from '../engine/units';
 import { prefsStorage } from '../platform/prefs';
 
 export interface Settings {
-  shift: 'follow' | 'night' | 'day';
   units: { temp: TempUnit; wind: WindUnit };
-  /** The BAR/BARISTA sign. Persisted: the bar remembers which menu you were on. */
+  /** The BAR/BARISTA switch. Persisted: the bar remembers which menu you were on. */
   menu: Menu;
+  /** Extreme Cheap · Budget · Mid-range · High-end. */
+  tier: Tier;
   sound: boolean;
   volume: number;
   haptics: boolean;
@@ -21,9 +23,9 @@ interface SettingsStore extends Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
-  shift: 'follow',
   units: { temp: 'C', wind: 'kmh' },
   menu: 'bar',
+  tier: 'budget',
   sound: true,
   volume: 0.6,
   haptics: true,
@@ -39,9 +41,10 @@ export const useSettings = create<SettingsStore>()(
     }),
     {
       name: 'globe-bar-settings',
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => prefsStorage),
       partialize: ({ set: _set, ...rest }) => rest,
+      migrate: (old) => ({ ...DEFAULT_SETTINGS, ...(typeof old === 'object' && old ? old : {}) }),
     },
   ),
 );

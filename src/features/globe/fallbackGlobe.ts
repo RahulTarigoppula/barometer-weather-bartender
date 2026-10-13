@@ -1,21 +1,24 @@
-// The engraved canvas globe: the pre-WebGL placeholder, the no-WebGL path and the context-lost path.
-// Still a real instrument — drag to spin, tap to pour, keyboard to steer.
+// The canvas globe: the pre-WebGL placeholder, the no-WebGL path and the context-lost path.
+// Still a real instrument — drag to spin, tap to pour, keyboard to steer. Opens on India.
 import { type GeoPermissibleObjects, geoArea, geoDistance, geoGraticule10, geoOrthographic, geoPath } from 'd3-geo';
-import { loadLand } from '../../api/geo';
-import { type GlobeCallbacks, type GlobeController, IDLE_MS } from './controller';
+import { loadIndiaOutline, loadLand } from '../../api/geo';
+import { type GlobeCallbacks, type GlobeController, HOME_VIEW } from './controller';
 
 type Ring = [number, number][];
 
 const COLORS = {
-  sea0: '#1E3A38',
-  sea1: '#0A1412',
-  grid: 'rgba(201,150,43,.22)',
-  land: '#8A6414',
-  landEdge: 'rgba(245,200,96,.35)',
-  rim: 'rgba(245,200,96,.55)',
-  pin: '#F5C860',
-  pinEdge: '#5A3F0C',
+  sea0: '#14406e',
+  sea1: '#040d1f',
+  grid: 'rgba(124,196,255,.12)',
+  land: '#2d6b52',
+  landEdge: 'rgba(160,230,200,.35)',
+  india: '#ff9933',
+  rim: 'rgba(124,196,255,.65)',
+  glow: 'rgba(79,157,255,.35)',
+  pin: '#ff9933',
+  pinEdge: '#fff4e6',
 };
+const FILL = 0.9;
 
 export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeController {
   const canvas = document.createElement('canvas');
@@ -23,8 +26,9 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
   el.appendChild(canvas);
   const ctx = canvas.getContext('2d');
   const projection = geoOrthographic().clipAngle(90).precision(0.6);
-  let rotate: [number, number] = [-40, -20];
+  let rotate: [number, number] = [-HOME_VIEW.lng, -HOME_VIEW.lat];
   let land: GeoPermissibleObjects | null = null;
+  let india: GeoPermissibleObjects | null = null;
   let pin: { lat: number; lng: number } | null = null;
   let w = 0;
   let h = 0;
@@ -32,7 +36,6 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
   let dragging = false;
   let moved = 0;
   let last: [number, number] = [0, 0];
-  let lastInteraction = 0;
   let raf = 0;
   let tween: { from: [number, number]; to: [number, number]; t0: number; ms: number } | null = null;
 
@@ -43,6 +46,11 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
     });
     land = { type: 'MultiPolygon', coordinates: polys };
   });
+  void loadIndiaOutline()
+    .then((rings) => {
+      india = { type: 'MultiLineString', coordinates: rings };
+    })
+    .catch(() => undefined);
 
   const resize = (): void => {
     const r = el.getBoundingClientRect();
@@ -59,13 +67,18 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
 
   const draw = (): void => {
     if (!ctx || w === 0) return;
-    const R = Math.min(w, h) / 2;
+    const R = (Math.min(w, h) / 2) * FILL;
     projection
       .translate([w / 2, h / 2])
       .scale(R)
       .rotate(rotate);
     const path = geoPath(projection, ctx);
     ctx.clearRect(0, 0, w, h);
+    const halo = ctx.createRadialGradient(w / 2, h / 2, R * 0.92, w / 2, h / 2, R * 1.12);
+    halo.addColorStop(0, COLORS.glow);
+    halo.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = halo;
+    ctx.fillRect(0, 0, w, h);
     const g = ctx.createRadialGradient(w / 2 - R * 0.3, h / 2 - R * 0.35, R * 0.1, w / 2, h / 2, R);
     g.addColorStop(0, COLORS.sea0);
     g.addColorStop(1, COLORS.sea1);
@@ -87,6 +100,13 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
       ctx.lineWidth = 0.6;
       ctx.stroke();
     }
+    if (india) {
+      ctx.beginPath();
+      path(india);
+      ctx.strokeStyle = COLORS.india;
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+    }
     ctx.beginPath();
     path({ type: 'Sphere' });
     ctx.strokeStyle = COLORS.rim;
@@ -97,13 +117,7 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
       const visible = geoDistance([pin.lng, pin.lat], [-rotate[0], -rotate[1]]) < Math.PI / 2;
       if (p && visible) {
         ctx.beginPath();
-        ctx.moveTo(p[0], p[1]);
-        ctx.lineTo(p[0], p[1] - 14);
-        ctx.strokeStyle = COLORS.pinEdge;
-        ctx.lineWidth = 2.2;
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(p[0], p[1] - 18, 6, 0, Math.PI * 2);
+        ctx.arc(p[0], p[1], 6, 0, Math.PI * 2);
         ctx.fillStyle = COLORS.pin;
         ctx.fill();
         ctx.strokeStyle = COLORS.pinEdge;
@@ -123,8 +137,6 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
       dl = ((((dl + 180) % 360) + 360) % 360) - 180;
       rotate = [tween.from[0] + dl * e, tween.from[1] + (tween.to[1] - tween.from[1]) * e];
       if (k >= 1) tween = null;
-    } else if (!dragging && !cb.reduced() && performance.now() - lastInteraction > IDLE_MS) {
-      rotate = [rotate[0] + 0.18, rotate[1]]; // idle drift
     }
     draw();
   };
@@ -136,7 +148,6 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
     dragging = true;
     moved = 0;
     last = [e.clientX, e.clientY];
-    lastInteraction = performance.now();
     tween = null;
     el.setPointerCapture(e.pointerId);
   };
@@ -148,17 +159,15 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
     last = [e.clientX, e.clientY];
     const k = 70 / Math.max(80, Math.min(w, h) / 2);
     rotate = [rotate[0] + dx * k, Math.max(-85, Math.min(85, rotate[1] - dy * k))];
-    lastInteraction = performance.now();
   };
   const onUp = (e: PointerEvent): void => {
     if (!dragging) return;
     dragging = false;
-    lastInteraction = performance.now();
     emitCenter();
     if (moved < 6) {
       const r = el.getBoundingClientRect();
       const ll = projection.invert?.([e.clientX - r.left, e.clientY - r.top]);
-      const R = Math.min(w, h) / 2;
+      const R = (Math.min(w, h) / 2) * FILL;
       const inside = Math.hypot(e.clientX - r.left - w / 2, e.clientY - r.top - h / 2) <= R;
       if (ll && inside) cb.onPick(ll[1], ll[0]);
     }
@@ -169,7 +178,6 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
   el.addEventListener('pointercancel', onUp);
 
   const goTo = (lat: number, lng: number, ms: number): void => {
-    lastInteraction = performance.now();
     const to: [number, number] = [-lng, -Math.max(-85, Math.min(85, lat))];
     if (ms <= 0) {
       rotate = to;
@@ -188,8 +196,9 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
       goTo(c.lat + dLat, c.lng + dLng, 200);
     },
     zoom() {
-      // the engraved globe has one size; zoom is a WebGL nicety
+      // the canvas globe has one size; zoom is a WebGL nicety
     },
+    home: () => goTo(HOME_VIEW.lat, HOME_VIEW.lng, cb.reduced() ? 0 : 800),
     center: () => ({ lat: -rotate[1], lng: ((((-rotate[0] + 180) % 360) + 360) % 360) - 180 }),
     pause(p) {
       paused = p;

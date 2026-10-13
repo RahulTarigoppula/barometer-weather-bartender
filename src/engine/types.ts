@@ -119,6 +119,8 @@ export interface Features {
   precipMm: number;
   precipProb: number;
   snowCm: number;
+  cloudCover: number;
+  pressureHpa: number;
   windKmh: number;
   gustKmh: number;
   isDay: boolean;

@@ -162,5 +162,27 @@ core += write('places.json', places);
 core += write('marine-50m.json', marine);
 write('land-110m.json', landRings);
 write('land-dots.json', dots);
+
+// India's outline for the globe, from Natural Earth's India point-of-view dataset (official boundaries).
+// Rings of the largest polygons only, decimated to ~0.08° steps so the line stays crisp but light.
+const ind = read('ne_10m_admin_0_countries_ind.geojson').features.find(
+  (f) => f.properties.ADM0_A3 === 'IND' || f.properties.ISO_A2 === 'IN',
+);
+if (!ind) throw new Error('India not found in the IND point-of-view file');
+const polys = ind.geometry.type === 'Polygon' ? [ind.geometry.coordinates] : ind.geometry.coordinates;
+const outline = polys
+  .map((poly) => poly[0])
+  .filter((ringPts) => ringPts.length > 40)
+  .map((ringPts) => {
+    const out = [];
+    for (const [x, y] of ringPts) {
+      const p = [r2(x), r2(y)];
+      const last = out[out.length - 1];
+      if (!last || Math.hypot(p[0] - last[0], p[1] - last[1]) >= 0.08) out.push(p);
+    }
+    out.push(out[0]);
+    return out;
+  });
+write('india-outline.json', outline);
 console.log(`core geo gzip total ${(core / 1024).toFixed(0)} KB (budget 900 KB)`);
 if (core > 900 * 1024) throw new Error('geo budget exceeded');

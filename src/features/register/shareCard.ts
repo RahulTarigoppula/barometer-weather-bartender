@@ -1,29 +1,31 @@
+import { type BudgetPlan, fmtRupees } from '../../engine/budget';
 import { fmtDate } from '../../engine/receipt';
 import type { Drink, Verdict } from '../../engine/types';
-import { fmtTemp, fmtWind, type Units } from '../../engine/units';
+import { fmtTemp, fmtTempShort, fmtWind, type Units } from '../../engine/units';
+import { wmoLabel } from '../../engine/wmo';
 import { plain } from '../../wit/speak';
 
 export const CARD_W = 1080;
 export const CARD_H = 1350;
 
 const C = {
-  wood: '#3A2114',
-  woodLo: '#1A0F0A',
-  paper: '#F3E6C8',
-  ink: '#1C120C',
-  muted: '#5E4632',
-  faint: '#A38A6F',
-  brass: '#C9962B',
-  brassHi: '#F5C860',
-  brassLo: '#8A6414',
-  neon: '#FFB347',
+  space0: '#03050b',
+  space1: '#0b1630',
+  panel: 'rgba(16,24,46,0.86)',
+  line: 'rgba(124,196,255,0.22)',
+  ink: '#eef3ff',
+  muted: '#9fb0d4',
+  sky: '#7cc4ff',
+  saffron: '#ff9933',
+  green: '#3ddc97',
+  land: 'rgba(124,196,255,0.35)',
 };
 
+const FONT = '"Space Grotesk Variable", "Space Grotesk", system-ui, sans-serif';
+const MONO = '"JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace';
+
 async function fontsReady(): Promise<void> {
-  const loads = ['400 64px Righteous', '500 30px "Space Grotesk Variable"', '400 24px "JetBrains Mono Variable"'].map(
-    (f) => document.fonts.load(f).catch(() => undefined),
-  );
-  // Wait for the fonts, but never longer than 2 s — then draw anyway.
+  const loads = [`700 64px ${FONT}`, `400 24px ${MONO}`].map((f) => document.fonts.load(f).catch(() => undefined));
   await Promise.race([Promise.all(loads), new Promise((r) => setTimeout(r, 2000))]);
 }
 
@@ -46,191 +48,153 @@ export interface CardInput {
   drink: Drink;
   stamp: string;
   jab: string;
-  closer: string;
+  plan: BudgetPlan;
   dots: [number, number][];
   units: Units;
   version: string;
 }
 
-/** The torn-off receipt as a 1080×1350 PNG: a paper field in a mahogany frame, neon wordmark on top. */
-export async function renderShareCard({
-  v,
-  drink,
-  stamp,
-  jab,
-  closer,
-  dots,
-  units,
-  version,
-}: CardInput): Promise<Blob> {
+/** The share card: weather first, then the drink and its budget, on a deep-space field. */
+export async function renderShareCard({ v, drink, stamp, jab, plan, dots, units, version }: CardInput): Promise<Blob> {
   await fontsReady();
   const canvas = document.createElement('canvas');
   canvas.width = CARD_W;
   canvas.height = CARD_H;
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('no 2d context');
+  const f = v.features;
 
-  // mahogany frame
-  const wood = ctx.createLinearGradient(0, 0, 0, CARD_H);
-  wood.addColorStop(0, C.wood);
-  wood.addColorStop(1, C.woodLo);
-  ctx.fillStyle = wood;
+  const bg = ctx.createRadialGradient(CARD_W * 0.7, CARD_H * 0.15, 50, CARD_W * 0.5, CARD_H * 0.5, CARD_H);
+  bg.addColorStop(0, C.space1);
+  bg.addColorStop(1, C.space0);
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, CARD_W, CARD_H);
+  // stars (deterministic)
+  let seed = 11;
+  const rnd = (): number => {
+    seed = (seed * 16807) % 2147483647;
+    return seed / 2147483647;
+  };
+  for (let i = 0; i < 260; i++) {
+    ctx.fillStyle = `rgba(255,255,255,${0.25 + rnd() * 0.6})`;
+    ctx.fillRect(rnd() * CARD_W, rnd() * CARD_H, rnd() < 0.1 ? 2.2 : 1.2, rnd() < 0.1 ? 2.2 : 1.2);
+  }
+
+  // the planet edge, glowing, bottom-right
+  const glow = ctx.createRadialGradient(CARD_W + 80, CARD_H + 120, 380, CARD_W + 80, CARD_H + 120, 640);
+  glow.addColorStop(0, 'rgba(79,157,255,0.0)');
+  glow.addColorStop(0.82, 'rgba(79,157,255,0.30)');
+  glow.addColorStop(1, 'rgba(79,157,255,0)');
+  ctx.fillStyle = glow;
   ctx.fillRect(0, 0, CARD_W, CARD_H);
 
-  // neon wordmark — a tube: stroked, glowing
-  ctx.textAlign = 'center';
-  ctx.font = '400 92px Righteous, Impact, sans-serif';
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = C.neon;
-  ctx.shadowColor = 'rgba(255,179,71,.7)';
-  ctx.shadowBlur = 26;
-  ctx.strokeText('THE GLOBE BAR', CARD_W / 2, 150);
-  ctx.shadowBlur = 0;
+  const x = 80;
+  const maxW = CARD_W - 160;
+  ctx.textAlign = 'left';
+  ctx.fillStyle = C.saffron;
+  ctx.font = `700 30px ${FONT}`;
+  ctx.fillText('barometer', x, 100);
+  ctx.fillStyle = C.muted;
+  ctx.font = `400 22px ${MONO}`;
+  ctx.fillText('weather first · then a drink', x + 190, 100);
 
-  // paper
-  const px = 80;
-  const py = 210;
-  const pw = CARD_W - 160;
-  const ph = CARD_H - 290;
-  ctx.fillStyle = C.paper;
-  ctx.beginPath();
-  ctx.roundRect(px, py, pw, ph, 24);
-  ctx.fill();
-  ctx.strokeStyle = C.faint;
+  let y = 190;
+  ctx.fillStyle = C.ink;
+  ctx.font = `700 60px ${FONT}`;
+  for (const l of wrapLines(
+    ctx,
+    v.place.nearestCity && v.place.nearestCity.distanceKm < 25 ? v.place.nearestCity.name : v.place.label,
+    maxW,
+  ).slice(0, 2)) {
+    ctx.fillText(l, x, y);
+    y += 68;
+  }
+  ctx.fillStyle = C.muted;
+  ctx.font = `400 26px ${MONO}`;
+  ctx.fillText(`${v.place.country?.name ?? ''}  ${fmtDate(f.localDate)} · ${v.localTime}`, x, y);
+  y += 190;
+
+  ctx.fillStyle = C.ink;
+  ctx.font = `700 170px ${FONT}`;
+  ctx.fillText(fmtTempShort(f.tempC, units.temp), x - 6, y);
+  ctx.font = `500 34px ${FONT}`;
+  ctx.fillStyle = C.sky;
+  ctx.fillText(wmoLabel(f.wmo), x + 330, y - 86);
+  ctx.fillStyle = C.muted;
+  ctx.fillText(`Feels like ${fmtTemp(f.apparentC, units.temp)}`, x + 330, y - 38);
+  y += 60;
+  ctx.font = `400 26px ${MONO}`;
+  ctx.fillStyle = C.ink;
+  ctx.fillText(
+    `HUMIDITY ${Math.round(f.rh)}%   WIND ${fmtWind(f.windKmh, units.wind).toUpperCase()}   AQI ${f.euAqi === null ? '—' : Math.round(f.euAqi)}   UV ${Math.round(f.uv)}`,
+    x,
+    y,
+  );
+  y += 60;
+
+  // drink panel
+  const py = y;
+  const ph = 480;
+  ctx.fillStyle = C.panel;
+  ctx.strokeStyle = C.line;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.roundRect(px + 18, py + 18, pw - 36, ph - 36, 14);
+  ctx.roundRect(x - 30, py, maxW + 60, ph, 28);
+  ctx.fill();
   ctx.stroke();
-
-  const x = px + 70;
-  const maxW = pw - 140;
-  let y = py + 110;
-  ctx.textAlign = 'left';
+  y = py + 64;
   ctx.fillStyle = C.muted;
-  ctx.font = '400 28px "JetBrains Mono Variable", monospace';
-  for (const l of wrapLines(ctx, v.place.label, maxW)) {
-    ctx.fillText(l, x, y);
-    y += 40;
-  }
-  ctx.fillText(`${fmtDate(v.features.localDate)} · ${v.localTime} local`, x, y);
-  y += 70;
-
+  ctx.font = `500 24px ${FONT}`;
+  ctx.fillText('THE BARTENDER RECOMMENDS', x, y);
+  y += 56;
   ctx.fillStyle = C.ink;
-  ctx.font = '500 38px "Space Grotesk Variable", sans-serif';
-  for (const l of wrapLines(ctx, jab, maxW).slice(0, 5)) {
+  ctx.font = `500 32px ${FONT}`;
+  for (const l of wrapLines(ctx, `“${jab}”`, maxW).slice(0, 3)) {
     ctx.fillText(l, x, y);
-    y += 52;
-  }
-  y += 40;
-
-  // the stamp, rotated −4°
-  const stampInk = getComputedStyle(document.documentElement).getPropertyValue('--stamp').trim();
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate((-4 * Math.PI) / 180);
-  ctx.font = '400 50px Righteous, Impact, sans-serif';
-  const sw = Math.min(maxW, ctx.measureText(stamp).width + 40);
-  ctx.strokeStyle = stampInk.startsWith('#') || stampInk.startsWith('rgb') ? stampInk : C.ink;
-  ctx.fillStyle = ctx.strokeStyle;
-  ctx.lineWidth = 4;
-  ctx.strokeRect(0, -50, sw, 70);
-  ctx.fillText(stamp, 20, 2, sw - 40);
-  ctx.restore();
-  y += 120;
-
-  ctx.fillStyle = C.ink;
-  ctx.font = '400 104px Righteous, Impact, sans-serif';
-  for (const l of wrapLines(ctx, drink.name, maxW).slice(0, 2)) {
-    ctx.fillText(l, x, y);
-    y += 110;
-  }
-  y += 10;
-
-  // receipt strip
-  ctx.strokeStyle = C.faint;
-  ctx.setLineDash([10, 8]);
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.lineTo(x + maxW, y);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  y += 50;
-  const f = v.features;
-  ctx.fillStyle = C.ink;
-  ctx.font = '400 30px "JetBrains Mono Variable", monospace';
-  const stats = [
-    `FEELS ${fmtTemp(f.apparentC, units.temp)}   DEW ${fmtTemp(f.dewPointC, units.temp)}`,
-    `WIND ${fmtWind(f.windKmh, units.wind).toUpperCase()}   UV ${Math.round(f.uv)}   AQI ${f.usAqi === null ? '—' : Math.round(f.usAqi)}`,
-  ];
-  if (f.marine) stats.push(`SST ${fmtTemp(f.marine.sstC, units.temp)}   WAVES ${f.marine.waveHeightM.toFixed(1)} M`);
-  for (const s of stats) {
-    ctx.fillText(s, x, y);
     y += 44;
   }
-  y += 20;
+  y += 50;
+  ctx.font = `700 26px ${FONT}`;
+  const sw = ctx.measureText(stamp).width + 36;
+  ctx.fillStyle = 'rgba(255,153,51,0.16)';
+  ctx.beginPath();
+  ctx.roundRect(x, y - 36, sw, 50, 25);
+  ctx.fill();
+  ctx.fillStyle = C.saffron;
+  ctx.fillText(stamp, x + 18, y - 2);
+  y += 86;
+  ctx.fillStyle = C.ink;
+  ctx.font = `700 76px ${FONT}`;
+  ctx.fillText(drink.name, x, y, maxW);
+  y += 66;
+  ctx.fillStyle = C.green;
+  ctx.font = `600 32px ${MONO}`;
+  ctx.fillText(`${plan.label.toUpperCase()} · ${fmtRupees(plan.low, plan.high)} / glass`, x, y, maxW);
+  y += 44;
   ctx.fillStyle = C.muted;
-  ctx.font = '500 30px "Space Grotesk Variable", sans-serif';
-  for (const l of wrapLines(ctx, closer, maxW).slice(0, 2)) {
-    ctx.fillText(l, x, y);
-    y += 42;
-  }
+  ctx.font = `400 26px ${FONT}`;
+  ctx.fillText(plan.pour, x, y, maxW);
 
-  // a dotted world with the pin, the receipt's little globe at poster size
-  const mapH = Math.min(maxW / 2, py + ph - 140 - (y + 10));
-  const mapW = mapH * 2;
-  const mapY = y + 10;
-  const mapX = px + (pw - mapW) / 2;
-  if (mapH >= 90) {
-    ctx.fillStyle = C.faint;
-    for (const [lng, lat] of dots) {
-      ctx.beginPath();
-      ctx.arc(mapX + ((lng + 180) / 360) * mapW, mapY + ((90 - lat) / 180) * mapH, mapH / 70, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    const pxPin = mapX + ((v.lng + 180) / 360) * mapW;
-    const pyPin = mapY + ((90 - v.lat) / 180) * mapH;
-    ctx.fillStyle = '#A0281F';
+  // the dotted world with the pin
+  const mapW = 300;
+  const mapH = 150;
+  const mx = CARD_W - mapW - 80;
+  const my = 150;
+  ctx.fillStyle = C.land;
+  for (const [lng, lat] of dots) {
     ctx.beginPath();
-    ctx.arc(pxPin, pyPin, 11, 0, Math.PI * 2);
+    ctx.arc(mx + ((lng + 180) / 360) * mapW, my + ((90 - lat) / 180) * mapH, 1.6, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = C.paper;
-    ctx.lineWidth = 3;
-    ctx.stroke();
   }
+  ctx.fillStyle = C.saffron;
+  ctx.beginPath();
+  ctx.arc(mx + ((v.lng + 180) / 360) * mapW, my + ((90 - v.lat) / 180) * mapH, 7, 0, Math.PI * 2);
+  ctx.fill();
 
-  // credits, at the foot of the paper
   ctx.fillStyle = C.muted;
-  ctx.font = '400 22px "JetBrains Mono Variable", monospace';
-  const credits = [
-    'Weather data by Open-Meteo.com (CC BY 4.0)',
-    [
-      v.sources.air ? 'CAMS ENSEMBLE (Copernicus)' : '',
-      v.sources.marine ? 'DWD' : '',
-      'NASA Earth Observatory',
-      'Natural Earth',
-    ]
-      .filter(Boolean)
-      .join(' · '),
-  ];
-  let cy = py + ph - 90;
-  for (const c of credits) {
-    for (const l of wrapLines(ctx, c, maxW)) {
-      ctx.fillText(l, x, cy);
-      cy += 30;
-    }
-  }
-
-  // brass foot-rail + version
-  const brass = ctx.createLinearGradient(0, 0, CARD_W, 0);
-  brass.addColorStop(0, C.brassLo);
-  brass.addColorStop(0.5, C.brassHi);
-  brass.addColorStop(1, C.brassLo);
-  ctx.fillStyle = brass;
-  ctx.fillRect(px, CARD_H - 52, pw, 5);
-  ctx.textAlign = 'center';
-  ctx.fillStyle = C.brass;
-  ctx.font = '400 20px "JetBrains Mono Variable", monospace';
-  ctx.fillText(`Spin. Tap. Survive. · v${version}`, CARD_W / 2, CARD_H - 18);
+  ctx.font = `400 20px ${MONO}`;
+  const credits = `Weather data by Open-Meteo.com (CC BY 4.0)${v.sources.air ? ' · CAMS' : ''}${v.sources.marine ? ' · DWD' : ''} · NASA · Natural Earth · v${version}`;
+  for (const [i, l] of wrapLines(ctx, credits, maxW).entries()) ctx.fillText(l, x, CARD_H - 70 + i * 28);
 
   return new Promise((resolve, reject) =>
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob failed'))), 'image/png'),
@@ -238,7 +202,7 @@ export async function renderShareCard({
 }
 
 export const cardFilename = (v: Verdict): string =>
-  `globe-bar-${plain(v.place.short)
+  `barometer-${plain(v.place.short)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')}-${v.features.localDate}.png`;

@@ -1,3 +1,4 @@
+import { Home, Minus, Plus } from 'lucide-react';
 import { type KeyboardEvent, type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { unlockAudio } from '../../audio/sfx';
 import { haptic } from '../../platform/haptics';
@@ -18,33 +19,11 @@ const hasWebGL = (): boolean => {
 
 const whenIdle = (fn: () => void): number =>
   typeof window.requestIdleCallback === 'function'
-    ? window.requestIdleCallback(fn, { timeout: 1500 })
-    : window.setTimeout(fn, 300);
+    ? window.requestIdleCallback(fn, { timeout: 1200 })
+    : window.setTimeout(fn, 200);
 
-function CradleArt(): ReactElement {
-  return (
-    <svg className="cradle__ring" viewBox="0 0 200 240" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
-      <g transform="rotate(-15 100 96)">
-        <circle cx="100" cy="96" r="93" fill="none" stroke="url(#brassV)" strokeWidth="5.5" />
-        <circle cx="100" cy="3" r="4.6" fill="url(#brassV)" />
-        <circle cx="100" cy="189" r="4.6" fill="url(#brassV)" />
-        <g stroke="#F5C860" strokeWidth=".9" opacity=".55">
-          <path d="M100 186 v6" />
-          <path d="M76 183 l-2 5.7" />
-          <path d="M124 183 l2 5.7" />
-          <path d="M53 173 l-3 5" />
-          <path d="M147 173 l3 5" />
-        </g>
-      </g>
-      <path d="M86 196 L114 196 L110 216 L90 216 Z" fill="url(#woodG)" stroke="#8A6414" strokeWidth="1" />
-      <ellipse cx="100" cy="221" rx="38" ry="9" fill="url(#woodG)" stroke="#8A6414" strokeWidth="1" />
-      <ellipse cx="100" cy="227" rx="31" ry="5" fill="url(#brassH)" opacity=".9" />
-    </svg>
-  );
-}
-
-/** The brass-cradled planet. The engraved canvas globe paints first; WebGL mounts on idle. */
-export function GlobeCradle(): ReactElement {
+/** The planet. The canvas globe paints first; the WebGL planet mounts on idle and takes over. */
+export function GlobeStage(): ReactElement {
   const fallbackRef = useRef<HTMLDivElement>(null);
   const webglRef = useRef<HTMLDivElement>(null);
   const active = useRef<GlobeController | null>(null);
@@ -73,13 +52,18 @@ export function GlobeCradle(): ReactElement {
     [],
   );
 
-  // The engraved globe — mounted once (StrictMode-safe: the cleanup disposes the first instance).
+  // The canvas globe — mounted once (StrictMode-safe: the cleanup disposes the first instance).
   useEffect(() => {
     const el = fallbackRef.current;
     if (!el) return;
     const g = createFallbackGlobe(el, callbacks());
     fallback.current = g;
     if (!active.current) active.current = g;
+    const p = useBar.getState().pin;
+    if (p) {
+      g.setPin(p);
+      g.flyTo(p.lat, p.lng);
+    }
     return () => {
       g.dispose();
       if (active.current === g) active.current = null;
@@ -87,7 +71,7 @@ export function GlobeCradle(): ReactElement {
     };
   }, [callbacks]);
 
-  // The WebGL globe, lazily, after first paint. `seat` re-mounts a NEW canvas after context loss.
+  // The WebGL planet, lazily. `seat` re-mounts a NEW canvas after context loss.
   // biome-ignore lint/correctness/useExhaustiveDependencies: `seat` is the re-seat trigger, by design
   useEffect(() => {
     const el = webglRef.current;
@@ -102,10 +86,7 @@ export function GlobeCradle(): ReactElement {
           webgl.current = mine;
           active.current = mine;
           const p = useBar.getState().pin;
-          if (p) {
-            mine.setPin(p);
-            mine.flyTo(p.lat, p.lng);
-          }
+          if (p) mine.setPin(p);
           patch({ globe: 'webgl' });
         })
         .catch(() => patch({ globe: 'svg' }));
@@ -147,6 +128,7 @@ export function GlobeCradle(): ReactElement {
     else if (k === 'ArrowDown') g.nudge(-5, 0);
     else if (k === '+' || k === '=') g.zoom(0.85);
     else if (k === '-' || k === '_') g.zoom(1.18);
+    else if (k === 'h' || k === 'H') g.home();
     else if (k === 'Enter' || k === ' ') {
       unlockAudio();
       const c = g.center();
@@ -157,12 +139,12 @@ export function GlobeCradle(): ReactElement {
 
   const webglOn = status === 'webgl';
   return (
-    <div className="cradle">
+    <div className="stage">
       <div
-        className="globe-holder"
+        className="stage__globe"
         role="application"
         tabIndex={0}
-        aria-label="World globe. Arrow keys rotate, Enter chooses the centre."
+        aria-label="Planet Earth, centred on India. Drag to spin, tap anywhere for its weather. Arrow keys rotate, Enter chooses the centre, H returns to India."
         aria-roledescription="globe"
         onKeyDown={onKey}
         onPointerDown={() => {
@@ -173,17 +155,27 @@ export function GlobeCradle(): ReactElement {
         <div ref={fallbackRef} className={`globe-layer${webglOn ? ' globe-layer--hidden' : ''}`} />
         <div ref={webglRef} className={`globe-layer${webglOn ? '' : ' globe-layer--hidden'}`} />
       </div>
-      <CradleArt />
+      <div className="stage__tools" role="group" aria-label="Globe controls">
+        <button type="button" className="icon-btn" aria-label="Back to India" onClick={() => active.current?.home()}>
+          <Home size={18} strokeWidth={1.75} aria-hidden="true" />
+        </button>
+        <button type="button" className="icon-btn" aria-label="Zoom in" onClick={() => active.current?.zoom(0.85)}>
+          <Plus size={18} strokeWidth={1.75} aria-hidden="true" />
+        </button>
+        <button type="button" className="icon-btn" aria-label="Zoom out" onClick={() => active.current?.zoom(1.18)}>
+          <Minus size={18} strokeWidth={1.75} aria-hidden="true" />
+        </button>
+      </div>
       {status === 'seized' && (
         <button
           type="button"
-          className="tag-brass seized"
+          className="chip chip--warn stage__seized"
           onClick={() => {
             patch({ globe: 'svg' });
             setSeat((n) => n + 1);
           }}
         >
-          <b>Brass tag</b> The globe’s bearings seized. Tap to re-seat.
+          The 3D planet stalled. Tap to restart it.
         </button>
       )}
     </div>

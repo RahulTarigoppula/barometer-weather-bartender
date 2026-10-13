@@ -11,15 +11,37 @@
     "colour": "#CFE8D2",
     "bottle": "rum",
     "virginTwin": "virgin-mojito",
-    "affinity": { "oppressive": 4, "muggy": 3, "hot": 3, "scorching": 3, "late": 1, "brunch": 1 },
+    "affinity": {
+      "oppressive": 4,
+      "muggy": 3,
+      "hot": 3,
+      "scorching": 3,
+      "late": 1,
+      "brunch": 1
+    },
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "45 ml", "ingredient": "white rum" },
-        { "amount": "20 ml", "ingredient": "fresh lime juice" },
-        { "amount": "6", "ingredient": "mint leaves" },
-        { "amount": "2 tsp", "ingredient": "cane sugar" },
-        { "amount": "top", "ingredient": "soda water" }
+        {
+          "amount": "45 ml",
+          "ingredient": "white rum"
+        },
+        {
+          "amount": "20 ml",
+          "ingredient": "fresh lime juice"
+        },
+        {
+          "amount": "6",
+          "ingredient": "mint leaves"
+        },
+        {
+          "amount": "2 tsp",
+          "ingredient": "cane sugar"
+        },
+        {
+          "amount": "top",
+          "ingredient": "soda water"
+        }
       ],
       "method": [
         "Muddle mint, sugar and lime in the glass.",
@@ -40,13 +62,27 @@
     "colour": "#E3EDC2",
     "bottle": "rum",
     "virginTwin": "salted-lime-soda",
-    "affinity": { "hot": 3, "oppressive": 3, "scorching": 3, "still": 1 },
+    "affinity": {
+      "hot": 3,
+      "oppressive": 3,
+      "scorching": 3,
+      "still": 1
+    },
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "60 ml", "ingredient": "cachaça" },
-        { "amount": "½", "ingredient": "lime, cut in wedges" },
-        { "amount": "4 tsp", "ingredient": "white cane sugar" }
+        {
+          "amount": "60 ml",
+          "ingredient": "cachaça"
+        },
+        {
+          "amount": "½",
+          "ingredient": "lime, cut in wedges"
+        },
+        {
+          "amount": "4 tsp",
+          "ingredient": "white cane sugar"
+        }
       ],
       "method": [
         "Muddle the lime wedges with the sugar, skin side down.",
@@ -81,10 +117,22 @@
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "60 ml", "ingredient": "dark rum" },
-        { "amount": "100 ml", "ingredient": "ginger beer" },
-        { "amount": "10 ml", "ingredient": "lime juice" },
-        { "amount": "1", "ingredient": "lime wedge" }
+        {
+          "amount": "60 ml",
+          "ingredient": "dark rum"
+        },
+        {
+          "amount": "100 ml",
+          "ingredient": "ginger beer"
+        },
+        {
+          "amount": "10 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "1",
+          "ingredient": "lime wedge"
+        }
       ],
       "method": [
         "Fill a highball with ice; add ginger beer and lime.",
@@ -105,14 +153,33 @@
     "colour": "#DCEFE4",
     "bottle": "gin",
     "virginTwin": "cucumber-tonic",
-    "affinity": { "warm": 3, "afternoon": 3, "golden": 3, "hot": 2, "muggy": 2, "mild": 2 },
+    "affinity": {
+      "warm": 3,
+      "afternoon": 3,
+      "golden": 3,
+      "hot": 2,
+      "muggy": 2,
+      "mild": 2
+    },
     "recipe": {
       "source": "opendrinks",
       "ingredients": [
-        { "amount": "50 ml", "ingredient": "London dry gin" },
-        { "amount": "150 ml", "ingredient": "tonic water" },
-        { "amount": "1", "ingredient": "grapefruit peel" },
-        { "amount": "fill", "ingredient": "cubed ice" }
+        {
+          "amount": "50 ml",
+          "ingredient": "London dry gin"
+        },
+        {
+          "amount": "150 ml",
+          "ingredient": "tonic water"
+        },
+        {
+          "amount": "1",
+          "ingredient": "grapefruit peel"
+        },
+        {
+          "amount": "fill",
+          "ingredient": "cubed ice"
+        }
       ],
       "method": [
         "Fill the glass with ice until it will take no more.",
@@ -133,14 +200,32 @@
     "colour": "#B8322E",
     "bottle": "vermouth",
     "virginTwin": "virgin-negroni",
-    "affinity": { "evening": 3, "golden": 3, "mild": 3, "still": 3, "cold": 1 },
+    "affinity": {
+      "evening": 3,
+      "golden": 3,
+      "mild": 3,
+      "still": 3,
+      "cold": 1
+    },
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "30 ml", "ingredient": "gin" },
-        { "amount": "30 ml", "ingredient": "sweet red vermouth" },
-        { "amount": "30 ml", "ingredient": "red bitter aperitivo" },
-        { "amount": "1", "ingredient": "orange peel" }
+        {
+          "amount": "30 ml",
+          "ingredient": "gin"
+        },
+        {
+          "amount": "30 ml",
+          "ingredient": "sweet red vermouth"
+        },
+        {
+          "amount": "30 ml",
+          "ingredient": "red bitter aperitivo"
+        },
+        {
+          "amount": "1",
+          "ingredient": "orange peel"
+        }
       ],
       "method": [
         "Equal parts, over one big rock.",
@@ -161,14 +246,32 @@
     "colour": "#D7E8A8",
     "bottle": "tequila",
     "virginTwin": "virgin-margarita",
-    "affinity": { "scorching": 4, "hot": 3, "uv-extreme": 3, "bone-dry": 3, "dust": 3 },
+    "affinity": {
+      "scorching": 4,
+      "hot": 3,
+      "uv-extreme": 3,
+      "bone-dry": 3,
+      "dust": 3
+    },
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "50 ml", "ingredient": "blanco tequila" },
-        { "amount": "25 ml", "ingredient": "fresh lime juice" },
-        { "amount": "20 ml", "ingredient": "triple sec" },
-        { "amount": "rim", "ingredient": "flaked salt" }
+        {
+          "amount": "50 ml",
+          "ingredient": "blanco tequila"
+        },
+        {
+          "amount": "25 ml",
+          "ingredient": "fresh lime juice"
+        },
+        {
+          "amount": "20 ml",
+          "ingredient": "triple sec"
+        },
+        {
+          "amount": "rim",
+          "ingredient": "flaked salt"
+        }
       ],
       "method": [
         "Salt half the rim. Half — you still have to talk to people.",
@@ -189,14 +292,30 @@
     "colour": "#E8F0C8",
     "bottle": "rum",
     "virginTwin": "frozen-limeade",
-    "affinity": { "scorching": 5, "uv-extreme": 3, "hot": 2 },
+    "affinity": {
+      "scorching": 5,
+      "uv-extreme": 3,
+      "hot": 2
+    },
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "60 ml", "ingredient": "white rum" },
-        { "amount": "25 ml", "ingredient": "fresh lime juice" },
-        { "amount": "15 ml", "ingredient": "sugar syrup" },
-        { "amount": "1 cup", "ingredient": "crushed ice" }
+        {
+          "amount": "60 ml",
+          "ingredient": "white rum"
+        },
+        {
+          "amount": "25 ml",
+          "ingredient": "fresh lime juice"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "sugar syrup"
+        },
+        {
+          "amount": "1 cup",
+          "ingredient": "crushed ice"
+        }
       ],
       "method": [
         "Blend everything until it stops arguing.",
@@ -217,14 +336,31 @@
     "colour": "#3A2214",
     "bottle": "vodka",
     "virginTwin": "espresso-tonic",
-    "affinity": { "late": 4, "evening": 2, "hot": 1, "fog": 1 },
+    "affinity": {
+      "late": 4,
+      "evening": 2,
+      "hot": 1,
+      "fog": 1
+    },
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "40 ml", "ingredient": "vodka" },
-        { "amount": "30 ml", "ingredient": "fresh espresso" },
-        { "amount": "15 ml", "ingredient": "coffee liqueur" },
-        { "amount": "5 ml", "ingredient": "sugar syrup" }
+        {
+          "amount": "40 ml",
+          "ingredient": "vodka"
+        },
+        {
+          "amount": "30 ml",
+          "ingredient": "fresh espresso"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "coffee liqueur"
+        },
+        {
+          "amount": "5 ml",
+          "ingredient": "sugar syrup"
+        }
       ],
       "method": [
         "Shake harder than you think is polite, with plenty of ice.",
@@ -245,15 +381,36 @@
     "colour": "#A8321E",
     "bottle": "vodka",
     "virginTwin": "virgin-mary",
-    "affinity": { "brunch": 4, "morning": 3, "smog": 3, "dust": 3, "chilly": 1 },
+    "affinity": {
+      "brunch": 4,
+      "morning": 3,
+      "smog": 3,
+      "dust": 3,
+      "chilly": 1
+    },
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "45 ml", "ingredient": "vodka" },
-        { "amount": "90 ml", "ingredient": "tomato juice" },
-        { "amount": "15 ml", "ingredient": "lemon juice" },
-        { "amount": "2 dash", "ingredient": "Worcestershire sauce" },
-        { "amount": "pinch", "ingredient": "celery salt & black pepper" }
+        {
+          "amount": "45 ml",
+          "ingredient": "vodka"
+        },
+        {
+          "amount": "90 ml",
+          "ingredient": "tomato juice"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "lemon juice"
+        },
+        {
+          "amount": "2 dash",
+          "ingredient": "Worcestershire sauce"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "celery salt & black pepper"
+        }
       ],
       "method": [
         "Roll it between two tins instead of shaking.",
@@ -274,14 +431,33 @@
     "colour": "#A85C1E",
     "bottle": "bitters",
     "virginTwin": "smoked-cherry-soda",
-    "affinity": { "chilly": 3, "cold": 3, "evening": 3, "late": 3, "still": 3, "fog": 3 },
+    "affinity": {
+      "chilly": 3,
+      "cold": 3,
+      "evening": 3,
+      "late": 3,
+      "still": 3,
+      "fog": 3
+    },
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "60 ml", "ingredient": "bourbon" },
-        { "amount": "1 tsp", "ingredient": "demerara syrup" },
-        { "amount": "2 dash", "ingredient": "aromatic bitters" },
-        { "amount": "1", "ingredient": "orange peel" }
+        {
+          "amount": "60 ml",
+          "ingredient": "bourbon"
+        },
+        {
+          "amount": "1 tsp",
+          "ingredient": "demerara syrup"
+        },
+        {
+          "amount": "2 dash",
+          "ingredient": "aromatic bitters"
+        },
+        {
+          "amount": "1",
+          "ingredient": "orange peel"
+        }
       ],
       "method": [
         "Syrup and bitters in the glass; one big cube.",
@@ -319,11 +495,26 @@
     "recipe": {
       "source": "opendrinks",
       "ingredients": [
-        { "amount": "50 ml", "ingredient": "blended whisky" },
-        { "amount": "15 ml", "ingredient": "honey" },
-        { "amount": "20 ml", "ingredient": "lemon juice" },
-        { "amount": "120 ml", "ingredient": "hot water" },
-        { "amount": "1", "ingredient": "clove-studded lemon wheel" }
+        {
+          "amount": "50 ml",
+          "ingredient": "blended whisky"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "honey"
+        },
+        {
+          "amount": "20 ml",
+          "ingredient": "lemon juice"
+        },
+        {
+          "amount": "120 ml",
+          "ingredient": "hot water"
+        },
+        {
+          "amount": "1",
+          "ingredient": "clove-studded lemon wheel"
+        }
       ],
       "method": [
         "Warm the mug with hot water; discard.",
@@ -358,11 +549,26 @@
     "recipe": {
       "source": "opendrinks",
       "ingredients": [
-        { "amount": "60 ml", "ingredient": "dark rum" },
-        { "amount": "1 tsp", "ingredient": "salted butter" },
-        { "amount": "2 tsp", "ingredient": "brown sugar" },
-        { "amount": "pinch", "ingredient": "nutmeg & clove" },
-        { "amount": "140 ml", "ingredient": "boiling water" }
+        {
+          "amount": "60 ml",
+          "ingredient": "dark rum"
+        },
+        {
+          "amount": "1 tsp",
+          "ingredient": "salted butter"
+        },
+        {
+          "amount": "2 tsp",
+          "ingredient": "brown sugar"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "nutmeg & clove"
+        },
+        {
+          "amount": "140 ml",
+          "ingredient": "boiling water"
+        }
       ],
       "method": [
         "Cream the butter, sugar and spice in the mug.",
@@ -383,15 +589,38 @@
     "colour": "#7E2230",
     "bottle": "syrup",
     "virginTwin": "spiced-apple-warmer",
-    "affinity": { "freezing": 4, "arctic": 3, "cold": 3, "snow": 3, "blizzard": 3, "polar": 3, "evening": 2 },
+    "affinity": {
+      "freezing": 4,
+      "arctic": 3,
+      "cold": 3,
+      "snow": 3,
+      "blizzard": 3,
+      "polar": 3,
+      "evening": 2
+    },
     "recipe": {
       "source": "opendrinks",
       "ingredients": [
-        { "amount": "150 ml", "ingredient": "red wine" },
-        { "amount": "20 ml", "ingredient": "spiced syrup" },
-        { "amount": "1", "ingredient": "orange wheel" },
-        { "amount": "1", "ingredient": "cinnamon stick" },
-        { "amount": "3", "ingredient": "cloves" }
+        {
+          "amount": "150 ml",
+          "ingredient": "red wine"
+        },
+        {
+          "amount": "20 ml",
+          "ingredient": "spiced syrup"
+        },
+        {
+          "amount": "1",
+          "ingredient": "orange wheel"
+        },
+        {
+          "amount": "1",
+          "ingredient": "cinnamon stick"
+        },
+        {
+          "amount": "3",
+          "ingredient": "cloves"
+        }
       ],
       "method": [
         "Warm the wine with the spice. Never let it boil.",
@@ -426,10 +655,22 @@
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "40 ml", "ingredient": "Irish whiskey" },
-        { "amount": "90 ml", "ingredient": "hot coffee" },
-        { "amount": "2 tsp", "ingredient": "demerara sugar" },
-        { "amount": "30 ml", "ingredient": "cream, lightly whipped" }
+        {
+          "amount": "40 ml",
+          "ingredient": "Irish whiskey"
+        },
+        {
+          "amount": "90 ml",
+          "ingredient": "hot coffee"
+        },
+        {
+          "amount": "2 tsp",
+          "ingredient": "demerara sugar"
+        },
+        {
+          "amount": "30 ml",
+          "ingredient": "cream, lightly whipped"
+        }
       ],
       "method": [
         "Sugar and coffee first; stir until fully dissolved.",
@@ -450,14 +691,32 @@
     "colour": "#C98A3B",
     "bottle": "ginger-beer",
     "virginTwin": "ginger-switchel",
-    "affinity": { "hot": 3, "warm": 3, "muggy": 3, "brunch": 3, "breezy": 3 },
+    "affinity": {
+      "hot": 3,
+      "warm": 3,
+      "muggy": 3,
+      "brunch": 3,
+      "breezy": 3
+    },
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "50 ml", "ingredient": "vodka" },
-        { "amount": "120 ml", "ingredient": "ginger beer" },
-        { "amount": "15 ml", "ingredient": "lime juice" },
-        { "amount": "1", "ingredient": "lime wedge" }
+        {
+          "amount": "50 ml",
+          "ingredient": "vodka"
+        },
+        {
+          "amount": "120 ml",
+          "ingredient": "ginger beer"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "1",
+          "ingredient": "lime wedge"
+        }
       ],
       "method": [
         "Pack the copper mug with ice; it must hurt to hold.",
@@ -491,11 +750,26 @@
     "recipe": {
       "source": "opendrinks",
       "ingredients": [
-        { "amount": "60 ml", "ingredient": "dark rum" },
-        { "amount": "100 ml", "ingredient": "pineapple juice" },
-        { "amount": "25 ml", "ingredient": "orange juice" },
-        { "amount": "25 ml", "ingredient": "cream of coconut" },
-        { "amount": "pinch", "ingredient": "nutmeg" }
+        {
+          "amount": "60 ml",
+          "ingredient": "dark rum"
+        },
+        {
+          "amount": "100 ml",
+          "ingredient": "pineapple juice"
+        },
+        {
+          "amount": "25 ml",
+          "ingredient": "orange juice"
+        },
+        {
+          "amount": "25 ml",
+          "ingredient": "cream of coconut"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "nutmeg"
+        }
       ],
       "method": [
         "Shake everything with crushed ice.",
@@ -516,13 +790,28 @@
     "colour": "#F0C24A",
     "bottle": "vermouth",
     "virginTwin": "sunrise-fizz",
-    "affinity": { "brunch": 4, "morning": 3, "mild": 3, "dawn": 3, "golden": 2 },
+    "affinity": {
+      "brunch": 4,
+      "morning": 3,
+      "mild": 3,
+      "dawn": 3,
+      "golden": 2
+    },
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "90 ml", "ingredient": "dry sparkling wine" },
-        { "amount": "60 ml", "ingredient": "cold orange juice" },
-        { "amount": "1", "ingredient": "orange twist" }
+        {
+          "amount": "90 ml",
+          "ingredient": "dry sparkling wine"
+        },
+        {
+          "amount": "60 ml",
+          "ingredient": "cold orange juice"
+        },
+        {
+          "amount": "1",
+          "ingredient": "orange twist"
+        }
       ],
       "method": [
         "Juice first, wine second — the other way round foams over.",
@@ -543,14 +832,34 @@
     "colour": "#F4B8A8",
     "bottle": "tequila",
     "virginTwin": "virgin-paloma",
-    "affinity": { "bone-dry": 3, "afternoon": 3, "warm": 3, "scorching": 2, "hot": 2, "dust": 2, "uv-extreme": 2 },
+    "affinity": {
+      "bone-dry": 3,
+      "afternoon": 3,
+      "warm": 3,
+      "scorching": 2,
+      "hot": 2,
+      "dust": 2,
+      "uv-extreme": 2
+    },
     "recipe": {
       "source": "iba",
       "ingredients": [
-        { "amount": "50 ml", "ingredient": "blanco tequila" },
-        { "amount": "15 ml", "ingredient": "lime juice" },
-        { "amount": "100 ml", "ingredient": "pink grapefruit soda" },
-        { "amount": "pinch", "ingredient": "salt" }
+        {
+          "amount": "50 ml",
+          "ingredient": "blanco tequila"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "100 ml",
+          "ingredient": "pink grapefruit soda"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "salt"
+        }
       ],
       "method": [
         "Salt in the glass, then ice to the brim.",
@@ -571,15 +880,37 @@
     "colour": "#C4652A",
     "bottle": "ginger-beer",
     "virginTwin": "virgin-michelada",
-    "affinity": { "smog": 3, "dust": 3, "brunch": 3, "afternoon": 3, "hot": 2, "muggy": 2 },
+    "affinity": {
+      "smog": 3,
+      "dust": 3,
+      "brunch": 3,
+      "afternoon": 3,
+      "hot": 2,
+      "muggy": 2
+    },
     "recipe": {
       "source": "opendrinks",
       "ingredients": [
-        { "amount": "330 ml", "ingredient": "cold lager" },
-        { "amount": "25 ml", "ingredient": "lime juice" },
-        { "amount": "2 dash", "ingredient": "hot sauce" },
-        { "amount": "1 tsp", "ingredient": "soy sauce" },
-        { "amount": "rim", "ingredient": "chilli salt" }
+        {
+          "amount": "330 ml",
+          "ingredient": "cold lager"
+        },
+        {
+          "amount": "25 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "2 dash",
+          "ingredient": "hot sauce"
+        },
+        {
+          "amount": "1 tsp",
+          "ingredient": "soy sauce"
+        },
+        {
+          "amount": "rim",
+          "ingredient": "chilli salt"
+        }
       ],
       "method": [
         "Rim the pint with chilli salt; chill it first.",
@@ -614,10 +945,22 @@
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "40 ml", "ingredient": "blended Scotch" },
-        { "amount": "25 ml", "ingredient": "green ginger wine" },
-        { "amount": "10 ml", "ingredient": "honey" },
-        { "amount": "100 ml", "ingredient": "hot water" }
+        {
+          "amount": "40 ml",
+          "ingredient": "blended Scotch"
+        },
+        {
+          "amount": "25 ml",
+          "ingredient": "green ginger wine"
+        },
+        {
+          "amount": "10 ml",
+          "ingredient": "honey"
+        },
+        {
+          "amount": "100 ml",
+          "ingredient": "hot water"
+        }
       ],
       "method": [
         "Warm the mug; tip the water out.",
@@ -637,22 +980,44 @@
     "ice": "crushed",
     "colour": "#CFE8D2",
     "bottle": "mint",
-    "affinity": { "oppressive": 4, "muggy": 3, "hot": 3, "scorching": 3, "morning": 2, "brunch": 2 },
+    "affinity": {
+      "oppressive": 4,
+      "muggy": 3,
+      "hot": 3,
+      "scorching": 3,
+      "morning": 2,
+      "brunch": 2
+    },
     "recipe": {
       "source": "opendrinks",
       "ingredients": [
-        { "amount": "25 ml", "ingredient": "lime juice" },
-        { "amount": "8", "ingredient": "mint leaves" },
-        { "amount": "2 tsp", "ingredient": "cane sugar" },
-        { "amount": "top", "ingredient": "soda water" },
-        { "amount": "fill", "ingredient": "crushed ice" }
+        {
+          "amount": "25 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "8",
+          "ingredient": "mint leaves"
+        },
+        {
+          "amount": "2 tsp",
+          "ingredient": "cane sugar"
+        },
+        {
+          "amount": "top",
+          "ingredient": "soda water"
+        },
+        {
+          "amount": "fill",
+          "ingredient": "crushed ice"
+        }
       ],
       "method": ["Muddle mint, sugar and lime.", "Pack with crushed ice; churn.", "Top with soda. Same insult, no rum."]
     }
   },
   {
     "id": "salted-lime-soda",
-    "name": "Salted Lime Soda",
+    "name": "Nimbu Soda",
     "base": "soda",
     "alcoholic": false,
     "abv": 0,
@@ -661,19 +1026,41 @@
     "ice": "cubes",
     "colour": "#E6F0CF",
     "bottle": "syrup",
-    "affinity": { "hot": 3, "oppressive": 3, "scorching": 3, "bone-dry": 3, "still": 1 },
+    "affinity": {
+      "hot": 3,
+      "oppressive": 3,
+      "scorching": 3,
+      "bone-dry": 3,
+      "still": 1
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "30 ml", "ingredient": "fresh lime juice" },
-        { "amount": "15 ml", "ingredient": "sugar syrup" },
-        { "amount": "pinch", "ingredient": "black salt" },
-        { "amount": "180 ml", "ingredient": "soda water" }
+        {
+          "amount": "30 ml",
+          "ingredient": "fresh lime juice"
+        },
+        {
+          "amount": "2 tsp",
+          "ingredient": "sugar, or less"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "kala namak (black salt)"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "roasted jeera powder"
+        },
+        {
+          "amount": "200 ml",
+          "ingredient": "chilled soda"
+        }
       ],
       "method": [
-        "Lime, syrup and salt in the glass; stir to dissolve.",
-        "Ice to the brim, soda over the top.",
-        "Drink half at once. You are allowed."
+        "Stir lime, sugar, kala namak and jeera until dissolved.",
+        "Ice to the brim, soda over the top — it will fizz up, let it.",
+        "Sweet, salted or both. Drink half at once."
       ]
     }
   },
@@ -688,14 +1075,35 @@
     "ice": "cubes",
     "colour": "#8A5A2E",
     "bottle": "ginger-beer",
-    "affinity": { "ocean": 7, "hail": 5, "downpour": 4, "storm": 4, "gale": 4, "breezy": 3, "rain": 3, "warm": 2 },
+    "affinity": {
+      "ocean": 7,
+      "hail": 5,
+      "downpour": 4,
+      "storm": 4,
+      "gale": 4,
+      "breezy": 3,
+      "rain": 3,
+      "warm": 2
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "140 ml", "ingredient": "ginger beer" },
-        { "amount": "20 ml", "ingredient": "lime juice" },
-        { "amount": "15 ml", "ingredient": "dark molasses syrup" },
-        { "amount": "1", "ingredient": "lime wedge" }
+        {
+          "amount": "140 ml",
+          "ingredient": "ginger beer"
+        },
+        {
+          "amount": "20 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "dark molasses syrup"
+        },
+        {
+          "amount": "1",
+          "ingredient": "lime wedge"
+        }
       ],
       "method": [
         "Ice, ginger beer, lime.",
@@ -715,14 +1123,33 @@
     "ice": "cubes",
     "colour": "#D6EEDC",
     "bottle": "syrup",
-    "affinity": { "warm": 3, "afternoon": 3, "golden": 3, "hot": 2, "muggy": 2, "mild": 2 },
+    "affinity": {
+      "warm": 3,
+      "afternoon": 3,
+      "golden": 3,
+      "hot": 2,
+      "muggy": 2,
+      "mild": 2
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "4", "ingredient": "cucumber ribbons" },
-        { "amount": "15 ml", "ingredient": "sugar syrup" },
-        { "amount": "15 ml", "ingredient": "lime juice" },
-        { "amount": "160 ml", "ingredient": "tonic water" }
+        {
+          "amount": "4",
+          "ingredient": "cucumber ribbons"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "sugar syrup"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "160 ml",
+          "ingredient": "tonic water"
+        }
       ],
       "method": [
         "Line the glass with cucumber; add ice.",
@@ -742,14 +1169,32 @@
     "ice": "cubes",
     "colour": "#B8322E",
     "bottle": "bitters",
-    "affinity": { "evening": 3, "golden": 3, "mild": 3, "still": 3, "cold": 1 },
+    "affinity": {
+      "evening": 3,
+      "golden": 3,
+      "mild": 3,
+      "still": 3,
+      "cold": 1
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "30 ml", "ingredient": "alcohol-free bitter aperitif" },
-        { "amount": "30 ml", "ingredient": "red grape juice" },
-        { "amount": "20 ml", "ingredient": "blood orange juice" },
-        { "amount": "1", "ingredient": "orange peel" }
+        {
+          "amount": "30 ml",
+          "ingredient": "alcohol-free bitter aperitif"
+        },
+        {
+          "amount": "30 ml",
+          "ingredient": "red grape juice"
+        },
+        {
+          "amount": "20 ml",
+          "ingredient": "blood orange juice"
+        },
+        {
+          "amount": "1",
+          "ingredient": "orange peel"
+        }
       ],
       "method": [
         "Stir over one big cube until it is properly cold.",
@@ -769,14 +1214,32 @@
     "ice": "none",
     "colour": "#D7E8A8",
     "bottle": "syrup",
-    "affinity": { "scorching": 4, "hot": 3, "uv-extreme": 3, "bone-dry": 3, "dust": 3 },
+    "affinity": {
+      "scorching": 4,
+      "hot": 3,
+      "uv-extreme": 3,
+      "bone-dry": 3,
+      "dust": 3
+    },
     "recipe": {
       "source": "opendrinks",
       "ingredients": [
-        { "amount": "30 ml", "ingredient": "lime juice" },
-        { "amount": "20 ml", "ingredient": "agave syrup" },
-        { "amount": "60 ml", "ingredient": "cold water" },
-        { "amount": "rim", "ingredient": "flaked salt" }
+        {
+          "amount": "30 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "20 ml",
+          "ingredient": "agave syrup"
+        },
+        {
+          "amount": "60 ml",
+          "ingredient": "cold water"
+        },
+        {
+          "amount": "rim",
+          "ingredient": "flaked salt"
+        }
       ],
       "method": [
         "Salt half the rim.",
@@ -787,34 +1250,54 @@
   },
   {
     "id": "frozen-limeade",
-    "name": "Frozen Limeade",
+    "name": "Aam Panna Slush",
     "base": "juice",
     "alcoholic": false,
     "abv": 0,
     "serve": "frozen",
     "glass": "coupe",
     "ice": "crushed",
-    "colour": "#DDEFB4",
+    "colour": "#D8E39A",
     "bottle": "syrup",
-    "affinity": { "scorching": 5, "uv-extreme": 3, "hot": 2 },
+    "affinity": {
+      "scorching": 5,
+      "uv-extreme": 3,
+      "hot": 2
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "40 ml", "ingredient": "fresh lime juice" },
-        { "amount": "25 ml", "ingredient": "sugar syrup" },
-        { "amount": "4", "ingredient": "mint leaves" },
-        { "amount": "1 cup", "ingredient": "crushed ice" }
+        {
+          "amount": "80 ml",
+          "ingredient": "raw-mango pulp, boiled and cooled"
+        },
+        {
+          "amount": "25 ml",
+          "ingredient": "jaggery or sugar syrup"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "kala namak and roasted jeera"
+        },
+        {
+          "amount": "4",
+          "ingredient": "mint leaves"
+        },
+        {
+          "amount": "1 cup",
+          "ingredient": "crushed ice"
+        }
       ],
       "method": [
-        "Blend until it sounds like gravel, then like snow.",
-        "Mound it high in a frozen coupe.",
-        "Brain freeze is the point. Lean into it."
+        "Blend everything until it sounds like gravel, then like snow.",
+        "Mound it into a frozen coupe.",
+        "The loo is outside. This is the cure."
       ]
     }
   },
   {
     "id": "espresso-tonic",
-    "name": "Espresso Tonic",
+    "name": "Filter Coffee Tonic",
     "base": "coffee",
     "alcoholic": false,
     "abv": 0,
@@ -823,18 +1306,36 @@
     "ice": "cubes",
     "colour": "#3A2214",
     "bottle": "tea",
-    "affinity": { "late": 4, "dawn": 3, "evening": 2, "hot": 1, "fog": 1 },
+    "affinity": {
+      "late": 4,
+      "dawn": 3,
+      "evening": 2,
+      "hot": 1,
+      "fog": 1
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "30 ml", "ingredient": "fresh espresso" },
-        { "amount": "150 ml", "ingredient": "tonic water" },
-        { "amount": "1", "ingredient": "orange slice" },
-        { "amount": "fill", "ingredient": "cubed ice" }
+        {
+          "amount": "40 ml",
+          "ingredient": "strong South Indian filter decoction"
+        },
+        {
+          "amount": "150 ml",
+          "ingredient": "tonic water"
+        },
+        {
+          "amount": "1",
+          "ingredient": "orange slice"
+        },
+        {
+          "amount": "fill",
+          "ingredient": "cubed ice"
+        }
       ],
       "method": [
         "Ice and tonic first, right to the top.",
-        "Pour the espresso through slowly; let it layer.",
+        "Pour the decoction through slowly; let it layer.",
         "Watch it for two seconds, then ruin it."
       ]
     }
@@ -850,15 +1351,36 @@
     "ice": "cubes",
     "colour": "#B23A22",
     "bottle": "syrup",
-    "affinity": { "brunch": 4, "morning": 3, "smog": 3, "dust": 3, "chilly": 1 },
+    "affinity": {
+      "brunch": 4,
+      "morning": 3,
+      "smog": 3,
+      "dust": 3,
+      "chilly": 1
+    },
     "recipe": {
       "source": "opendrinks",
       "ingredients": [
-        { "amount": "150 ml", "ingredient": "tomato juice" },
-        { "amount": "15 ml", "ingredient": "lemon juice" },
-        { "amount": "2 dash", "ingredient": "Worcestershire sauce" },
-        { "amount": "2 dash", "ingredient": "hot sauce" },
-        { "amount": "pinch", "ingredient": "celery salt & black pepper" }
+        {
+          "amount": "150 ml",
+          "ingredient": "tomato juice"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "lemon juice"
+        },
+        {
+          "amount": "2 dash",
+          "ingredient": "Worcestershire sauce"
+        },
+        {
+          "amount": "2 dash",
+          "ingredient": "hot sauce"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "celery salt & black pepper"
+        }
       ],
       "method": [
         "Roll it between two tins with ice.",
@@ -869,34 +1391,54 @@
   },
   {
     "id": "smoked-cherry-soda",
-    "name": "Smoked Cherry Soda",
+    "name": "Kokum Soda",
     "base": "soda",
     "alcoholic": false,
     "abv": 0,
     "serve": "chilled",
     "glass": "rocks",
     "ice": "cubes",
-    "colour": "#8E2A2A",
+    "colour": "#8E2A4A",
     "bottle": "bitters",
-    "affinity": { "chilly": 3, "cold": 3, "evening": 3, "late": 3, "still": 3, "fog": 3, "smog": 3 },
+    "affinity": {
+      "chilly": 3,
+      "cold": 3,
+      "evening": 3,
+      "late": 3,
+      "still": 3,
+      "fog": 3,
+      "smog": 3
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "30 ml", "ingredient": "smoked cherry syrup" },
-        { "amount": "2 dash", "ingredient": "alcohol-free aromatic bitters" },
-        { "amount": "120 ml", "ingredient": "soda water" },
-        { "amount": "1", "ingredient": "dark cherry" }
+        {
+          "amount": "40 ml",
+          "ingredient": "kokum syrup"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "kala namak and jeera"
+        },
+        {
+          "amount": "10 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "150 ml",
+          "ingredient": "soda water"
+        }
       ],
       "method": [
-        "Syrup and bitters over one big cube.",
+        "Kokum, salt and lime over one big cube.",
         "Soda, poured slowly, one stir.",
-        "The cherry is not optional. It is the whole idea."
+        "Konkan-coast sour, the colour of a sunset."
       ]
     }
   },
   {
     "id": "hot-lemon-ginger",
-    "name": "Hot Lemon & Ginger",
+    "name": "Adrak Nimbu Chai",
     "base": "tea",
     "alcoholic": false,
     "abv": 0,
@@ -919,10 +1461,22 @@
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "1 tbsp", "ingredient": "grated ginger" },
-        { "amount": "20 ml", "ingredient": "lemon juice" },
-        { "amount": "15 ml", "ingredient": "honey" },
-        { "amount": "180 ml", "ingredient": "boiling water" }
+        {
+          "amount": "1 tbsp",
+          "ingredient": "grated ginger"
+        },
+        {
+          "amount": "20 ml",
+          "ingredient": "lemon juice"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "honey"
+        },
+        {
+          "amount": "180 ml",
+          "ingredient": "boiling water"
+        }
       ],
       "method": [
         "Steep the ginger in the boiling water for four minutes.",
@@ -942,14 +1496,34 @@
     "ice": "none",
     "colour": "#4A2A14",
     "bottle": "cocoa",
-    "affinity": { "arctic": 5, "polar": 4, "freezing": 4, "blizzard": 3, "snow": 3, "gale": 3, "late": 1 },
+    "affinity": {
+      "arctic": 5,
+      "polar": 4,
+      "freezing": 4,
+      "blizzard": 3,
+      "snow": 3,
+      "gale": 3,
+      "late": 1
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "200 ml", "ingredient": "whole milk" },
-        { "amount": "40 g", "ingredient": "dark chocolate" },
-        { "amount": "1 tsp", "ingredient": "cocoa" },
-        { "amount": "pinch", "ingredient": "salt" }
+        {
+          "amount": "200 ml",
+          "ingredient": "whole milk"
+        },
+        {
+          "amount": "40 g",
+          "ingredient": "dark chocolate"
+        },
+        {
+          "amount": "1 tsp",
+          "ingredient": "cocoa"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "salt"
+        }
       ],
       "method": [
         "Warm the milk; never boil it.",
@@ -982,11 +1556,26 @@
     "recipe": {
       "source": "opendrinks",
       "ingredients": [
-        { "amount": "200 ml", "ingredient": "cloudy apple juice" },
-        { "amount": "1", "ingredient": "cinnamon stick" },
-        { "amount": "3", "ingredient": "cloves" },
-        { "amount": "1", "ingredient": "star anise" },
-        { "amount": "1", "ingredient": "orange wheel" }
+        {
+          "amount": "200 ml",
+          "ingredient": "cloudy apple juice"
+        },
+        {
+          "amount": "1",
+          "ingredient": "cinnamon stick"
+        },
+        {
+          "amount": "3",
+          "ingredient": "cloves"
+        },
+        {
+          "amount": "1",
+          "ingredient": "star anise"
+        },
+        {
+          "amount": "1",
+          "ingredient": "orange wheel"
+        }
       ],
       "method": [
         "Warm the juice with the spice for five minutes.",
@@ -1021,12 +1610,30 @@
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "150 ml", "ingredient": "water" },
-        { "amount": "100 ml", "ingredient": "whole milk" },
-        { "amount": "2 tsp", "ingredient": "strong black tea" },
-        { "amount": "4", "ingredient": "crushed cardamom pods" },
-        { "amount": "1 slice", "ingredient": "ginger" },
-        { "amount": "2 tsp", "ingredient": "sugar" }
+        {
+          "amount": "150 ml",
+          "ingredient": "water"
+        },
+        {
+          "amount": "100 ml",
+          "ingredient": "whole milk"
+        },
+        {
+          "amount": "2 tsp",
+          "ingredient": "strong black tea"
+        },
+        {
+          "amount": "4",
+          "ingredient": "crushed cardamom pods"
+        },
+        {
+          "amount": "1 slice",
+          "ingredient": "ginger"
+        },
+        {
+          "amount": "2 tsp",
+          "ingredient": "sugar"
+        }
       ],
       "method": [
         "Boil water, ginger and spice for two minutes.",
@@ -1037,28 +1644,50 @@
   },
   {
     "id": "ginger-switchel",
-    "name": "Ginger Switchel",
+    "name": "Jaljeera Cooler",
     "base": "soda",
     "alcoholic": false,
     "abv": 0,
     "serve": "iced",
     "glass": "copper-mug",
     "ice": "cubes",
-    "colour": "#C98A3B",
+    "colour": "#9C8A3A",
     "bottle": "ginger-beer",
-    "affinity": { "hot": 3, "warm": 3, "muggy": 3, "brunch": 3, "breezy": 3 },
+    "affinity": {
+      "hot": 3,
+      "warm": 3,
+      "muggy": 3,
+      "brunch": 3,
+      "breezy": 3
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "20 ml", "ingredient": "cider vinegar" },
-        { "amount": "15 ml", "ingredient": "maple syrup" },
-        { "amount": "1 tbsp", "ingredient": "grated ginger" },
-        { "amount": "150 ml", "ingredient": "cold water" }
+        {
+          "amount": "2 tsp",
+          "ingredient": "jaljeera masala"
+        },
+        {
+          "amount": "20 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "6",
+          "ingredient": "mint leaves"
+        },
+        {
+          "amount": "1 tsp",
+          "ingredient": "grated ginger"
+        },
+        {
+          "amount": "180 ml",
+          "ingredient": "cold water or soda"
+        }
       ],
       "method": [
-        "Stir everything until the syrup gives up.",
-        "Rest it an hour if you have one; ten minutes if you don't.",
-        "Strain over ice. Farmers drank this in gales."
+        "Crush the mint and ginger with the masala and lime.",
+        "Pack the mug with ice; top with cold water or soda.",
+        "Stir hard. Boondi on top if you have it."
       ]
     }
   },
@@ -1086,11 +1715,26 @@
     "recipe": {
       "source": "opendrinks",
       "ingredients": [
-        { "amount": "120 ml", "ingredient": "pineapple juice" },
-        { "amount": "30 ml", "ingredient": "orange juice" },
-        { "amount": "30 ml", "ingredient": "cream of coconut" },
-        { "amount": "10 ml", "ingredient": "lime juice" },
-        { "amount": "pinch", "ingredient": "nutmeg" }
+        {
+          "amount": "120 ml",
+          "ingredient": "pineapple juice"
+        },
+        {
+          "amount": "30 ml",
+          "ingredient": "orange juice"
+        },
+        {
+          "amount": "30 ml",
+          "ingredient": "cream of coconut"
+        },
+        {
+          "amount": "10 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "nutmeg"
+        }
       ],
       "method": [
         "Shake hard with crushed ice.",
@@ -1110,14 +1754,32 @@
     "ice": "none",
     "colour": "#F0C24A",
     "bottle": "syrup",
-    "affinity": { "brunch": 4, "morning": 3, "mild": 3, "dawn": 3, "golden": 2 },
+    "affinity": {
+      "brunch": 4,
+      "morning": 3,
+      "mild": 3,
+      "dawn": 3,
+      "golden": 2
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "70 ml", "ingredient": "cold orange juice" },
-        { "amount": "15 ml", "ingredient": "raspberry syrup" },
-        { "amount": "80 ml", "ingredient": "sparkling water" },
-        { "amount": "1", "ingredient": "orange twist" }
+        {
+          "amount": "70 ml",
+          "ingredient": "cold orange juice"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "raspberry syrup"
+        },
+        {
+          "amount": "80 ml",
+          "ingredient": "sparkling water"
+        },
+        {
+          "amount": "1",
+          "ingredient": "orange twist"
+        }
       ],
       "method": [
         "Juice and syrup in the flute; do not stir.",
@@ -1137,15 +1799,38 @@
     "ice": "cubes",
     "colour": "#F2BFAE",
     "bottle": "syrup",
-    "affinity": { "bone-dry": 3, "afternoon": 3, "warm": 3, "scorching": 2, "hot": 2, "dust": 2, "uv-extreme": 2 },
+    "affinity": {
+      "bone-dry": 3,
+      "afternoon": 3,
+      "warm": 3,
+      "scorching": 2,
+      "hot": 2,
+      "dust": 2,
+      "uv-extreme": 2
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "60 ml", "ingredient": "pink grapefruit juice" },
-        { "amount": "15 ml", "ingredient": "lime juice" },
-        { "amount": "10 ml", "ingredient": "agave syrup" },
-        { "amount": "100 ml", "ingredient": "soda water" },
-        { "amount": "pinch", "ingredient": "salt" }
+        {
+          "amount": "60 ml",
+          "ingredient": "pink grapefruit juice"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "10 ml",
+          "ingredient": "agave syrup"
+        },
+        {
+          "amount": "100 ml",
+          "ingredient": "soda water"
+        },
+        {
+          "amount": "pinch",
+          "ingredient": "salt"
+        }
       ],
       "method": [
         "Salt in the glass, ice to the brim.",
@@ -1165,15 +1850,37 @@
     "ice": "none",
     "colour": "#C4652A",
     "bottle": "bitters",
-    "affinity": { "smog": 3, "dust": 3, "brunch": 3, "afternoon": 3, "hot": 2, "muggy": 2 },
+    "affinity": {
+      "smog": 3,
+      "dust": 3,
+      "brunch": 3,
+      "afternoon": 3,
+      "hot": 2,
+      "muggy": 2
+    },
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "250 ml", "ingredient": "cold tomato juice" },
-        { "amount": "25 ml", "ingredient": "lime juice" },
-        { "amount": "2 dash", "ingredient": "hot sauce" },
-        { "amount": "1 tsp", "ingredient": "soy sauce" },
-        { "amount": "rim", "ingredient": "chilli salt" }
+        {
+          "amount": "250 ml",
+          "ingredient": "cold tomato juice"
+        },
+        {
+          "amount": "25 ml",
+          "ingredient": "lime juice"
+        },
+        {
+          "amount": "2 dash",
+          "ingredient": "hot sauce"
+        },
+        {
+          "amount": "1 tsp",
+          "ingredient": "soy sauce"
+        },
+        {
+          "amount": "rim",
+          "ingredient": "chilli salt"
+        }
       ],
       "method": [
         "Rim a chilled pint with chilli salt.",
@@ -1207,10 +1914,22 @@
     "recipe": {
       "source": "house",
       "ingredients": [
-        { "amount": "1 tbsp", "ingredient": "grated ginger" },
-        { "amount": "20 ml", "ingredient": "honey" },
-        { "amount": "15 ml", "ingredient": "lemon juice" },
-        { "amount": "180 ml", "ingredient": "boiling water" }
+        {
+          "amount": "1 tbsp",
+          "ingredient": "grated ginger"
+        },
+        {
+          "amount": "20 ml",
+          "ingredient": "honey"
+        },
+        {
+          "amount": "15 ml",
+          "ingredient": "lemon juice"
+        },
+        {
+          "amount": "180 ml",
+          "ingredient": "boiling water"
+        }
       ],
       "method": [
         "Steep the ginger hard for five minutes.",

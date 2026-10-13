@@ -3,7 +3,7 @@
 **Codename:** Barometer · **Design:** The Globe Bar
 **Tagline:** *Spin. Tap. Survive.*
 
-Status: **Live** — v0.9.0 shipped 2026-10-12 at https://rahultarigoppula.github.io/barometer-weather-bartender/ (decisions taken while building: `docs/IMPLEMENTATION-PROMPT.md` §0, C13–C27).
+Status: **Live** — v1.0.0 (2026-10-13): the space/India redesign with weather first and four budget tiers, at https://rahultarigoppula.github.io/barometer-weather-bartender/ (decisions: `docs/IMPLEMENTATION-PROMPT.md` §0, C13–C33).
 
 ---
 

@@ -31,16 +31,16 @@ export default defineConfig({
       registerType: 'prompt', // brass tag: "New bottles in stock. Restock?"
       injectRegister: null, // registered by hand, web only
       manifest: {
-        name: 'The Globe Bar',
-        short_name: 'Globe Bar',
-        description: 'Click anywhere on Earth. Get judged. Get a drink.',
+        name: 'Barometer — weather first, then a drink',
+        short_name: 'Barometer',
+        description: 'Live weather on a 3D planet that opens on India, then the drink it calls for — at your budget.',
         id: base,
         start_url: base,
         scope: base,
         display: 'standalone',
         orientation: 'any',
-        background_color: '#1A0F0A',
-        theme_color: '#1A0F0A',
+        background_color: '#02040a',
+        theme_color: '#02040a',
         icons: [
           { src: 'icons/pwa-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/pwa-512.png', sizes: '512x512', type: 'image/png' },
@@ -51,12 +51,12 @@ export default defineConfig({
         globPatterns: [
           '**/*.{js,css,html}',
           'assets/*latin-wght-normal*.woff2',
-          'assets/righteous-latin-400-normal*.woff2',
           'geo/countries-110m.json',
           'geo/places.json',
           'geo/marine-50m.json',
           'geo/land-dots.json',
           'geo/land-110m.json',
+          'geo/india-outline.json',
           'textures/earth-day.jpg',
           'icons/*.{png,svg}',
         ],

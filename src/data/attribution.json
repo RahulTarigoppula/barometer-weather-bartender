@@ -15,7 +15,7 @@
   {
     "name": "Natural Earth",
     "licence": "Public domain",
-    "use": "Offline reverse geocoding: countries, populated places, marine polygons, land",
+    "use": "Offline reverse geocoding; India's outline from the India point-of-view dataset",
     "url": "https://www.naturalearthdata.com/"
   },
   {
@@ -43,7 +43,7 @@
     "url": "https://github.com/alfg/opendrinks"
   },
   {
-    "name": "Righteous, Space Grotesk, JetBrains Mono",
+    "name": "Space Grotesk, JetBrains Mono",
     "licence": "SIL OFL 1.1",
     "use": "Typefaces, self-hosted via Fontsource",
     "url": "https://fontsource.org/"
@@ -76,7 +76,7 @@
   {
     "name": "Lucide",
     "licence": "ISC",
-    "use": "Icons in the Back Office and search only",
+    "use": "Interface and weather icons",
     "url": "https://lucide.dev/"
   },
   {

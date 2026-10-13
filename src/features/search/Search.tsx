@@ -77,7 +77,7 @@ export function Search(): ReactElement {
           type="search"
           autoComplete="off"
           spellCheck={false}
-          placeholder="Wanted: somewhere with weather. Type a city…"
+          placeholder="Search a city — Indian places first"
           aria-label="Search for a place"
           role="combobox"
           aria-expanded={phase.kind === 'results'}
@@ -101,7 +101,10 @@ export function Search(): ReactElement {
               tabIndex={-1}
               onClick={() => choose(r)}
             >
-              <span>{r.name}</span>
+              <span>
+                {r.name}
+                {r.india && <span className="badge">India</span>}
+              </span>
               <span className="co">
                 {[r.admin1, r.country].filter(Boolean).join(', ')} · {r.lat.toFixed(2)}, {r.lng.toFixed(2)}
               </span>
@@ -122,7 +125,7 @@ export function WhereAmI(): ReactElement {
   return (
     <button
       type="button"
-      className="plate plate--ghost"
+      className="icon-btn icon-btn--text"
       disabled={!online || busy}
       title={online ? 'Uses your device location, resolved offline' : 'No signal'}
       onClick={() => {
@@ -138,7 +141,7 @@ export function WhereAmI(): ReactElement {
           .finally(() => setBusy(false));
       }}
     >
-      <LocateFixed size={18} strokeWidth={1.75} aria-hidden="true" /> Where am I
+      <LocateFixed size={18} strokeWidth={1.75} aria-hidden="true" /> <span className="hide-sm">Near me</span>
     </button>
   );
 }

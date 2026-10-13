@@ -1,8 +1,8 @@
 {
   "name": "barometer",
   "private": true,
-  "version": "0.9.0",
-  "description": "The Globe Bar — spin the planet, tap anywhere, and a judgmental bartender reads that spot's weather and slides you a drink.",
+  "version": "1.0.0",
+  "description": "Barometer: a 3D planet that opens on India. Weather first, then the drink it calls for, at your budget.",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -41,7 +41,6 @@
     "@capacitor/status-bar": "^8.0.4",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/space-grotesk": "^5.3.0",
-    "@fontsource/righteous": "^5.3.0",
     "d3-geo": "^3.1.1",
     "dexie": "^4.4.6",
     "dexie-react-hooks": "^4.4.0",

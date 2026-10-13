@@ -55,8 +55,6 @@ function present(v: Verdict, note: 'stale' | 'repoured' | null, slide: boolean):
   bar.patch({
     coaster: { kind: 'verdict', verdict: v, note },
     lastDrinkId: v.drinkId,
-    receipt: 'printing',
-    tornAt: null,
     ...(slide ? { slide: bar.slide + 1 } : {}),
   });
   setHash(v.lat, v.lng);
@@ -82,7 +80,6 @@ export async function pour(latIn: number, lngIn: number): Promise<void> {
     slide: bar.slide + 1,
     opinion: 0,
     flipped: false,
-    receipt: 'none',
   });
 
   try {
@@ -144,8 +141,9 @@ export async function pourFromHash(lat: number, lng: number, recent: Verdict | u
   return pour(lat, lng);
 }
 
+/** The default pour: New Delhi. India first. */
+export const DEFAULT_PLACE = { name: 'New Delhi', lat: 28.61, lng: 77.21 };
+
 export function backToBar(): void {
-  ++seq;
-  useBar.getState().patch({ coaster: { kind: 'empty' }, receipt: 'none', pin: null, opinion: 0, flipped: false });
-  if (window.location.hash !== '#/') window.history.replaceState(null, '', '#/');
+  void pour(DEFAULT_PLACE.lat, DEFAULT_PLACE.lng);
 }

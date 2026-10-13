@@ -44,6 +44,13 @@ export function loadDots(): Promise<[number, number][]> {
   return dots;
 }
 
+let india: Promise<[number, number][][]> | null = null;
+/** India's outline (Natural Earth, India point of view) for the globe. */
+export function loadIndiaOutline(): Promise<[number, number][][]> {
+  india ??= getJson<[number, number][][]>('geo/india-outline.json');
+  return india;
+}
+
 let land: Promise<[number, number][][]> | null = null;
 export function loadLand(): Promise<[number, number][][]> {
   land ??= getJson<[number, number][][]>('geo/land-110m.json');

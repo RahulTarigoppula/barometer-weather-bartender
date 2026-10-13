@@ -10,7 +10,6 @@ export type CoasterState =
   | { kind: 'error'; error: ErrorKind; lat: number; lng: number; retryAt: number };
 
 export type GlobeStatus = 'svg' | 'webgl' | 'seized';
-export type ReceiptState = 'none' | 'printing' | 'torn';
 
 export interface Toast {
   id: number;
@@ -26,14 +25,13 @@ export interface Pin {
 
 interface BarState {
   coaster: CoasterState;
-  /** Bumps when a new coaster slides in — NOT when the same coaster re-prints. */
+  /** Bumps when a new verdict card arrives — NOT when the same verdict re-renders. */
   slide: number;
   pin: Pin | null;
   /** 0 = the bartender's pick; 1.. = the "second opinion" runners-up. */
   opinion: number;
+  /** The recipe panel is open. */
   flipped: boolean;
-  receipt: ReceiptState;
-  tornAt: string | null;
   toast: Toast | null;
   globe: GlobeStatus;
   online: boolean;
@@ -50,20 +48,21 @@ interface BarActions {
 
 let toastSeq = 0;
 
+/** India is the default view. */
+export const HOME = { lat: 22.5, lng: 79.5 };
+
 export const useBar = create<BarState & BarActions>()((set) => ({
   coaster: { kind: 'empty' },
   slide: 0,
   pin: null,
   opinion: 0,
   flipped: false,
-  receipt: 'none',
-  tornAt: null,
   toast: null,
   globe: 'svg',
   online: typeof navigator === 'undefined' ? true : navigator.onLine,
   restock: null,
   lastDrinkId: undefined,
-  center: { lat: 20, lng: 40 },
+  center: HOME,
   patch: (p) => set(p),
   showToast: (text) => set({ toast: { id: ++toastSeq, text } }),
 }));

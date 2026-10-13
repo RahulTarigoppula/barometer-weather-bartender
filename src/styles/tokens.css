@@ -1,136 +1,59 @@
-/* Barometer — The Globe Bar — design tokens. Night shift is :root. */
-/* Register the colour tokens so the shift change (A8) can transition them. */
-@property --bg {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #1a0f0a;
-}
-@property --bg-elevated {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #2e1a10;
-}
-@property --surface {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #3a2114;
-}
-@property --surface-2 {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #4a2c1a;
-}
-@property --ink {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #f3e6c8;
-}
-@property --ink-muted {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #c9b28c;
-}
-@property --accent {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #c9962b;
-}
-@property --accent-2 {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #7fe8c8;
-}
-@property --border {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #4a3222;
-}
-@property --border-strong {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #c9962b;
-}
-@property --neon {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #ffb347;
-}
-
+/* Barometer — space theme tokens. One dark theme: a planet in space, India in saffron. */
 :root {
   color-scheme: dark;
 
-  /* colour — Night shift (default) */
-  --bg: #1a0f0a;
-  --bg-elevated: #2e1a10;
-  --surface: #3a2114;
-  --surface-2: #4a2c1a;
-  --ink: #f3e6c8;
-  --ink-muted: #c9b28c;
-  --ink-faint: #8c7355; /* faint = decorative only */
-  --accent: #c9962b;
-  --accent-ink: #1a0f0a; /* brass */
-  --accent-2: #7fe8c8; /* crushed-ice mint */
-  --success: #8cc46a;
-  --success-fill: #5b8c3a;
-  --warning: #f08a3c; /* amaro orange */
-  --danger: #f0564b;
-  --danger-fill: #b8322e; /* campari; text on --bg only */
-  --border: #4a3222;
-  --border-strong: #c9962b;
-  --focus: #f5c860;
+  /* space */
+  --void-0: #02040a;
+  --void-1: #060b18;
+  --void-2: #0b1530;
+  --nebula-a: rgba(64, 108, 255, 0.16);
+  --nebula-b: rgba(255, 153, 51, 0.07);
+  --nebula-c: rgba(61, 220, 151, 0.05);
 
-  /* app-specific materials */
-  --neon: #ffb347;
-  --neon-glow: rgba(255, 179, 71, 0.55);
-  --neon-off: #6b4a3a;
-  --brass-hi: #f5c860;
-  --brass-lo: #8a6414;
-  --brass-gradient: linear-gradient(100deg, #8a6414 0%, #c9962b 35%, #f5c860 52%, #c9962b 68%, #8a6414 100%);
-  --paper: #f3e6c8;
-  --paper-2: #e6d2a6;
-  --paper-border: #d8c7a6;
-  --paper-ink: #1c120c;
-  --paper-ink-muted: #5e4632;
-  --paper-ink-faint: #a38a6f;
-  --paper-accent: #7a5a12;
-  --paper-accent-2: #1f6e7b;
-  --paper-success: #3e6b2a;
-  --paper-warning: #a6470e;
-  --paper-danger: #a0281f;
-  --vfd: #0b0703;
-  --register-hi: #221309;
-  --register-lo: #170d07;
-  --night-sky: linear-gradient(180deg, #0b0a12 0%, #171019 52%, #2a1b10 100%);
-  --day-sky: linear-gradient(180deg, #bfd9e8 0%, #dce6ea 55%, #e9eef0 100%);
-  --scrim: rgba(10, 6, 4, 0.5);
+  /* surfaces */
+  --panel: rgba(13, 20, 40, 0.72);
+  --panel-solid: #0d1428;
+  --panel-2: rgba(255, 255, 255, 0.035);
+  --panel-3: rgba(255, 255, 255, 0.07);
+  --line: rgba(124, 196, 255, 0.14);
+  --line-strong: rgba(124, 196, 255, 0.32);
 
-  /* set per verdict by JS — these three tint art, never text */
-  --grade: rgba(255, 179, 71, 0.12); /* window pane tint */
-  --stamp: var(--paper-ink); /* intensifier stamp ink */
-  --drink-glow: rgba(127, 232, 200, 0); /* coaster ring glow */
+  /* ink (all AA on --panel-solid) */
+  --ink: #eef3ff;
+  --ink-muted: #a9b8d8;
+  --ink-faint: #6f7fa3;
 
-  --grain-opacity: 0.08;
-  --shadow-alpha: 1;
+  /* accents */
+  --sky: #7cc4ff; /* weather */
+  --saffron: #ff9933; /* India, the bartender */
+  --saffron-ink: #1a0d00;
+  --green: #3ddc97; /* budget, alcohol-free */
+  --amber: #ffc861;
+  --red: #ff6b6b;
+  --violet: #b494ff;
+  --focus: #7cc4ff;
 
-  /* typography */
-  --font-display: "Righteous", "Bowlby One", Impact, sans-serif;
+  /* air-quality scale */
+  --aqi-good: #3ddc97;
+  --aqi-fair: #9be15d;
+  --aqi-moderate: #ffc861;
+  --aqi-poor: #ff9933;
+  --aqi-very-poor: #ff6b6b;
+  --aqi-severe: #c084fc;
+
+  /* type */
   --font-body: "Space Grotesk Variable", "Space Grotesk", system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
   --text-xs: 0.75rem;
   --text-sm: 0.8125rem;
   --text-base: 1rem;
-  --text-lg: 1.1875rem;
+  --text-lg: 1.125rem;
   --text-xl: 1.375rem;
   --text-2xl: 1.75rem;
-  --text-3xl: clamp(2.25rem, 5vw, 3rem);
-  --text-4xl: clamp(2.75rem, 7vw, 4.5rem);
-  --text-5xl: clamp(3.5rem, 9vw, 7rem);
-  --leading-tight: 1.05;
-  --leading-body: 1.5;
-  --tracking-display: 0.02em;
-  --tracking-caps: 0.08em;
+  --text-3xl: clamp(2rem, 3.4vw, 2.75rem);
+  --text-temp: clamp(4.5rem, 8vw, 7rem);
 
-  /* spacing (8px base) */
+  /* spacing */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -139,239 +62,65 @@
   --space-6: 32px;
   --space-7: 40px;
   --space-8: 48px;
-  --space-9: 64px;
-  --space-10: 80px;
-  --space-11: 96px;
-  --space-12: 128px;
 
-  /* radius */
-  --radius-sm: 3px;
-  --radius-md: 6px;
-  --radius-lg: 14px;
-  --radius-xl: 24px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
   --radius-full: 9999px;
 
-  /* elevation — warm-black contact shadows; things sit ON wood, they do not float */
-  --shadow-1: 0 1px 0 rgba(0, 0, 0, calc(0.35 * var(--shadow-alpha)));
-  --shadow-2: 0 6px 14px -6px rgba(0, 0, 0, calc(0.55 * var(--shadow-alpha)));
-  --shadow-3: 0 18px 40px -12px rgba(0, 0, 0, calc(0.7 * var(--shadow-alpha)));
+  --shadow-card: 0 20px 60px -24px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --blur: blur(18px) saturate(140%);
 
-  /* motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-nod: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-spring: linear(
-    0,
-    0.009,
-    0.035 2.1%,
-    0.141,
-    0.281 6.7%,
-    0.723 12.9%,
-    0.938 16.7%,
-    1.017,
-    1.077 20.4%,
-    1.121,
-    1.149 24.3%,
-    1.159,
-    1.163 27.8%,
-    1.154,
-    1.129 32.8%,
-    1.051 39.6%,
-    0.979 47.2%,
-    0.957 53.7%,
-    0.977 61.9%,
-    1.006 74.4%,
-    1.001 100%
-  );
-  --dur-fast: 120ms;
-  --dur-base: 240ms;
-  --dur-slow: 480ms;
-  --dur-fly: 1200ms;
-  --dur-slide: 620ms;
-  --dur-print: 60ms;
+  --dur-fast: 140ms;
+  --dur-base: 260ms;
+  --dur-slow: 520ms;
 
-  /* layout */
-  --globe-size: clamp(260px, 44vmin, 520px);
+  --topbar-h: 68px;
   --page-inset: 16px;
-  --shift-transition: var(--dur-slow) var(--ease-in-out);
-
-  /* the ONLY texture in the app: wood grain, stretched 1×6 so it reads as grain, not noise */
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9 0.04' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 
-/* Day shift — set by JS from the clicked place's is_day (pinnable in the Back Office) */
-:root[data-shift="day"] {
-  color-scheme: light;
-  --bg: #efe3cc;
-  --bg-elevated: #d9b98a;
-  --surface: #fbf4e4;
-  --surface-2: #e6d2a6;
-  --ink: #1c120c;
-  --ink-muted: #5e4632;
-  --ink-faint: #9c8468;
-  --accent: #7a5a12;
-  --accent-ink: #fbf4e4;
-  --accent-2: #1f6e7b;
-  --success: #3e6b2a;
-  --success-fill: #5b8c3a;
-  --warning: #a6470e;
-  --danger: #a0281f;
-  --danger-fill: #b8322e;
-  --border: #d8c7a6;
-  --border-strong: #7a5a12;
-  --focus: #7a5a12;
-  --neon: #e8b7a0;
-  --neon-glow: transparent;
-  --neon-off: #c8a78f;
-  --paper: #fbf4e4;
-  --grain-opacity: 0.05;
-  --shadow-alpha: 0.6;
-  --register-hi: #3a2a18;
-  --register-lo: #241809;
-  --scrim: rgba(217, 185, 138, 0.55);
-}
-
-/* Before the first click the OS decides; JS sets data-shift on the first verdict. */
-@media (prefers-color-scheme: light) {
-  :root:not([data-shift]) {
-    color-scheme: light;
-    --bg: #efe3cc;
-    --bg-elevated: #d9b98a;
-    --surface: #fbf4e4;
-    --surface-2: #e6d2a6;
-    --ink: #1c120c;
-    --ink-muted: #5e4632;
-    --ink-faint: #9c8468;
-    --accent: #7a5a12;
-    --accent-ink: #fbf4e4;
-    --accent-2: #1f6e7b;
-    --success: #3e6b2a;
-    --warning: #a6470e;
-    --danger: #a0281f;
-    --border: #d8c7a6;
-    --border-strong: #7a5a12;
-    --focus: #7a5a12;
-    --neon: #e8b7a0;
-    --neon-glow: transparent;
-    --neon-off: #c8a78f;
-    --paper: #fbf4e4;
-    --grain-opacity: 0.05;
-    --shadow-alpha: 0.6;
-    --register-hi: #3a2a18;
-    --register-lo: #241809;
-    --scrim: rgba(217, 185, 138, 0.55);
+@media (min-width: 1024px) {
+  :root {
+    --page-inset: 28px;
   }
 }
 
-/* Paper material scope — coaster, receipt, recipe card, share card.
-   Components inside read the SAME token names, so they never special-case paper. */
-.paper {
-  --bg: var(--paper);
-  --bg-elevated: var(--paper);
-  --surface: var(--paper);
-  --surface-2: var(--paper-2);
-  --ink: var(--paper-ink);
-  --ink-muted: var(--paper-ink-muted);
-  --ink-faint: var(--paper-ink-faint);
-  --accent: var(--paper-accent);
-  --accent-ink: var(--paper);
-  --accent-2: var(--paper-accent-2);
-  --success: var(--paper-success);
-  --warning: var(--paper-warning);
-  --danger: var(--paper-danger);
-  --border: var(--paper-border);
-  --border-strong: var(--paper-accent);
-  --focus: var(--paper-accent);
-  color-scheme: light;
-  background: var(--bg);
-  color: var(--ink);
-}
-
-:root {
-  transition:
-    --bg var(--shift-transition),
-    --bg-elevated var(--shift-transition),
-    --surface var(--shift-transition),
-    --surface-2 var(--shift-transition),
-    --ink var(--shift-transition),
-    --ink-muted var(--shift-transition),
-    --accent var(--shift-transition),
-    --accent-2 var(--shift-transition),
-    --border var(--shift-transition),
-    --border-strong var(--shift-transition),
-    --neon var(--shift-transition);
-}
-
-/* Weather-grade tokens (§3.5), from the verdict's driving tag. They tint art, never text;
-   --stamp is always one of the AA-checked paper inks. */
+/* Weather tint per verdict, used for the weather card glow only (never behind text). */
 :root[data-grade="heat"] {
-  --grade: rgba(240, 138, 60, 0.18);
-  --stamp: var(--paper-warning);
-  --drink-glow: rgba(240, 138, 60, 0.25);
+  --grade: rgba(255, 138, 60, 0.28);
 }
 :root[data-grade="muggy"] {
-  --grade: rgba(27, 111, 106, 0.22);
-  --stamp: var(--paper-accent-2);
-  --drink-glow: rgba(31, 110, 123, 0.3);
+  --grade: rgba(40, 200, 180, 0.24);
 }
-:root[data-grade="cold"] {
-  --grade: rgba(159, 216, 255, 0.2);
-  --stamp: var(--paper-accent-2);
-  --drink-glow: rgba(31, 110, 123, 0.2);
+:root[data-grade="cold"],
+:root[data-grade="snow"] {
+  --grade: rgba(159, 216, 255, 0.28);
 }
 :root[data-grade="rain"] {
-  --grade: rgba(44, 52, 64, 0.3);
-  --stamp: var(--paper-ink);
-  --drink-glow: rgba(0, 0, 0, 0);
-}
-:root[data-grade="snow"] {
-  --grade: rgba(220, 230, 238, 0.26);
-  --stamp: var(--paper-accent-2);
-  --drink-glow: rgba(31, 110, 123, 0.2);
+  --grade: rgba(90, 130, 200, 0.28);
 }
 :root[data-grade="storm"] {
-  --grade: rgba(44, 52, 64, 0.4);
-  --stamp: var(--paper-danger);
-  --drink-glow: rgba(160, 40, 31, 0.3);
+  --grade: rgba(180, 148, 255, 0.3);
 }
 :root[data-grade="fog"] {
-  --grade: rgba(140, 115, 85, 0.35);
-  --stamp: var(--paper-ink-muted);
-  --drink-glow: rgba(0, 0, 0, 0);
+  --grade: rgba(170, 160, 140, 0.24);
 }
-:root[data-grade="sodium"] {
-  --grade: rgba(255, 179, 71, 0.12);
-  --stamp: var(--paper-ink);
-  --drink-glow: rgba(255, 179, 71, 0.15);
-}
+:root[data-grade="sodium"],
 :root[data-grade="none"] {
-  --grade: rgba(255, 179, 71, 0.06);
-  --stamp: var(--paper-ink);
-  --drink-glow: rgba(255, 179, 71, 0.1);
+  --grade: rgba(124, 196, 255, 0.18);
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
     --dur-fast: 0ms;
-    --dur-base: 200ms;
-    --dur-slow: 240ms;
-    --dur-fly: 0ms;
-    --dur-slide: 200ms;
-    --dur-print: 0ms;
-    --ease-spring: var(--ease-out);
+    --dur-base: 160ms;
+    --dur-slow: 200ms;
   }
 }
 :root[data-motion="less"] {
   --dur-fast: 0ms;
-  --dur-base: 200ms;
-  --dur-slow: 240ms;
-  --dur-fly: 0ms;
-  --dur-slide: 200ms;
-  --dur-print: 0ms;
-  --ease-spring: var(--ease-out);
-}
-@media (min-width: 1024px) {
-  :root {
-    --page-inset: 32px;
-  }
+  --dur-base: 160ms;
+  --dur-slow: 200ms;
 }

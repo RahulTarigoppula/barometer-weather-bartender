@@ -44,8 +44,8 @@ export const airUrl = (lat: number, lng: number): string =>
 export const marineUrl = (lat: number, lng: number): string =>
   `${MARINE_HOST}/v1/marine?latitude=${c4(lat)}&longitude=${c4(lng)}` +
   '&current=wave_height,sea_surface_temperature,wind_wave_height&timezone=auto';
-export const searchUrl = (name: string): string =>
-  `${GEOCODE_HOST}/v1/search?name=${encodeURIComponent(name)}&count=5&language=en&format=json`;
+export const searchUrl = (name: string, countryCode?: string): string =>
+  `${GEOCODE_HOST}/v1/search?name=${encodeURIComponent(name)}&count=5&language=en&format=json${countryCode ? `&countryCode=${countryCode}` : ''}`;
 
 // ───────────── errors (each has a bar-voiced coaster) ─────────────
 export class BarBusyError extends Error {
@@ -212,10 +212,11 @@ export interface SearchResult {
   admin1: string;
   lat: number;
   lng: number;
+  india: boolean;
 }
 
-export async function searchPlaces(name: string, signal?: AbortSignal, f: FetchLike = fetch): Promise<SearchResult[]> {
-  const res = await f(searchUrl(name), signal ? { signal } : {});
+async function searchOnce(url: string, signal: AbortSignal | undefined, f: FetchLike): Promise<SearchResult[]> {
+  const res = await f(url, signal ? { signal } : {});
   if (res.status === 429) throw new BarBusyError();
   if (!res.ok) throw new ModelsSilentError(`HTTP ${res.status}`);
   const body: unknown = await res.json();
@@ -224,6 +225,29 @@ export async function searchPlaces(name: string, signal?: AbortSignal, f: FetchL
     const lat = num(o.latitude);
     const lng = num(o.longitude);
     if (lat === null || lng === null || !str(o.name)) return [];
-    return [{ name: str(o.name), country: str(o.country), admin1: str(o.admin1), lat, lng }];
+    const india = str(o.country_code) === 'IN' || str(o.country) === 'India';
+    return [{ name: str(o.name), country: str(o.country), admin1: str(o.admin1), lat, lng, india }];
   });
+}
+
+/** India first: Indian matches lead, then the rest of the world, de-duplicated, at most six rows. */
+export async function searchPlaces(name: string, signal?: AbortSignal, f: FetchLike = fetch): Promise<SearchResult[]> {
+  const [inIndia, world] = await Promise.allSettled([
+    searchOnce(searchUrl(name, 'IN'), signal, f),
+    searchOnce(searchUrl(name), signal, f),
+  ]);
+  if (inIndia.status === 'rejected' && world.status === 'rejected') throw inIndia.reason;
+  const rows = [
+    ...(inIndia.status === 'fulfilled' ? inIndia.value.map((r) => ({ ...r, india: true })) : []),
+    ...(world.status === 'fulfilled' ? world.value : []),
+  ];
+  const seen = new Set<string>();
+  return rows
+    .filter((r) => {
+      const k = `${r.lat.toFixed(2)},${r.lng.toFixed(2)}`;
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    })
+    .slice(0, 6);
 }

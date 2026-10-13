@@ -56,6 +56,8 @@ export function buildFeatures(input: Pick<JudgeInput, 'now' | 'lat' | 'lng' | 's
     wmo: c.wmo,
     precipMm: c.precipMm,
     precipProb: s.hourNow.precipProb,
+    cloudCover: c.cloudCover,
+    pressureHpa: c.pressureHpa,
     snowCm: c.snowCm,
     windKmh: c.windKmh,
     gustKmh: c.gustKmh,

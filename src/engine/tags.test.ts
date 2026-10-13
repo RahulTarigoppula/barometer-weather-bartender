@@ -21,6 +21,8 @@ const base: Features = {
   precipMm: 0,
   precipProb: 0,
   snowCm: 0,
+  cloudCover: 20,
+  pressureHpa: 1012,
   windKmh: 10,
   gustKmh: 15,
   isDay: true,

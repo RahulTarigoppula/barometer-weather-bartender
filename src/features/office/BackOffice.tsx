@@ -1,27 +1,24 @@
 import type { ReactElement } from 'react';
 import { openDrawer } from '../../app/route';
 import { Knob, Lever, Seg } from '../../components/ui/Controls';
+import { TIER_LABEL, TIERS, type Tier } from '../../engine/budget';
 import { useSettings } from '../../state/settings';
 
-/** Settings, in bar furniture: brass segmented controls, bar-tap levers and a brass knob. */
+/** Settings: segmented controls, switches and a volume knob. */
 export function BackOffice(): ReactElement {
   const s = useSettings();
   const set = s.set;
   return (
     <>
       <div className="field">
-        <span className="field__label">Shift</span>
-        <Seg
-          label="Shift"
-          value={s.shift}
-          options={[
-            { value: 'follow', label: 'Follow the place' },
-            { value: 'night', label: 'Night' },
-            { value: 'day', label: 'Day' },
-          ]}
-          onChange={(shift) => set({ shift })}
+        <span className="field__label">Budget</span>
+        <Seg<Tier>
+          label="Default budget"
+          value={s.tier}
+          options={TIERS.map((t) => ({ value: t, label: TIER_LABEL[t] }))}
+          onChange={(tier) => set({ tier })}
         />
-        <p className="field__desc">The room follows the clicked place’s daylight. Pin it if you prefer one shift.</p>
+        <p className="field__desc">Every recommendation shows the pour, the place and a ₹ range for this budget.</p>
       </div>
       <div className="field">
         <span className="field__label">Units</span>

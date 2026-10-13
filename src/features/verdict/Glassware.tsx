@@ -118,7 +118,7 @@ export function Glassware({ drink, size = 66 }: { drink: Drink; size?: number })
             rx="2"
             fill="#EAF6F2"
             opacity=".75"
-            stroke="#1F6E7B"
+            stroke="#7cc4ff"
             strokeWidth=".8"
           />
         );
@@ -130,12 +130,12 @@ export function Glassware({ drink, size = 66 }: { drink: Drink; size?: number })
             className="steam"
             d={`M${x} ${g.top - (i === 1 ? 8 : 6)} q4 -5 0 -10 q-4 -5 0 -10`}
             fill="none"
-            stroke="#A38A6F"
+            stroke="#9fb0d4"
             strokeWidth="1.6"
             strokeLinecap="round"
           />
         ))}
-      <path d={g.d} fill="none" stroke="#7A5A12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={g.d} fill="none" stroke="#cfe3ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

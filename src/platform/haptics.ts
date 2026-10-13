@@ -12,7 +12,9 @@ export async function haptic(kind: Haptic): Promise<void> {
   if (!enabled) return;
   try {
     if (!isNative()) {
-      if (kind === 'medium' && 'vibrate' in navigator) navigator.vibrate(12);
+      // Only after a real gesture: the opening pour happens before the user has touched anything.
+      const activated = navigator.userActivation?.hasBeenActive ?? false;
+      if (kind === 'medium' && activated && 'vibrate' in navigator) navigator.vibrate(12);
       return;
     }
     const { Haptics, ImpactStyle, NotificationType } = await import('@capacitor/haptics');

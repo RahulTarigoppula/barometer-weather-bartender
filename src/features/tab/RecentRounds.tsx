@@ -1,26 +1,29 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import type { ReactElement } from 'react';
+import { openDrawer } from '../../app/route';
 import { drinkById } from '../../data/menu';
 import { fmtTempShort } from '../../engine/units';
 import { db } from '../../state/db';
 import { useSettings } from '../../state/settings';
 import { repour } from '../verdict/pour';
 
-/** The last three rounds on the Tab, chalked on the counter. */
+/** The last few places you looked at, one tap to see them again. */
 export function RecentRounds(): ReactElement | null {
-  const rows = useLiveQuery(() => db.verdicts.orderBy('createdAt').reverse().limit(3).toArray(), []);
+  const rows = useLiveQuery(() => db.verdicts.orderBy('createdAt').reverse().limit(4).toArray(), []);
   const unit = useSettings((s) => s.units.temp);
   if (!rows?.length) return null;
   return (
-    <section aria-label="Recent rounds">
-      <p className="caps" style={{ margin: 'var(--space-2) 0 0' }}>
-        Recent rounds
-      </p>
+    <section className="card recent" aria-label="Recent places">
+      <div className="recent__head">
+        <h3 className="h3">Recent</h3>
+        <button type="button" className="link" onClick={() => openDrawer('tab')}>
+          All history
+        </button>
+      </div>
       <ul className="tablist">
         {rows.map((v) => (
           <li key={v.id}>
             <button type="button" className="tabrow" onClick={() => void repour(v)}>
-              <span className="tabrow__id">#{String(v.id ?? 0).padStart(4, '0')}</span>
               <span>
                 <span className="tabrow__place">{v.place.short}</span>
                 <span className="tabrow__sub">

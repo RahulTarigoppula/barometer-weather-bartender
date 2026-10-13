@@ -149,8 +149,28 @@ describe('searchPlaces', () => {
       }),
     );
     expect(await searchPlaces('Mum', undefined, r.f)).toEqual([
-      { name: 'Mumbai', country: 'India', admin1: 'Maharashtra', lat: 19.07, lng: 72.88 },
+      { name: 'Mumbai', country: 'India', admin1: 'Maharashtra', lat: 19.07, lng: 72.88, india: true },
     ]);
+    expect(r.calls.some((u) => u.endsWith('&countryCode=IN'))).toBe(true);
+  });
+  it('puts Indian matches first, then the world, de-duplicated', async () => {
+    const r = routed((u) =>
+      json({
+        results: u.includes('countryCode=IN')
+          ? [{ name: 'Hyderabad', country: 'India', country_code: 'IN', latitude: 17.38, longitude: 78.49 }]
+          : [
+              { name: 'Hyderabad', country: 'Pakistan', country_code: 'PK', latitude: 25.39, longitude: 68.37 },
+              { name: 'Hyderabad', country: 'India', country_code: 'IN', latitude: 17.38, longitude: 78.49 },
+            ],
+      }),
+    );
+    const rows = await searchPlaces('Hyderabad', undefined, r.f);
+    expect(rows.map((x) => [x.country, x.india])).toEqual([
+      ['India', true],
+      ['Pakistan', false],
+    ]);
+    const half = routed((u) => (u.includes('countryCode') ? json({}, 500) : json({ results: [] })));
+    expect(await searchPlaces('x', undefined, half.f)).toEqual([]);
     expect(await searchPlaces('zzz', undefined, routed(() => json({})).f)).toEqual([]);
     await expect(searchPlaces('x', undefined, routed(() => json({}, 429)).f)).rejects.toBeInstanceOf(BarBusyError);
     await expect(searchPlaces('x', undefined, routed(() => json({}, 500)).f)).rejects.toBeInstanceOf(ModelsSilentError);
