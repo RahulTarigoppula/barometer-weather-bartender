@@ -29,7 +29,38 @@ describe('today’s genre', () => {
     expect(genreOf(v.features, v.tags, false).name).toBe('Rainy-day drama');
     for (const name of ['mumbai', 'yakutsk', 'denver-hail'] as const) {
       const g = judgeFixture(name);
-      expect(genreOf(g.features, g.tags, true).line).not.toMatch(/—/);
+      expect(genreOf(g.features, g.tags, true).line).not.toMatch(/\u2014/);
     }
+  });
+});
+
+describe('a story to pair with the day', () => {
+  it('every genre names one, without em dashes', () => {
+    const f = { apparentC: 24, usAqi: 40, isDay: true, dayPart: 'afternoon' as 'afternoon' | 'golden' | 'late' };
+    const cases: [Partial<typeof f>, Tag[]][] = [
+      [{}, ['storm']],
+      [{}, ['rain']],
+      [{}, ['snow']],
+      [{ usAqi: 300 }, []],
+      [{}, ['fog']],
+      [{}, ['drizzle']],
+      [{ apparentC: 44 }, []],
+      [{ apparentC: 36 }, ['muggy']],
+      [{ apparentC: -4 }, []],
+      [{ apparentC: 8 }, []],
+      [{ dayPart: 'golden' }, []],
+      [{ isDay: false, dayPart: 'late' }, []],
+      [{}, []],
+    ];
+    const seen = new Set<string>();
+    for (const [over, tags] of cases) {
+      const g = genreOf({ ...f, ...over }, t(...tags), true);
+      seen.add(g.id);
+      expect(g.pair.length, g.name).toBeGreaterThan(3);
+      expect(`${g.name} ${g.line} ${g.pair}`).not.toMatch(/\u2014/);
+    }
+    expect(seen.size).toBe(13);
+    expect(genreOf(f, t('rain'), true).pair).toMatch(/Monsoon Wedding/);
+    expect(genreOf(f, [], true).pair).toMatch(/Malgudi Days/);
   });
 });

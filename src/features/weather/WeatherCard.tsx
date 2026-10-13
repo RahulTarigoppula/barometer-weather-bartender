@@ -309,9 +309,10 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
         <p className="mahaul__genre">
           <span className="mahaul__kicker">Today’s genre</span> <b>{genre.name}</b>
           <span className="mahaul__logline"> · {genre.line}</span>
+          <span className="mahaul__pair">Pair it with {genre.pair}.</span>
         </p>
         <p className="mahaul__text">{brief}</p>
-        <Listen text={`${brief} Today’s genre: ${genre.name}. ${genre.line}`} />
+        <Listen text={`${brief} Today’s genre: ${genre.name}. ${genre.line} Pair it with ${genre.pair}.`} />
       </div>
       <div className="weather__now">
         <Icon className="weather__icon" size={88} strokeWidth={1.25} aria-hidden="true" />

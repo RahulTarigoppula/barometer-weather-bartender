@@ -135,7 +135,7 @@ describe('the mahaul brief', () => {
     expect(s).toBe(
       'Clear sky over New Delhi this morning, 27°. Nothing out there to worry about. Today’s pour: Mojito.',
     );
-    expect(s).not.toMatch(/—/);
+    expect(s).not.toMatch(/\u2014/);
   });
   it('afternoon and evening wording; roads without an easing hour', () => {
     expect(
@@ -184,5 +184,78 @@ describe('twilight by the clock', () => {
     expect(hourMood({ time: '2026-10-13T18:00', tempC: 30, precipProb: 0, wmo: 0, isDay: false }).hour).toBe('dusk');
     expect(hourMood({ time: '2026-10-13T20:00', tempC: 30, precipProb: 0, wmo: 0, isDay: false }).hour).toBe('night');
     expect(hourMood({ time: '2026-10-13T05:00', tempC: 30, precipProb: 0, wmo: 0, isDay: false }).hour).toBe('dawn');
+  });
+});
+
+describe('the forecast in plain words', () => {
+  const fmt = (c: number): string => `${Math.round(c)}°`;
+  const hr = (i: number, tempC: number, precipProb: number, isDay = i >= 2 && i <= 13) => ({
+    time: `2026-10-13T${String((i + 5) % 24).padStart(2, '0')}:00`,
+    tempC,
+    precipProb,
+    wmo: 0,
+    isDay,
+  });
+  it('tells the next day: rain window, high and low', async () => {
+    const { dayStory, sunTurns } = await import('./outlook');
+    const dry = Array.from({ length: 24 }, (_, i) => hr(i, 26 + Math.sin(i / 4) * 6, 5));
+    expect(dayStory(dry, fmt)).toMatch(
+      /^Dry for the next 24 hours\. High of 32° at \d{2}:00, low of \d+° at \d{2}:00\.$/,
+    );
+    const wet = dry.map((h, i) => ({ ...h, precipProb: i >= 10 ? 70 + i : 10 }));
+    expect(dayStory(wet, fmt)).toMatch(/^Rain likely from 15:00, wettest around 04:00\./);
+    expect(
+      dayStory(
+        dry.map((h) => ({ ...h, precipProb: 60 })),
+        fmt,
+      ),
+    ).toMatch(/^Rain is likely right now/);
+    expect(
+      dayStory(
+        dry.map((h, i) => ({ ...h, precipProb: i === 5 ? 30 : 0 })),
+        fmt,
+      ),
+    ).toMatch(/small chance of rain around 10:00/);
+    expect(dayStory([], fmt)).toBe('');
+    expect(sunTurns(dry)).toEqual([
+      { index: 2, kind: 'sunrise' },
+      { index: 14, kind: 'sunset' },
+    ]);
+  });
+  it('tells the week: rainy days, warmest day, coolest night', async () => {
+    const { weekStory } = await import('./outlook');
+    const day = (date: string, tMaxC: number, tMinC: number, p: number) => ({
+      date,
+      wmo: 0,
+      tMaxC,
+      tMinC,
+      precipProbMax: p,
+      uvMax: 5,
+    });
+    const week = [
+      day('2026-10-13', 34, 26, 10),
+      day('2026-10-14', 33, 25, 20),
+      day('2026-10-15', 31, 24, 70),
+      day('2026-10-16', 30, 23, 80),
+      day('2026-10-17', 35, 26, 5),
+      day('2026-10-18', 38, 27, 0),
+      day('2026-10-19', 36, 26, 10),
+    ];
+    expect(weekStory(week, fmt)).toBe(
+      'Rain likely on Thursday and Friday. Warmest on Sunday (38°), coolest night on Friday (23°).',
+    );
+    expect(
+      weekStory(
+        week.map((d) => ({ ...d, precipProbMax: 0 })),
+        fmt,
+      ),
+    ).toMatch(/^A dry week ahead\./);
+    expect(
+      weekStory(
+        week.map((d) => ({ ...d, precipProbMax: 90 })),
+        fmt,
+      ),
+    ).toMatch(/^A wet week: rain most days\./);
+    expect(weekStory(week.slice(0, 1), fmt)).toBe('');
   });
 });

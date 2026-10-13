@@ -13,7 +13,7 @@ export function Footer(): ReactElement {
           window.location.hash = '#/story';
         }}
       >
-        <Play size={14} strokeWidth={2} aria-hidden="true" /> Watch our story: why “Mausam ka Mahaul”
+        <Play size={14} strokeWidth={2} aria-hidden="true" /> Watch the story behind the name
       </button>
       <p className="footer__credits">
         Weather by{' '}
@@ -25,6 +25,7 @@ export function Footer(): ReactElement {
           Our story &amp; credits
         </button>
       </p>
+      <p className="footer__signoff">Built by Rahul, between episodes and chapters.</p>
       <p className="footer__credits">
         Road outlook is an estimate unless you add a live key. Drink responsibly. Prices are indicative per glass in
         Indian cities.

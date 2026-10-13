@@ -1,4 +1,4 @@
-# Barometer — ARCHITECTURE.md
+# Barometer: ARCHITECTURE.md
 
 **Project:** 04 · The Contextual Weather Bartender (codename "Barometer", design "The Globe Bar") · **Date:** 2026-09-06
 **Binding:** `_shared/DECISIONS.md` (D1 stack, D2 hosting, D3 Android, D4 wit ladder, D5 licences, D6 layout, D7 tokens, D8 row 04), `docs/RESEARCH.md` (every API/library below is verified there), `docs/DESIGN.md` (components, routes, motion, tokens).
@@ -116,7 +116,7 @@ barometer/
 │   │   └── index.ts                 # judge(input) → Verdict (no I/O)
 │   ├── data/
 │   │   ├── drinks.json              # generated: normalised recipes from IBA + Open Drinks (MIT)
-│   │   ├── bar-menu.json            # hand-authored: 40 drinks (20 bar + 20 barista) — affinities, serve, glass, colour, virginTwin
+│   │   ├── bar-menu.json            # hand-authored: 40 drinks (20 bar + 20 barista), affinities, serve, glass, colour, virginTwin
 │   │   ├── cities-ticker.json       # ~80 cities {name, tz, lat, lng} for the register ticker
 │   │   └── attribution.json         # rendered on About + receipt footer
 │   ├── wit/
@@ -168,7 +168,7 @@ export interface PlaceHit {
 // ---------- weather (normalised from Open-Meteo) ----------
 export interface WeatherSnapshot {
   fetchedAt: number;                 // epoch ms (client clock)
-  cellKey: string;                   // "19,73" — 0.25° cell, default number formatting (C10)
+  cellKey: string;                   // "19,73", 0.25° cell, default number formatting (C10)
   timezone: string;                  // IANA, from timezone=auto
   utcOffsetSeconds: number;
   current: {
@@ -237,14 +237,14 @@ export interface Verdict {
   id?: number;                             // Dexie autoincrement
   createdAt: number;
   lat: number; lng: number;                // clicked, 4 dp
-  cell: string;                            // cellKey(lat, lng) — powers "have I poured here recently"
+  cell: string;                            // cellKey(lat, lng), powers "have I poured here recently"
   place: PlaceHit;
   timezone: string; localTime: string;     // "02:14"
   shift: 'day' | 'night';
   menu: 'bar' | 'barista';
   features: Features;
   tags: TagScore[];                        // sorted by weight desc
-  drivingTag: Tag;                         // first match in the §5.2 PRIORITY list — NOT tags[0] (C6)
+  drivingTag: Tag;                         // first match in the §5.2 PRIORITY list, NOT tags[0] (C6)
   thermalTag: Tag | null;                  // highest-weight temp/humidity tag → dial label
   dial: 'ARCTIC' | 'FREEZING' | 'CHILLY' | 'FAIR' | 'MUGGY' | 'SOUP' | 'SCORCHING';
   dialAngle: number;                       // index × 40 − 120, i.e. −120…+120
@@ -254,7 +254,7 @@ export interface Verdict {
   lines: { place: string; time: string; jab: string; drink: string; serve: string; closer: string; hedge?: string };
   suggestBarista: boolean;                 // localHour < 11 && menu === 'bar' && dayPart !== 'late'
   stale?: boolean;                         // served from cache older than 15 min (offline)
-  seed: string;                            // "19.1|72.9|0|bar" — the Mumbai fixture's local hour is 0
+  seed: string;                            // "19.1|72.9|0|bar", the Mumbai fixture's local hour is 0
 }
 
 // ---------- persistence ----------
@@ -290,7 +290,7 @@ Settings live in Zustand with `persist` → `localStorage` on web / `@capacitor/
 
 ## 5. Key algorithms
 
-All of §5.1–§5.7 live in `src/engine` and are pure functions with golden tests. Worked examples use the nine golden fixtures of IMPL §10.2 — the same roster TESTING §2.1 lists, and no other places. **Where this file and `docs/IMPLEMENTATION-PROMPT.md` disagree on a number, IMPL wins**: its §0 conflict ledger is the resolution record, and every value below has been brought into line with it.
+All of §5.1–§5.7 live in `src/engine` and are pure functions with golden tests. Worked examples use the nine golden fixtures of IMPL §10.2, the same roster TESTING §2.1 lists, and no other places. **Where this file and `docs/IMPLEMENTATION-PROMPT.md` disagree on a number, IMPL wins**: its §0 conflict ledger is the resolution record, and every value below has been brought into line with it.
 
 ### 5.1 Comfort formulas (`comfort.ts`)
 
@@ -315,7 +315,7 @@ export function heatIndex(tempC: number, rh: number): { hiF: number; hiC: number
 // Worked: 35 °C (95 °F), RH 50 → HI ≈ 105 °F ≈ 40.7 °C.
 
 /** Canadian humidex from air temp and dew point (°C). Flags a dew point above the air temp
- *  rather than throwing — bad marine rows do exist (IMPL §6.1). */
+ *  rather than throwing, bad marine rows do exist (IMPL §6.1). */
 export function humidex(tempC: number, dewC: number): { value: number; suspicious: boolean } {
   const e = 6.11 * Math.exp(5417.753 * (1 / 273.16 - 1 / (273.15 + dewC)));
   return { value: tempC + 0.5555 * (e - 10), suspicious: dewC > tempC };
@@ -330,7 +330,7 @@ export function windChillC(tempC: number, windKmh: number): number | null {
 }
 // Worked: −45 °C, 6 km/h → v^0.16 = 1.332 → 13.12 − 27.97 − 15.14 − 23.76 = −53.8 °C.
 
-/** Magnus dew point — used only when the API omits dew_point_2m (marine-only cells).
+/** Magnus dew point, used only when the API omits dew_point_2m (marine-only cells).
  *  Guards rh <= 0, where Math.log(0) would otherwise produce NaN (IMPL §6.1, TESTING T-CF-5). */
 export function dewPointC(tempC: number, rh: number): number | null {
   if (rh <= 0) return null;
@@ -353,11 +353,11 @@ WMO `weather_code` table (`wmo.ts`): 0 clear · 1–3 partly/overcast · 45/48 f
 
 ### 5.2 Features → tags with intensity (`tags.ts`)
 
-> **The band table lives in one place only: `docs/IMPLEMENTATION-PROMPT.md` §6.3** (ledger C2 — it reproduces TESTING §2.3, which was declared the contract). The table that used to sit here carried a superseded set of edges (hot 30–38, muggy 21–24, `bone-dry` on RH alone, gale at 39 km/h, `hail` emitting `storm` as well) and is deliberately gone rather than duplicated: two copies of a threshold table is how a golden value drifts. What follows is the shape of the module and the facts a reader of *this* file needs.
+> **The band table lives in one place only: `docs/IMPLEMENTATION-PROMPT.md` §6.3** (ledger C2, it reproduces TESTING §2.3, which was declared the contract). The table that used to sit here carried a superseded set of edges (hot 30–38, muggy 21–24, `bone-dry` on RH alone, gale at 39 km/h, `hail` emitting `storm` as well) and is deliberately gone rather than duplicated: two copies of a threshold table is how a golden value drifts. What follows is the shape of the module and the facts a reader of *this* file needs.
 
 Each rule emits at most one tag per family (temperature and humidity are exclusive bands; `hail` may sit beside another precipitation tag; `blizzard` **replaces** `snow`). `intensity` is how far into the band the value sits (0–1, clamped); **`weight = base × (1 + intensity)`**. Temperature is evaluated on the API's `apparent_temperature`, never on a locally recomputed value.
 
-Three edges are worth memorising because they are the ones every reviewer gets wrong: `bone-dry` needs **both** `Td < 5` **and** `RH < 25`; `39 ≤ v < 62` with gusts under 60 produces **no** wind tag at all (a deliberate gap — `gale` is `v ≥ 62` **or** `g ≥ 60`); and `hail` (wmo 96/99) does **not** also emit `storm` (wmo 95).
+Three edges are worth memorising because they are the ones every reviewer gets wrong: `bone-dry` needs **both** `Td < 5` **and** `RH < 25`; `39 ≤ v < 62` with gusts under 60 produces **no** wind tag at all (a deliberate gap, `gale` is `v ≥ 62` **or** `g ≥ 60`); and `hail` (wmo 96/99) does **not** also emit `storm` (wmo 95).
 
 ```ts
 export function extractTags(f: Features): TagScore[] {
@@ -370,11 +370,11 @@ export function extractTags(f: Features): TagScore[] {
   if      (A >= 38) add('scorching', 'temp', (A - 38) / 8,  1.3);
   else if (A >  28) add('hot',       'temp', (A - 28) / 10, 1.0);
   /* … the remaining rows exactly as IMPL §6.3 lists them … */
-  return out.sort((a, b) => b.weight - a.weight);   // ordering only — see the driving tag below
+  return out.sort((a, b) => b.weight - a.weight);   // ordering only, see the driving tag below
 }
 ```
 
-**The driving tag is not `tags[0]`** (ledger C6). `weight` orders the array and feeds drink scoring; the *driving* tag — which sets the dial grade, the stamp family and the window tint — is the first match in this priority list:
+**The driving tag is not `tags[0]`** (ledger C6). `weight` orders the array and feeds drink scoring; the *driving* tag, which sets the dial grade, the stamp family and the window tint, is the first match in this priority list:
 
 ```
 hail, storm, arctic, scorching, blizzard, oppressive, downpour, freezing, dust, smog,
@@ -384,10 +384,10 @@ breezy, warm, mild, still, ocean, polar, <the day-part tag>
 
 `ocean` and `polar` sit near the bottom on purpose: the ocean never drives the dial, the coaster copy handles it. **Grade family** from the driving tag: `scorching|hot|uv-extreme → heat` · `muggy|oppressive → muggy` · `chilly|cold|freezing|arctic → cold` · `rain|drizzle|downpour → rain` · `snow|blizzard → snow` · `storm|hail|gale → storm` · `fog|smog|dust → fog` · `late|evening → sodium` · anything else → `none`.
 
-**Worked example A — Mumbai fixture (2026-09-06 00:45 local):** A 31.5, Td 24.4, RH 94, wmo 51, v 1.9, g 2.9, isDay 0, EU AQI 34, UV 0 →
+**Worked example A, Mumbai fixture (2026-09-06 00:45 local):** A 31.5, Td 24.4, RH 94, wmo 51, v 1.9, g 2.9, isDay 0, EU AQI 34, UV 0 →
 `oppressive` (i 0.10, w 1.43) · `hot` (i 0.35, w **1.35**) · `late` (00:45 is 45 min from 01:30 → i 0.70, w 1.02) · `drizzle` (i 0.30, w 0.78) · `still` (w 0.20). Sorted: **oppressive 1.43**, hot 1.35, late 1.02, drizzle 0.78, still 0.20. Driving tag = `oppressive` → dial **SOUP**, grade family *muggy* (window tint `#1B6F6A` 22 %), stamp coloured by `--stamp`.
 
-**Worked example B — Yakutsk fixture (2026-01-14 03:10 local):** A −48.7, Td −44.2, RH 78, wmo **71 (light snow)**, v 5.5, g 9.0, isDay 0, lat 62.03 →
+**Worked example B, Yakutsk fixture (2026-01-14 03:10 local):** A −48.7, Td −44.2, RH 78, wmo **71 (light snow)**, v 5.5, g 9.0, isDay 0, lat 62.03 →
 `arctic` (i 0.948, w 2.73) · `snow` (i 0.30, w 1.17) · `late` (03:10 → i 0.333, w 0.80) · `still` (w 0.20). Driving = `arctic` → dial **ARCTIC**, grade *cold* (`#9FD8FF` 20 %), frost creep (A ≤ −10).
 
 The nine golden fixtures and their expected tag sets are tabulated once, in IMPL §6.3 / TESTING §2.3. `denver-hail` carries **`gale`**, not `breezy` (ledger C7: gusts 78 ≥ 60), and its dial is still FAIR because the dial reports the thermal tag.
@@ -419,7 +419,7 @@ export function scoreDrinks(tags: TagScore[], menu: Drink[], opts: { lastDrinkId
 
 `menu` is already filtered: BAR = `alcoholic === true` (20 drinks), BARISTA = `alcoholic === false` (20 drinks). Every cocktail names a `virginTwin`, so the Barista flip re-prints without re-scoring. The menu itself is defined once, in IMPL §6.11, under a hard rule: **every one of the 34 tags has ≥ 3 drinks at affinity ≥ 3**, asserted by `scripts/check-menu.mjs`.
 
-**Worked example A (Mumbai, BAR menu)** — a selection of the twenty bar drinks; the full ranking is snapshot-pinned:
+**Worked example A (Mumbai, BAR menu)**, a selection of the twenty bar drinks; the full ranking is snapshot-pinned:
 
 | Drink | serve | affinity (relevant) | Σ affinity × weight | serve | **score** |
 |---|---|---|---|---|---|
@@ -437,7 +437,7 @@ export function scoreDrinks(tags: TagScore[], menu: Drink[], opts: { lastDrinkId
 | Hot Buttered Rum | hot | arctic 5, snow 3, late 1 | 13.65 + 3.51 + 0.80 = 17.95 | +2 | **19.95** |
 | Mulled Wine | hot | arctic 3, snow 3 | 8.19 + 3.51 = 11.69 | +2 | 13.69 |
 | Hot Toddy | hot | arctic 2, snow 2 | 5.46 + 2.34 = 7.80 | +2 | 9.80 |
-| Mojito | iced | — | 0 | −3 | −3.00 |
+| Mojito | iced |: | 0 | −3 | −3.00 |
 
 ### 5.4 Seeded pick and the second opinion (`pick.ts`)
 
@@ -455,7 +455,7 @@ export function pick(ranked: { drink: Drink; score: number }[], seed: string): {
   let idx = 0;
   if (!dominant) {
     const r = seedrandom(seed)();                          // deterministic per place/hour/menu
-    idx = r < 0.85 ? 0 : r < 0.96 ? 1 : 2;                 // 85 / 11 / 4 % — the code matches the prose
+    idx = r < 0.85 ? 0 : r < 0.96 ? 1 : 2;                 // 85 / 11 / 4 %, the code matches the prose
     if (idx >= top.length) idx = top.length - 1;
   }
   const chosen = top[idx] ?? first;
@@ -489,7 +489,7 @@ export function stampFor(tags: TagScore[], drink: Drink, menu: 'bar' | 'barista'
 
 `src/wit/grammar/intensifiers.json` is the **single source for every stamp string** (ledger C12). It is reproduced in full in IMPL §6.6; do not paraphrase it, do not hard-code a stamp in a test, and note that the `hot` family has **separate `warm` and `hot` ladders** (`WARM` / `WARM, NO ARGUMENTS` / `BOTH HANDS. NOW.` versus `HOT` / `HOT, NO ARGUMENTS` / `SCALDING. DO NOT GO OUTSIDE.`) and the storm ladder ends **`DO NOT GO OUTSIDE.`**, not "UNDER THE COUNTER".
 
-Worked: Mumbai — Mojito (iced), 0.35 + 0.10 + 0.5 = 0.95 → tier 1 → **AGGRESSIVELY ICED**. Yakutsk — Hot Buttered Rum (hot), 0.948 + 0.5 = 1.448 → tier 2 → **SCALDING. DO NOT GO OUTSIDE.** Reykjavík — Hot Toddy (hot), chilly intensity 0.79 → tier 1 → **HOT, NO ARGUMENTS**. Denver — hail ⇒ storm family, forced tier 2 → **DO NOT GO OUTSIDE.** (with `gentler: true`, tier 1 → **INDOORS. NOW.**).
+Worked: Mumbai, Mojito (iced), 0.35 + 0.10 + 0.5 = 0.95 → tier 1 → **AGGRESSIVELY ICED**. Yakutsk, Hot Buttered Rum (hot), 0.948 + 0.5 = 1.448 → tier 2 → **SCALDING. DO NOT GO OUTSIDE.** Reykjavík, Hot Toddy (hot), chilly intensity 0.79 → tier 1 → **HOT, NO ARGUMENTS**. Denver, hail ⇒ storm family, forced tier 2 → **DO NOT GO OUTSIDE.** (with `gentler: true`, tier 1 → **INDOORS. NOW.**).
 
 `stamp.ink` does **not** colour the stamp: `--stamp` from the grade family (DESIGN §4.4 / IMPL §3.5) is the only thing that does. `ink` exists solely to carry the barista-green override and to populate the `data-ink` attribute the component tests assert.
 
@@ -520,11 +520,11 @@ The day-part ladder is an **eight-step, first-match-wins** list; it lives in IMP
 8. otherwise `afternoon`.
 
 Note that `late` is tested **before** `dawn`, and that the polar branch returns a clock mapping rather than reading `is_day`. `minutesToSunrise/Sunset` come from the `daily.sunrise/sunset` local ISO strings minus `current.time` (both local, no offset needed); when the strings are empty they are `±Infinity`. `is_day` from the API is authoritative for the *shift* (Day/Night); sunrise/sunset only refine the day-part. Polar local time is phrased loosely in the grammar (RESEARCH §3: `Antarctica/McMurdo`, `Etc/GMT-7` are pragmatic guesses).
-**`suggestBarista = localHour < 11 && menu === 'bar' && dayPart !== 'late'`** — at Mumbai's 00:45 the bartender does not offer you a coffee; he makes a remark about the hour.
+**`suggestBarista = localHour < 11 && menu === 'bar' && dayPart !== 'late'`**, at Mumbai's 00:45 the bartender does not offer you a coffee; he makes a remark about the hour.
 
 ### 5.7 Offline reverse geocoding (`engine/geocode/`)
 
-Build step (`scripts/prep-geo.mjs`): for each Natural Earth GeoJSON feature, ensure d3's spherical winding — `if (geoArea(feature) > 2π) reverse every ring` (an inverted polygon covers "everything but the country"); compute `bbox` with `geoBounds`; keep only `ADMIN, NAME, ISO_A2, CONTINENT, SUBREGION`. Populated places: keep `name, adm0name, iso_a2, latitude, longitude, pop_max, featurecla` → `places.json` (~400 KB). Marine polygons 50m: keep `name, featurecla`.
+Build step (`scripts/prep-geo.mjs`): for each Natural Earth GeoJSON feature, ensure d3's spherical winding, `if (geoArea(feature) > 2π) reverse every ring` (an inverted polygon covers "everything but the country"); compute `bbox` with `geoBounds`; keep only `ADMIN, NAME, ISO_A2, CONTINENT, SUBREGION`. Populated places: keep `name, adm0name, iso_a2, latitude, longitude, pop_max, featurecla` → `places.json` (~400 KB). Marine polygons 50m: keep `name, featurecla`.
 
 ```ts
 import { geoContains, geoDistance } from 'd3-geo';
@@ -579,12 +579,12 @@ Two typing notes, because `exactOptionalPropertyTypes` and `noUncheckedIndexedAc
 
 Costs: 177 country features × bbox test ≈ 10 µs; `geoContains` on the 1–5 candidates ≈ 1–3 ms; kdbush query < 0.1 ms; total well under the 20 ms budget. `countries-50m.json` (3.1 MB) is fetched lazily after the first verdict and swapped in for finer coastlines; the 110m file (0.8 MB) is precached.
 
-**Golden points: there is exactly one list, the twelve rows of TESTING §2.5 (reproduced in IMPL §6.8).** Do not add a second set here — the earlier ad-hoc list in this file was a third, conflicting one and has been deleted. The rows that matter most are `(19.07, 72.88)` → IN / Mumbai / ≤ 40 km, `(42.0, 51.0)` → **ocean, Caspian Sea** (the marine-first ordering above is the only reason it passes), `(0, −140)` → open ocean, `(−72, 2.5)` → Antarctica, and the antimeridian pair `(−20, ±179.9)` resolving to the same side.
+**Golden points: there is exactly one list, the twelve rows of TESTING §2.5 (reproduced in IMPL §6.8).** Do not add a second set here, the earlier ad-hoc list in this file was a third, conflicting one and has been deleted. The rows that matter most are `(19.07, 72.88)` → IN / Mumbai / ≤ 40 km, `(42.0, 51.0)` → **ocean, Caspian Sea** (the marine-first ordering above is the only reason it passes), `(0, −140)` → open ocean, `(−72, 2.5)` → Antarctica, and the antimeridian pair `(−20, ±179.9)` resolving to the same side.
 ### 5.8 Weather fetch and caching (`api/`)
 
 ```ts
 const q = (n: number) => Math.round(n * 4) / 4;                    // 0.25° quantisation
-export function cellKey(lat: number, lng: number): string {        // C10 — no toFixed anywhere
+export function cellKey(lat: number, lng: number): string {        // C10, no toFixed anywhere
   let x = q(lng);
   if (x === 180) x = -180;                                         // antimeridian: 179.9 and -179.9 share a cell
   return `${q(lat)},${x}`;                                         // "19,73" · "64.25,-22" · "-17.75,-180"
@@ -651,7 +651,7 @@ export function speak(v: Omit<Verdict, 'lines'>, grammarJson: Grammar): Verdict[
 }
 ```
 
-Example output (Mumbai, seed `19.1|72.9|0|bar|voice`): *"~38 km from Mumbai, India. 00:45 local · dew point 24°. The air is soup. You are not sweating, you are marinating. **AGGRESSIVELY ICED** Mojito. Served in a bucket. It is almost one in the morning. Drink it and go to bed."* The intensifier word is marked in the drink line with the literal guillemets `«…»` — never markdown asterisks — and the renderer swaps them for `<em class="intensifier">`, Righteous at 1.6× (DESIGN §5, IMPL §3.7/§6.10, TESTING T-WT-2). Any LLM rung receives `lines` + 3 grammar samples and must return the same JSON shape; on error/timeout (6 s) the procedural lines stay (D4).
+Example output (Mumbai, seed `19.1|72.9|0|bar|voice`): *"~38 km from Mumbai, India. 00:45 local · dew point 24°. The air is soup. You are not sweating, you are marinating. **AGGRESSIVELY ICED** Mojito. Served in a bucket. It is almost one in the morning. Drink it and go to bed."* The intensifier word is marked in the drink line with the literal guillemets `«…»`, never markdown asterisks, and the renderer swaps them for `<em class="intensifier">`, Righteous at 1.6× (DESIGN §5, IMPL §3.7/§6.10, TESTING T-WT-2). Any LLM rung receives `lines` + 3 grammar samples and must return the same JSON shape; on error/timeout (6 s) the procedural lines stay (D4).
 
 ---
 
@@ -666,7 +666,7 @@ Example output (Mumbai, seed `19.1|72.9|0|bar|voice`): *"~38 km from Mumbai, Ind
 
 - `vite-plugin-pwa` `generateSW`, `registerType: 'prompt'` (a brass tag "New bottles in stock. Restock?"), `base`/`scope`/`start_url` = `VITE_BASE_PATH`.
 - **Precache** (≈ 4.5 MB): shell, fonts (3 files, ~110 KB), `geo/countries-110m.json`, `geo/places.json`, `geo/marine-50m.json`, `geo/land-dots.json`, `textures/earth-day.jpg`, `earth-topology.png`, `earth-water.png`, `sounds/bar.ogg`, `data/*.json` (bundled in JS).
-- **Runtime caching:** `textures/*.webp` and `geo/countries-50m.json` → CacheFirst, 30 days, **max 4 entries** (C4 — day 4K/8K + night 4K/8K is the whole set); `*.open-meteo.com` → **NetworkOnly** (our Dexie layer is the cache; Workbox must not serve stale API JSON silently).
+- **Runtime caching:** `textures/*.webp` and `geo/countries-50m.json` → CacheFirst, 30 days, **max 4 entries** (C4, day 4K/8K + night 4K/8K is the whole set); `*.open-meteo.com` → **NetworkOnly** (our Dexie layer is the cache; Workbox must not serve stale API JSON silently).
 - **Offline behaviour:** `navigator.onLine` + fetch failure → register prints "NO SIGNAL · SERVING FROM THE TAB"; `getWeather` returns a stale snapshot (≤ 24 h) tagged `stale` → coaster shows a brass "re-poured from memory" tag; search and Where-am-I disabled with tooltip; Tab always opens.
 - `navigator.storage.persist()` requested after the first verdict. Never registered inside Capacitor (`!Capacitor.isNativePlatform()`).
 
@@ -686,19 +686,19 @@ Example output (Mumbai, seed `19.1|72.9|0|bar|voice`): *"~38 km from Mumbai, Ind
 
 All no-key, `Access-Control-Allow-Origin: *` (probed 2026-09-06). Non-commercial use only; CC BY 4.0 attribution rendered in-app.
 
-**Forecast** — `GET https://api.open-meteo.com/v1/forecast`
+**Forecast**, `GET https://api.open-meteo.com/v1/forecast`
 `?latitude=19.07&longitude=72.88&current=temperature_2m,relative_humidity_2m,apparent_temperature,dew_point_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_gusts_10m,wind_direction_10m,is_day&hourly=uv_index,precipitation_probability&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`
 → `{ timezone, utc_offset_seconds, current: { time, interval: 900, temperature_2m, …, is_day: 0|1 }, hourly: { time[], uv_index[], precipitation_probability[] }, daily: { sunrise[], sunset[], … } }`. 15 variables + 2 hourly + 5 daily ≈ **2 weighted calls**. Pick the `hourly` row whose `time` shares the hour of `current.time`.
 
-**Air quality** — `GET https://air-quality-api.open-meteo.com/v1/air-quality?latitude&longitude&current=european_aqi,us_aqi,pm2_5,pm10,ozone,dust,uv_index&timezone=auto` → `current.interval: 3600`. Credit CAMS ENSEMBLE. ≈ 1 call.
+**Air quality**, `GET https://air-quality-api.open-meteo.com/v1/air-quality?latitude&longitude&current=european_aqi,us_aqi,pm2_5,pm10,ozone,dust,uv_index&timezone=auto` → `current.interval: 3600`. Credit CAMS ENSEMBLE. ≈ 1 call.
 
-**Marine** (ocean clicks only) — `GET https://marine-api.open-meteo.com/v1/marine?latitude&longitude&current=wave_height,sea_surface_temperature,wind_wave_height&timezone=auto`. Credit DWD. ≈ 0.5 call. Some coastal/inland cells return an error → treat as "no marine data".
+**Marine** (ocean clicks only), `GET https://marine-api.open-meteo.com/v1/marine?latitude&longitude&current=wave_height,sea_surface_temperature,wind_wave_height&timezone=auto`. Credit DWD. ≈ 0.5 call. Some coastal/inland cells return an error → treat as "no marine data".
 
-**Geocoding (forward, search box)** — `GET https://geocoding-api.open-meteo.com/v1/search?name=Mumbai&count=5&language=en` → `results[{ name, country, admin1, latitude, longitude, timezone, population }]`. Debounced 250 ms, min 2 chars, no autocomplete under 250 ms.
+**Geocoding (forward, search box)**, `GET https://geocoding-api.open-meteo.com/v1/search?name=Mumbai&count=5&language=en` → `results[{ name, country, admin1, latitude, longitude, timezone, population }]`. Debounced 250 ms, min 2 chars, no autocomplete under 250 ms.
 
 **Limits & handling:** 600/min · 5,000/h · 10,000/day per IP; each land click ≤ 3 weighted calls and each ocean click ≤ 4 (marine adds ≈ 1); the 0.25° / 15 min cache makes repeats free. Headers: none required; send `Accept: application/json`. On `429` → `phase: 'error'` with the "Bar's busy. Give it a minute." coaster and a 60 s cooldown; on `4xx` (bad coords) → "Nowhere on Earth"; on timeout/network → offline path (§7). No retry storms: one retry after 1.5 s for 5xx only.
 
-**Nominatim (optional lever, off by default)** — `GET https://nominatim.openstreetmap.org/reverse?lat&lon&format=jsonv2&zoom=10` with `Referer` (browsers cannot set UA); client throttle ≥ 1.1 s between calls, cached per cell forever in Dexie; only called after the offline label is already printed; "Data © OpenStreetMap contributors" on the coaster when used. Never in grids, never on hover.
+**Nominatim (optional lever, off by default)**, `GET https://nominatim.openstreetmap.org/reverse?lat&lon&format=jsonv2&zoom=10` with `Referer` (browsers cannot set UA); client throttle ≥ 1.1 s between calls, cached per cell forever in Dexie; only called after the offline label is already printed; "Data © OpenStreetMap contributors" on the coaster when used. Never in grids, never on hover.
 
 **Optional AI rungs (D4):** rung 1 through `worker/` using `_shared/templates/worker-proxy.ts` pointed at Workers AI (fail-open → rung 0); rung 2 direct from the browser to `generativelanguage.googleapis.com` / `openrouter.ai` / `api.groq.com` with the user's key (WebCrypto vault per FREE-AI-OPTIONS §6.1, "session only" default); rung 3 `@mlc-ai/web-llm` in a Worker on desktop WebGPU only. Prompt = the procedural `lines` JSON + 3 samples; output validated against the same shape; 6 s timeout.
 
@@ -717,7 +717,7 @@ All no-key, `Access-Control-Allow-Origin: *` (probed 2026-09-06). Non-commercial
 
 | Metric | Budget | How |
 |---|---|---|
-| Initial JS (before globe chunk) | **≤ 180 KB gzip** (C3 — hard, fails CI) | React + router + Zustand + Dexie + Motion + engine + grammar; globe.gl/three in a lazy `import()` chunk (separately budgeted at ≤ 320 KB gzip) requested after first paint |
+| Initial JS (before globe chunk) | **≤ 180 KB gzip** (C3: hard, fails CI) | React + router + Zustand + Dexie + Motion + engine + grammar; globe.gl/three in a lazy `import()` chunk (separately budgeted at ≤ 320 KB gzip) requested after first paint |
 | LCP | DOM neon sign + brass plate, < 1.5 s on 4G mid-range Android | Fonts `swap`; canvas mounts after `requestIdleCallback`; SVG dotted globe holds the cradle meanwhile |
 | Click → printed coaster | < 2.0 s (p50 < 1.2 s); skeleton within 100 ms | Parallel fetches, 6 s abort, cache |
 | Engine | < 5 ms per verdict; geocode < 20 ms warm | Pure functions, prebuilt kdbush, bbox pre-test |
@@ -733,19 +733,19 @@ All no-key, `Access-Control-Allow-Origin: *` (probed 2026-09-06). Non-commercial
 | Forecast fetch fails / times out (6 s) | Error coaster "The models are not answering. Try again." + brass RETRY; window unchanged | `phase 'error'`, `retry()` re-pours same coords |
 | HTTP 429 | "Bar's busy. Give it a minute." + 60 s cooldown on the RETRY plate | `api/openMeteo.ts` throws `RateLimited` |
 | Offline with cache ≤ 24 h | Coaster prints with "re-poured from memory" tag; register "NO SIGNAL · SERVING FROM THE TAB" | `stale: true` |
-| Offline, no cache | Error coaster with "NO SIGNAL" line; Tab still opens | — |
-| AQI/marine fails | Silent; tags simply absent; receipt shows `AQI —` | best-effort `catch(() => undefined)` |
+| Offline, no cache | Error coaster with "NO SIGNAL" line; Tab still opens |: |
+| AQI/marine fails | Silent; tags simply absent; receipt shows `AQI, ` | best-effort `catch(() => undefined)` |
 | Bad deep link | "Nowhere on Earth has those coordinates. Impressive." + "Back to the bar" | router loader validation |
 | WebGL unavailable / context lost | SVG dotted globe stays clickable (equirectangular hit-test); "The globe's bearings seized. Tap to re-seat." remounts canvas | `webgl` state |
 | Texture load fails | Keep `earth-day.jpg`; log nothing; retry on next visit via CacheFirst | `onError` in globe.gl `globeImageUrl` swap |
-| Fonts fail | System fallback stacks; share card waits ≤ 2 s on `document.fonts.load` then draws anyway | — |
+| Fonts fail | System fallback stacks; share card waits ≤ 2 s on `document.fonts.load` then draws anyway |: |
 | Share fails / unsupported | Download fallback + toast "Saved to your device" | `platform/share.ts` |
 | Dexie quota / blocked | Verdict still shown; Tab write skipped with a one-time toast "The Tab is full. Export and clear." | try/catch around `db.verdicts.add` |
-| Geolocation denied | Tooltip "The bar respects your privacy. Spin the globe instead." | — |
+| Geolocation denied | Tooltip "The bar respects your privacy. Spin the globe instead." |: |
 | Grammar missing a per-tag pool | Falls back to `jab_default`; a Vitest asserts every tag has ≥ 8 lines so this never ships | `buildGrammar` |
 
 All errors are handled locally; nothing is reported anywhere.
 
 ## 13. No analytics
 
-No analytics, telemetry, crash reporting, feature flags service, A/B testing, remote config, fonts CDN, or tag managers — in any build. The only network hosts are the four Open-Meteo APIs (always) and Nominatim / user-enabled LLM providers (opt-in). A Playwright test enforces the allow-list.
+No analytics, telemetry, crash reporting, feature flags service, A/B testing, remote config, fonts CDN, or tag managers, in any build. The only network hosts are the four Open-Meteo APIs (always) and Nominatim / user-enabled LLM providers (opt-in). A Playwright test enforces the allow-list.

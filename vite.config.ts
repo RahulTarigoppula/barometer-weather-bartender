@@ -31,9 +31,10 @@ export default defineConfig({
       registerType: 'autoUpdate', // new builds take over on the next load
       injectRegister: null, // registered by hand, web only
       manifest: {
-        name: 'Mausam ka Mahaul — weather, roads and the right drink',
+        name: 'Mausam ka Mahaul: weather, roads and the right drink',
         short_name: 'Mausam',
-        description: 'Live weather on a 3D planet that opens on India, then the drink it calls for — at your budget.',
+        description:
+          'Check the sky before you step out: weather, air and roads for India and the world, and the drink the weather calls for.',
         id: base,
         start_url: base,
         scope: base,
@@ -72,7 +73,7 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: {
               cacheName: 'bar-heavy-v1',
-              expiration: { maxEntries: 4, maxAgeSeconds: 60 * 60 * 24 * 30 }, // C4 — four, not eight
+              expiration: { maxEntries: 4, maxAgeSeconds: 60 * 60 * 24 * 30 }, // C4, four, not eight
             },
           },
           // NEVER let Workbox answer a weather call: Dexie is the cache and staleness is a UI state.

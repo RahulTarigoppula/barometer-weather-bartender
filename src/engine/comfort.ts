@@ -49,7 +49,7 @@ export function windChill(tempC: number, windKmh: number): number | null {
   return 13.12 + 0.6215 * tempC - 11.37 * v + 0.3965 * tempC * v;
 }
 
-/** Magnus dew point — used only when the API omits dew_point_2m. */
+/** Magnus dew point, used only when the API omits dew_point_2m. */
 export function dewPoint(tempC: number, rh: number): number | null {
   if (rh <= 0) return null;
   if (rh >= 100) return tempC;

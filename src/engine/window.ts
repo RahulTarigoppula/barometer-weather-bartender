@@ -11,7 +11,7 @@ export interface WindowWeather {
   rain: number;
 }
 
-/** What happens on the window glass for a verdict — the weather never touches the coaster. */
+/** What happens on the window glass for a verdict, the weather never touches the coaster. */
 export function windowWeather(v: Pick<Verdict, 'tags' | 'features' | 'gradeFamily'>): WindowWeather {
   const has = (t: Tag): boolean => v.tags.some((s) => s.tag === t);
   const f = v.features;

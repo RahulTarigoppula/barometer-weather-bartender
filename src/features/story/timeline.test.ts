@@ -27,7 +27,7 @@ describe('the opening story', () => {
     expect(SCENES[0]?.chapter).toMatch(/^Prologue/);
   });
   it('uses no em dashes anywhere in its copy', () => {
-    for (const s of SCENES) expect(`${s.chapter} ${s.line} ${s.sub}`).not.toMatch(/—/);
+    for (const s of SCENES) expect(`${s.chapter} ${s.line} ${s.sub}`).not.toMatch(/\u2014/);
   });
   it('finds the scene and progress at any time, clamped', () => {
     expect(sceneAt(0).scene.id).toBe('universe');

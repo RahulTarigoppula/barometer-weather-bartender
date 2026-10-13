@@ -14,7 +14,7 @@ const EXPECTED = {
   'oslo-brunch': { drink: 'bloody-mary', driving: 'mild', dial: 'FAIR', tier: 0 },
 } as const;
 
-describe('judge() — the nine golden fixtures', () => {
+describe('judge(), the nine golden fixtures', () => {
   it.each(FIXTURES)('%s', (name) => {
     const v = judgeFixture(name);
     const e = EXPECTED[name];

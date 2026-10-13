@@ -15,7 +15,7 @@ const byId = (id: string): Drink => {
 const scoreOf = (r: Ranked[], id: string): number => r.find((x) => x.drink.id === id)?.score ?? Number.NaN;
 const t = (tag: Tag, weight: number, intensity = 0): TagScore => ({ tag, family: 'temp', weight, intensity });
 
-describe('worked example A — Mumbai, BAR', () => {
+describe('worked example A, Mumbai, BAR', () => {
   const v = judgeFixture('mumbai');
   const r = scoreDrinks(v.tags, BAR);
   it.each([
@@ -39,7 +39,7 @@ describe('worked example A — Mumbai, BAR', () => {
   });
 });
 
-describe('worked example B — Yakutsk, BAR', () => {
+describe('worked example B, Yakutsk, BAR', () => {
   const r = scoreDrinks(judgeFixture('yakutsk').tags, BAR);
   it.each([
     ['hot-buttered-rum', 19.95],

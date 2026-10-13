@@ -55,7 +55,7 @@ export function GlobeStage(): ReactElement {
     [],
   );
 
-  // The canvas globe — mounted once (StrictMode-safe: the cleanup disposes the first instance).
+  // The canvas globe, mounted once (StrictMode-safe: the cleanup disposes the first instance).
   useEffect(() => {
     const el = fallbackRef.current;
     if (!el) return;

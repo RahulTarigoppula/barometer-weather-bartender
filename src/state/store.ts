@@ -25,7 +25,7 @@ export interface Pin {
 
 interface BarState {
   coaster: CoasterState;
-  /** Bumps when a new verdict card arrives — NOT when the same verdict re-renders. */
+  /** Bumps when a new verdict card arrives, NOT when the same verdict re-renders. */
   slide: number;
   pin: Pin | null;
   /** 0 = the bartender's pick; 1.. = the "second opinion" runners-up. */

@@ -1,12 +1,12 @@
-# Barometer — "The Globe Bar" — THE Implementation Prompt
+# Barometer: "The Globe Bar": THE Implementation Prompt
 
-**Read this file and nothing else.** It is self-contained: every token, threshold, endpoint, workflow, formula, fixture and acceptance test you need is inlined below. You do not need `GOAL.md`, `docs/DESIGN.md`, `docs/ARCHITECTURE.md`, `docs/PLAN.md`, `docs/TESTING.md`, `docs/DEPLOYMENT.md`, `docs/RESEARCH.md`, `_shared/DECISIONS.md` or `design/preview.html`. If any of those files exist and disagree with this one, **this one wins** — the conflict ledger in §0 says why.
+**Read this file and nothing else.** It is self-contained: every token, threshold, endpoint, workflow, formula, fixture and acceptance test you need is inlined below. You do not need `GOAL.md`, `docs/DESIGN.md`, `docs/ARCHITECTURE.md`, `docs/PLAN.md`, `docs/TESTING.md`, `docs/DEPLOYMENT.md`, `docs/RESEARCH.md`, `_shared/DECISIONS.md` or `design/preview.html`. If any of those files exist and disagree with this one, **this one wins**, the conflict ledger in §0 says why.
 
-Target: one solo developer on Windows 11 with Node 22.17, npm, git, Python 3.14, Git Bash, GitHub CLI. **No Java, no Android SDK, no Flutter locally, and none required** — every APK is compiled by GitHub Actions.
+Target: one solo developer on Windows 11 with Node 22.17, npm, git, Python 3.14, Git Bash, GitHub CLI. **No Java, no Android SDK, no Flutter locally, and none required**, every APK is compiled by GitHub Actions.
 
 ---
 
-## 0. Conflict ledger (resolved — do not re-litigate)
+## 0. Conflict ledger (resolved: do not re-litigate)
 
 The source planning documents disagreed in a handful of places. These are the binding resolutions. Where you find contradicting numbers in any other file, apply these.
 
@@ -21,8 +21,8 @@ The source planning documents disagreed in a handful of places. These are the bi
 | C7 | `denver-hail` expected wind tag: `breezy` vs `gale` | **`gale`** (gusts 78 ≥ 60 ⇒ gale by the §6.3 rule). Its driving tag is still `hail` and its dial is still `FAIR`. | The threshold table outranks the illustrative expectation row it contradicts. |
 | C8 | Drink scoring maths: `weight = base × (1 + intensity)` vs "driving ×3, others ×1" | **`weight = base × (1 + intensity)`** (§6.5). Serve bonuses use the full table in §6.5, not ±2. Repeat penalty is **−2**, session-scoped. | The simplified ×3/×1 model was a hand-check illustration; it does not reproduce the worked examples. |
 | C9 | Weather cache storage: `localStorage` (50 entries) vs memory + Dexie (200 entries) | **In-memory `Map` + Dexie `weatherCache`, pruned to the newest 200 rows on boot.** No `localStorage` cache. | Multi-tab safe and survives the 5 MB `localStorage` ceiling. |
-| C10 | Cache cell-key format | **`${round4(lat)},${round4(lng)}` with JavaScript default number formatting** — `19,73`, `64.25,-22`, `0,-140.25`, `-90,0`, `-17.75,-180`. No forced decimal places. | Matches the pinned cache tests. |
-| C11 | RNG seed shape | **`` `${lat.toFixed(1)}|${lng.toFixed(1)}|${localHour}|${menu}` ``** — the menu is part of the seed so the barista flip is independently deterministic. | |
+| C10 | Cache cell-key format | **`${round4(lat)},${round4(lng)}` with JavaScript default number formatting**: `19,73`, `64.25,-22`, `0,-140.25`, `-90,0`, `-17.75,-180`. No forced decimal places. | Matches the pinned cache tests. |
+| C11 | RNG seed shape | **`` `${lat.toFixed(1)}|${lng.toFixed(1)}|${localHour}|${menu}` ``**: the menu is part of the seed so the barista flip is independently deterministic. | |
 | C12 | Intensifier stamp wording per fixture | **`src/wit/grammar/intensifiers.json` (§6.6) is the single source.** Stamp strings are snapshot-pinned after the first green run, not hard-coded in tests. | |
 | C13 | Reverse-geocode precedence: marine polygon first vs land first | **Country polygon → coastal town (nearest place ≤ 15 km) → marine polygon → polar ice → open water.** | Natural Earth's 50 m marine polygons overlap real coastlines (Lisbon at (38.72, −9.14) fell into the North Atlantic). No country polygon contains the Caspian point (42, 51) at 110 m or 50 m, so land-first still returns the Caspian Sea. The Fiji golden rows (−17.7, ±179.9) are open sea at NE resolution; the tests now use Fiji land at (−16.6, 179.35) and (−16.2, −179.9) and assert the two antimeridian sea points name the South Pacific Ocean. |
 | C14 | Repo name `barometer` | **`barometer-weather-bartender`** (the owner's repository). Pages base path is `/barometer-weather-bartender/`; every workflow derives it from `github.event.repository.name`. | The repository already existed. |
@@ -32,8 +32,8 @@ The source planning documents disagreed in a handful of places. These are the bi
 | C18 | Monthly Blue Marble NG downloads | **One Blue Marble 4K WebP** (from the MIT three-globe repo's NASA-derived `earth-blue-marble.jpg`) plus **NASA Black Marble 2016** 4K/8K WebP from NASA EO. | The monthly BMNG image URLs no longer resolve; the night side matters more than the month. |
 | C19 | `gale` intensity formula | **`clamp01(max(0, (v − 62) / 40) + (g ≥ 60 ? 0.2 : 0))`** | The literal formula clamps Denver's gust bonus to zero; this one reproduces the pinned Dark 'n' Stormy 17.53 / margin 7.45. |
 | C20 | EU AQI band edges | **Strict `<` edges** (20 → fair, 40 → moderate, 60 → poor, 80 → very-poor). | Matches the §6.1 golden row. |
-| C21 | `arabian-sea` timezone | **`Etc/GMT-4`, offset 14400** — probed live on day 1 (D1-2). (0, −140) returns `Etc/GMT+9`. | The 19800 in §10.2 was a placeholder. |
-| C22 | Worked example B, Mojito | **−2.20**, not −3.00 — the table omitted Mojito's `late` affinity (1 × 0.80). | Arithmetic. |
+| C21 | `arabian-sea` timezone | **`Etc/GMT-4`, offset 14400**: probed live on day 1 (D1-2). (0, −140) returns `Etc/GMT+9`. | The 19800 in §10.2 was a placeholder. |
+| C22 | Worked example B, Mojito | **−2.20**, not −3.00: the table omitted Mojito's `late` affinity (1 × 0.80). | Arithmetic. |
 | C23 | Lisbon / Oslo driving tags | **`warm` / `mild`** by the C6 priority list (the §6.3 table bolded the day-part). Dial and grade are unchanged (FAIR / none). | C6 is binding. |
 | C24 | Licence scanner exclusion | **`suncalc@2.1.1`** is excluded (ESM release, no `license` field; repo LICENSE is BSD-2-Clause). **OFL-1.1** is allowed for the three Fontsource fonts. | Re-check on every bump. |
 | C25 | E2E with SwiftShader WebGL | **E2E stubs WebGL** so the flows run on the engraved canvas globe (the real no-WebGL path); Open-Meteo is always routed to fixtures; a catch-all route records any foreign request. | Software WebGL starved the main thread under parallel headless runs. |
@@ -42,10 +42,10 @@ The source planning documents disagreed in a handful of places. These are the bi
 | C28 | The bar's look (mahogany, brass, neon; §3) | **v1 redesign at the owner's request: a planet in deep space.** One dark theme (no day/night shift); a starfield, a soft blue atmosphere, glass panels, saffron (India) and sky-blue (weather) accents, Space Grotesk + JetBrains Mono (Righteous dropped). The "no navy, no starfield, no glass" rules of §3.1 are retired. | The owner found the bar look "not my vibe" and the globe too small. |
 | C29 | Layout | **Weather first, then bartending.** A full-height hero planet (sticky on desktop, ~64 svh on phones) beside a panel: weather card → bartender card → recent places. The back-bar shelf, wall dial, register and window are gone; their information lives in the weather card (comfort scale, tiles, ambient layers) and the bartender card. | Owner direction. |
 | C30 | Default view and first pour | **India.** The camera's home is 22.5°N 79.5°E; India's outline (Natural Earth *India point-of-view* boundaries) and 18 Indian cities are drawn on the planet; Indian city chips come first; search asks the geocoder with `countryCode=IN` and the world in parallel and lists Indian matches first; on open the app pours the last place on the Tab, else New Delhi. The "no request before a pour" rule (§10.9) is replaced by "the only requests are Open-Meteo". | Owner direction: India is the primary focus. |
-| C31 | Budget ranges | **Four tiers — Extreme Cheap, Budget, Mid-range, High-end** (`src/engine/budget.ts`): per drink, an Indian-market pour, where to drink it and a per-glass ₹ band scaled by base (beer cheaper, agave dearer), ≈ $ for non-Indian places; persisted, selectable on the card and in Settings, printed on the share card. The scoring engine is unchanged, so every golden fixture still holds. | Owner direction. Prices are indicative ranges, not quotes. |
+| C31 | Budget ranges | **Four tiers: Extreme Cheap, Budget, Mid-range, High-end** (`src/engine/budget.ts`): per drink, an Indian-market pour, where to drink it and a per-glass ₹ band scaled by base (beer cheaper, agave dearer), ≈ $ for non-Indian places; persisted, selectable on the card and in Settings, printed on the share card. The scoring engine is unchanged, so every golden fixture still holds. | Owner direction. Prices are indicative ranges, not quotes. |
 | C32 | Mocktail names | **Six alcohol-free twins take Indian names and recipes, same ids:** Nimbu Soda, Jaljeera Cooler, Aam Panna Slush, Kokum Soda, Filter Coffee Tonic, Adrak Nimbu Chai. | India focus without touching the scoring golden values. |
 | C33 | Colour tokens | Space colours are `--void-*`; `--space-*` stays the spacing scale. | Caught by lint: the first draft reused `--space-1` for both. |
-| C34 | Name | **Mausam ka Mahaul** ("the vibe of the weather"). Repository, package id, IndexedDB name and the History export tag stay `barometer` so links, installs and saved data survive. | The owner asked for a name with a story; *mausam* is the weather, *mahaul* the mood it creates — exactly what the app reads. "ka", not "ki": *mahaul* is masculine. |
+| C34 | Name | **Mausam ka Mahaul** ("the vibe of the weather"). Repository, package id, IndexedDB name and the History export tag stay `barometer` so links, installs and saved data survive. | The owner asked for a name with a story; *mausam* is the weather, *mahaul* the mood it creates: exactly what the app reads. "ka", not "ki": *mahaul* is masculine. |
 | C35 | The ticker | **Removed.** The footer is quiet credits only. | The owner disliked the scrolling news-ticker; it competed with the weather for attention. |
 | C36 | Traffic | **Two layers:** a pure, labelled *Estimate* (`engine/traffic.ts`: weekday/weekend rush curves, 12-metro severity, rain/downpour/fog/snow drag, 10 km trip minutes, the first hour it eases) and an **optional live** TomTom flow reading with the user's own key, stored locally, CSP-allowed only for `api.tomtom.com`. | No free, key-less, CORS-enabled live traffic API exists; an honest estimate beats a fake "live" badge. |
 | C37 | Forecast data | Forecast asks for 7 days plus hourly `weather_code`/`is_day` and daily `weather_code`/`precipitation_probability_max`; the next 25 hours and the days are stored on the verdict (`forecast`) so History re-prints the outlook without a request. | One request still serves the whole screen. |
@@ -60,13 +60,13 @@ C13–C27 were recorded while building v0.9 (2026-10-12); C28–C33 are the v1.0
 
 You are a principal front-end engineer with a strong graphics and information-design bias. You are building **one** app, alone, from an empty folder to a deployed, premium, screenshot-worthy product. You write TypeScript in strict mode, you write the pure engine before the UI, and you treat the visual specification in §3 as a contract rather than a suggestion.
 
-**The product, in one paragraph.** Barometer — brand name *The Globe Bar* — is a brass-cradled planet sitting on a mahogany counter under a buzzing neon sign. You flick the globe (it has bearings; you can feel them), tap anywhere on Earth, and a brass pin drops while the camera flies in. In the ~400 ms it takes Open-Meteo to answer, a blank cream coaster is already sliding across the counter. Then it prints: how far you are from the nearest real town, the local time, one weather jab in a judgmental bartender's voice, an intensifier stamped at an angle (AGGRESSIVELY ICED · HOT, NO ARGUMENTS · DO NOT GO OUTSIDE), the drink name in sign lettering, and a mono receipt strip of the numbers that justify it. At the same moment, the bottle the bartender reached for lights up on the back-bar shelf and the wall barometer's needle swings to the word that decided it: SOUP for Mumbai at 02:14 with a 24° dew point, ARCTIC for Yakutsk at −48° apparent. Flip the coaster for the recipe, flip the BAR sign to BARISTA for the alcohol-free twin (the bartender suggests it himself before 11:00 local), tear the register receipt off as a 1080×1350 share card, and every verdict lands on The Tab — your history — which re-flies the globe when tapped. Everything runs client-side: no accounts, no analytics, no server of ours, no API key of ours, anywhere.
+**The product, in one paragraph.** Barometer, brand name *The Globe Bar*, is a brass-cradled planet sitting on a mahogany counter under a buzzing neon sign. You flick the globe (it has bearings; you can feel them), tap anywhere on Earth, and a brass pin drops while the camera flies in. In the ~400 ms it takes Open-Meteo to answer, a blank cream coaster is already sliding across the counter. Then it prints: how far you are from the nearest real town, the local time, one weather jab in a judgmental bartender's voice, an intensifier stamped at an angle (AGGRESSIVELY ICED · HOT, NO ARGUMENTS · DO NOT GO OUTSIDE), the drink name in sign lettering, and a mono receipt strip of the numbers that justify it. At the same moment, the bottle the bartender reached for lights up on the back-bar shelf and the wall barometer's needle swings to the word that decided it: SOUP for Mumbai at 02:14 with a 24° dew point, ARCTIC for Yakutsk at −48° apparent. Flip the coaster for the recipe, flip the BAR sign to BARISTA for the alcohol-free twin (the bartender suggests it himself before 11:00 local), tear the register receipt off as a 1080×1350 share card, and every verdict lands on The Tab, your history, which re-flies the globe when tapped. Everything runs client-side: no accounts, no analytics, no server of ours, no API key of ours, anywhere.
 
-**The quality bar.** *If it looks like a generic weather dashboard, start over.* Concretely: if a screenshot of any state could be mistaken for a weather app, it has failed — a bottle, a coaster's pressed ring, a brass pin or the neon sign must be visible in every frame. There is no navy, no starfield, no glassmorphism, no blur, no floating cards, no stat pills, no icon grid, no forecast strip, no charts. The dark is mahogany; the accent is brass; the card is paper; nothing floats.
+**The quality bar.** *If it looks like a generic weather dashboard, start over.* Concretely: if a screenshot of any state could be mistaken for a weather app, it has failed, a bottle, a coaster's pressed ring, a brass pin or the neon sign must be visible in every frame. There is no navy, no starfield, no glassmorphism, no blur, no floating cards, no stat pills, no icon grid, no forecast strip, no charts. The dark is mahogany; the accent is brass; the card is paper; nothing floats.
 
 **Three adjectives: Tactile · Cheeky · Loud.**
 
-**The trick that makes it one object instead of a dashboard:** every piece of information is a *thing in the bar*. The weather is on the window glass behind the counter. The temperature is a needle on a brass wall dial. The verdict is letterpressed on a coaster. The stats are a thermal receipt from the register. The decision is visible before it is read — the bottle he reached for lights up.
+**The trick that makes it one object instead of a dashboard:** every piece of information is a *thing in the bar*. The weather is on the window glass behind the counter. The temperature is a needle on a brass wall dial. The verdict is letterpressed on a coaster. The stats are a thermal receipt from the register. The decision is visible before it is read, the bottle he reached for lights up.
 
 **Working agreement (law, not preference).**
 
@@ -100,29 +100,29 @@ You are a principal front-end engineer with a strong graphics and information-de
 | Primitives | shadcn/ui on Base UI: `dialog`, `switch`, `slider`, `tooltip` | restyled through tokens; **never forked** |
 | Android (optional tier) | `@capacitor/core`, `/android`, `/cli`, `/app`, `/haptics`, `/share`, `/filesystem`, `/preferences`, `/status-bar`, `/splash-screen`, `/geolocation` | Capacitor 8.5.x |
 | Tests | `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `jsdom`, `fake-indexeddb`, `@playwright/test`, `@axe-core/playwright` | Vitest 3 · Playwright 1.5x |
-| Lint/format | `@biomejs/biome` | latest — the only linter/formatter |
+| Lint/format | `@biomejs/biome` | latest: the only linter/formatter |
 | Data prep | `sharp` (dev only) | latest |
 
-**Explicitly not used:** GSAP (free but non-OSI — no timeline here needs it), React Three Fiber / drei / postprocessing (deferred stretch work behind the `globeMaterial` seam), CesiumJS, MapLibre, cobe, `react-globe.gl`, `@turf/*`, `world-atlas`, `topojson-client`, any CSS-in-JS runtime, any component library other than shadcn-on-Base-UI.
+**Explicitly not used:** GSAP (free but non-OSI, no timeline here needs it), React Three Fiber / drei / postprocessing (deferred stretch work behind the `globeMaterial` seam), CesiumJS, MapLibre, cobe, `react-globe.gl`, `@turf/*`, `world-atlas`, `topojson-client`, any CSS-in-JS runtime, any component library other than shadcn-on-Base-UI.
 
 ### 2.2 Free-only rule
 
-GitHub (public repo, Pages, Actions, Releases) is the entire infrastructure. No Cloudflare Worker is needed to ship; one is optional later for the keyless AI garnish. **No card is entered anywhere.** No ads, no affiliate links, no sponsor button, no donation button, no store listing — Open-Meteo's free tier is non-commercial-only and that is a deployment constraint, not just a legal footnote.
+GitHub (public repo, Pages, Actions, Releases) is the entire infrastructure. No Cloudflare Worker is needed to ship; one is optional later for the keyless AI garnish. **No card is entered anywhere.** No ads, no affiliate links, no sponsor button, no donation button, no store listing, Open-Meteo's free tier is non-commercial-only and that is a deployment constraint, not just a legal footnote.
 
 ### 2.3 Licence rules
 
 - App code, illustrations and grammar: **MIT**.
-- Dependencies: OSI licences only — MIT / Apache-2.0 / BSD-2 / BSD-3 / ISC / MPL-2.0 / Zlib / CC0 / Unlicense / 0BSD. **AGPL and GPL are banned.**
+- Dependencies: OSI licences only, MIT / Apache-2.0 / BSD-2 / BSD-3 / ISC / MPL-2.0 / Zlib / CC0 / Unlicense / 0BSD. **AGPL and GPL are banned.**
 - Bundled data: public domain / CC0 / CC BY 4.0 / MIT only.
-- **Never bundle, never call, never copy:** `teijo/iba-cocktails` (no licence file at all — all rights reserved), TheCocktailDB (test key is not licensed for published apps), BigDataCloud / `api-bdc.io` (its fair-use policy forbids arbitrary map-click coordinates and threatens HTTP 402 + IP bans), `timeapi.io` (terms unverifiable), PlanetPixelEmporium textures (proprietary), `PranshulGG/WeatherMaster` code (GPL-3.0), `open-meteo/weather-map-layer` code (GPL-2.0), MobileCLIP weights.
-- **Do bundle:** `rasmusab/iba-cocktails` (MIT), `alfg/opendrinks` (MIT), Natural Earth vectors from `nvkelso/natural-earth-vector` (public domain), NASA Blue Marble NG + Black Marble (public domain, credit "NASA Earth Observatory", no implied endorsement), three-globe example textures `earth-day.jpg` / `earth-topology.png` / `earth-water.png` / `night-sky.png` (MIT repo, NASA-derived — see the day-1 licence check in §9), Righteous / Space Grotesk / JetBrains Mono (SIL OFL 1.1), CC0 sounds from Freesound's CC0 filter or Kenney.nl.
+- **Never bundle, never call, never copy:** `teijo/iba-cocktails` (no licence file at all, all rights reserved), TheCocktailDB (test key is not licensed for published apps), BigDataCloud / `api-bdc.io` (its fair-use policy forbids arbitrary map-click coordinates and threatens HTTP 402 + IP bans), `timeapi.io` (terms unverifiable), PlanetPixelEmporium textures (proprietary), `PranshulGG/WeatherMaster` code (GPL-3.0), `open-meteo/weather-map-layer` code (GPL-2.0), MobileCLIP weights.
+- **Do bundle:** `rasmusab/iba-cocktails` (MIT), `alfg/opendrinks` (MIT), Natural Earth vectors from `nvkelso/natural-earth-vector` (public domain), NASA Blue Marble NG + Black Marble (public domain, credit "NASA Earth Observatory", no implied endorsement), three-globe example textures `earth-day.jpg` / `earth-topology.png` / `earth-water.png` / `night-sky.png` (MIT repo, NASA-derived, see the day-1 licence check in §9), Righteous / Space Grotesk / JetBrains Mono (SIL OFL 1.1), CC0 sounds from Freesound's CC0 filter or Kenney.nl.
 - `suncalc@2.0.2` has no `license` field on npm; its repo LICENSE is BSD-2-Clause. Exclude exactly that one package from the licence scanner with a comment, and re-check on every bump.
 - Every recipe's **method text is written in-house**. Quantities are facts; prose can be copyrighted.
 - `README.md` carries an Attribution table that must match `src/data/attribution.json` and the `#/about` screen, three ways, enforced by a test.
 
 ### 2.4 Privacy
 
-No analytics, telemetry, crash reporting, feature flags service, A/B testing, remote config, font CDN or tag manager — in any build. No accounts, no cookies, no cloud sync. The coordinates you click are sent only to Open-Meteo (required to get weather) and, only if the user switches the lever on, to Nominatim. Device location is requested only when "Where am I" is tapped and is resolved **offline**. Deep-link URLs carry coordinates rounded to 2 dp (~1 km) and nothing else. BYO LLM keys (a stretch feature) are AES-GCM-wrapped with a non-extractable `CryptoKey` in IndexedDB, default to "session only", are displayed as last-4, and never appear in a URL, a log or the share card.
+No analytics, telemetry, crash reporting, feature flags service, A/B testing, remote config, font CDN or tag manager, in any build. No accounts, no cookies, no cloud sync. The coordinates you click are sent only to Open-Meteo (required to get weather) and, only if the user switches the lever on, to Nominatim. Device location is requested only when "Where am I" is tapped and is resolved **offline**. Deep-link URLs carry coordinates rounded to 2 dp (~1 km) and nothing else. BYO LLM keys (a stretch feature) are AES-GCM-wrapped with a non-extractable `CryptoKey` in IndexedDB, default to "session only", are displayed as last-4, and never appear in a URL, a log or the share card.
 
 ### 2.5 Offline
 
@@ -140,8 +140,8 @@ The app shell, fonts, geo data, drink data, grammar, sounds and the first-paint 
 
 ### 2.7 Repo name and identifiers
 
-- GitHub repo: **`barometer`**, public. The name becomes the Pages sub-path and `VITE_BASE_PATH=/barometer/` — renaming it later means redoing the base path and the PWA scope.
-- Android `appId`: **`com.rahul.barometer`** — can never change after the first install.
+- GitHub repo: **`barometer`**, public. The name becomes the Pages sub-path and `VITE_BASE_PATH=/barometer/`, renaming it later means redoing the base path and the PWA scope.
+- Android `appId`: **`com.rahul.barometer`**, can never change after the first install.
 - App display name: **The Globe Bar**.
 
 ### 2.8 Folder layout
@@ -211,7 +211,7 @@ barometer/
 
 ---
 
-## 3. Design & aesthetics — the complete frontend brief
+## 3. Design & aesthetics: the complete frontend brief
 
 This section is the entire visual contract. Build from it directly.
 
@@ -223,8 +223,8 @@ This section is the entire visual contract. Build from it directly.
 
 - *"Another 3D earth on a navy/space gradient with a glass card."* No navy, no starfield, no glassmorphism, no blur, nothing floating.
 - *A weather dashboard.* No stat pills, no icon grid, no forecast strip, no charts.
-- *A Prohibition speakeasy / Art-Deco template.* No gold filigree, no script fonts, no sunburst borders. **One brass line per band, one neon sign — that is the entire ornament budget.**
-- *Refined.* This is a dive bar with good bones. If a build reads as elegant-and-quiet, the levers are copy (rude), scale (the intensifier stamp at ~2×, rotated), light (the neon buzz, the lightning frame) and sound — **never more colour**.
+- *A Prohibition speakeasy / Art-Deco template.* No gold filigree, no script fonts, no sunburst borders. **One brass line per band, one neon sign, that is the entire ornament budget.**
+- *Refined.* This is a dive bar with good bones. If a build reads as elegant-and-quiet, the levers are copy (rude), scale (the intensifier stamp at ~2×, rotated), light (the neon buzz, the lightning frame) and sound, **never more colour**.
 
 **References to steal from (in spirit, not pixels):** Zoffoli globe-bar cabinets (the brass meridian cradle, the turned-wood base); Hopper's *Nighthawks* (warm interior against a cold outside, seen through a big pane); Lloyd from *The Shining* (impeccably polite, quietly judging you); Not Boring Weather (weather as a lit, tactile object); Braun SK4 (one honest material per surface); Dead Rabbit NYC printed coasters (pressed rings, stamped type, rude copy); Googie/tiki neon signage; earth.nullschool.net (the planet as an instrument you interrogate by clicking); NASA Black Marble; an antique aneroid barometer face; thermal receipt paper.
 
@@ -232,10 +232,10 @@ This section is the entire visual contract. Build from it directly.
 
 The bar has **no theme toggle**. Click somewhere in daylight and the room is on the **Day shift** (daylight through the window, oak, neon off); click into night and it is the **Night shift** (mahogany, sodium window, neon on). Before the first click, `prefers-color-scheme` decides. A pin in the Back Office can fix either shift. The shift is driven by the clicked place's `is_day`, set as `data-shift="day" | "night"` on `<html>`.
 
-### 3.3 Design tokens — paste this into `src/styles/tokens.css` verbatim
+### 3.3 Design tokens: paste this into `src/styles/tokens.css` verbatim
 
 ```css
-/* Barometer — The Globe Bar — design tokens. Night shift is :root. */
+/* Barometer, The Globe Bar, design tokens. Night shift is :root. */
 /* Register the colour tokens so the shift change (A8) can transition them. */
 @property --bg            { syntax:'<color>'; inherits:true; initial-value:#1A0F0A; }
 @property --bg-elevated   { syntax:'<color>'; inherits:true; initial-value:#2E1A10; }
@@ -252,7 +252,7 @@ The bar has **no theme toggle**. Click somewhere in daylight and the room is on 
 :root {
   color-scheme: dark;
 
-  /* colour — Night shift (default) */
+  /* colour, Night shift (default) */
   --bg: #1A0F0A; --bg-elevated: #2E1A10; --surface: #3A2114; --surface-2: #4A2C1A;
   --ink: #F3E6C8; --ink-muted: #C9B28C; --ink-faint: #8C7355;  /* faint = decorative only */
   --accent: #C9962B; --accent-ink: #1A0F0A;                    /* brass */
@@ -271,7 +271,7 @@ The bar has **no theme toggle**. Click somewhere in daylight and the room is on 
   --paper-accent: #7A5A12; --paper-accent-2: #1F6E7B;
   --paper-success: #3E6B2A; --paper-warning: #A6470E; --paper-danger: #A0281F;
 
-  /* set per verdict by JS — these three tint art, never text */
+  /* set per verdict by JS, these three tint art, never text */
   --grade: rgba(255,179,71,.12);      /* window pane tint */
   --stamp: var(--paper-ink);          /* intensifier stamp ink */
   --drink-glow: rgba(127,232,200,0);  /* coaster ring glow */
@@ -298,7 +298,7 @@ The bar has **no theme toggle**. Click somewhere in daylight and the room is on 
   /* radius */
   --radius-sm: 3px; --radius-md: 6px; --radius-lg: 14px; --radius-xl: 24px; --radius-full: 9999px;
 
-  /* elevation — warm-black contact shadows; things sit ON wood, they do not float */
+  /* elevation, warm-black contact shadows; things sit ON wood, they do not float */
   --shadow-1: 0 1px 0 rgba(0,0,0, calc(.35 * var(--shadow-alpha)));
   --shadow-2: 0 6px 14px -6px rgba(0,0,0, calc(.55 * var(--shadow-alpha)));
   --shadow-3: 0 18px 40px -12px rgba(0,0,0, calc(.7 * var(--shadow-alpha)));
@@ -320,7 +320,7 @@ The bar has **no theme toggle**. Click somewhere in daylight and the room is on 
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9 0.04' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 
-/* Day shift — set by JS from the clicked place's is_day (pinnable in the Back Office) */
+/* Day shift, set by JS from the clicked place's is_day (pinnable in the Back Office) */
 :root[data-shift="day"] {
   color-scheme: light;
   --bg: #EFE3CC; --bg-elevated: #D9B98A; --surface: #FBF4E4; --surface-2: #E6D2A6;
@@ -347,7 +347,7 @@ The bar has **no theme toggle**. Click somewhere in daylight and the room is on 
   }
 }
 
-/* Paper material scope — coaster, receipt, recipe card, share card.
+/* Paper material scope, coaster, receipt, recipe card, share card.
    Components inside read the SAME token names, so they never special-case paper. */
 .paper {
   --bg: var(--paper); --bg-elevated: var(--paper); --surface: var(--paper); --surface-2: var(--paper-2);
@@ -373,7 +373,7 @@ The bar has **no theme toggle**. Click somewhere in daylight and the room is on 
 @media (min-width: 1024px) { :root { --page-inset: 32px; } }
 ```
 
-**Tailwind bridge** in `src/index.css` — layout utilities only, materials stay hand-written:
+**Tailwind bridge** in `src/index.css`, layout utilities only, materials stay hand-written:
 
 ```css
 @import "tailwindcss";
@@ -394,7 +394,7 @@ Paper scope (both shifts): `--ink` 14.9:1 (Day 16.8:1); `--ink-muted` 7.1:1 and 
 Hard rules:
 
 1. `--ink-faint` is **decorative only** (rail shadows, coaster rings, dividers, disabled engraving). It never carries running text.
-2. `--danger` on `--surface` in Night is 4.4:1 — **large text only** (≥ 18 px / 600). For body copy on wood use the `--danger-fill #B8322E` fill with `--ink` text.
+2. `--danger` on `--surface` in Night is 4.4:1, **large text only** (≥ 18 px / 600). For body copy on wood use the `--danger-fill #B8322E` fill with `--ink` text.
 3. On the **Day shift, only `--ink` sits directly on oak (`--bg-elevated`)**. Muted and brass text on oak are forbidden.
 4. On the Night shift, text on wood is only `--ink`, `--ink-muted` or `--accent`.
 5. `--grade`, `--drink-glow` and neon **never sit behind text**.
@@ -405,22 +405,22 @@ Hard rules:
 
 | Grade family (from driving tag) | `--grade` (window tint) | `--stamp` (stamp ink) | `--drink-glow` | Window layer |
 |---|---|---|---|---|
-| **heat** — scorching, hot, uv-extreme | `#F08A3C` @ 18% | `var(--warning)` | `--warning` @ 25% | glare |
-| **muggy** — muggy, oppressive | `#1B6F6A` @ 22% | `var(--accent-2)` | `--accent-2` @ 30% | droplets |
-| **cold** — chilly, cold, freezing, arctic | `#9FD8FF` @ 20% | `var(--accent-2)` | `--accent-2` @ 20% | frost creep at apparent ≤ −10° |
-| **rain** — drizzle, rain, downpour | `#2C3440` @ 30% | `var(--ink)` | none | streaks, three parallax speeds |
-| **snow** — snow, blizzard | `#DCE6EE` @ 26% | `var(--accent-2)` | `--accent-2` @ 20% | slow flakes |
-| **storm** — storm, hail, gale | `#2C3440` @ 40% | `var(--danger)` | `--danger` @ 30% | lightning frame |
-| **fog** — fog, smog, dust | `#8C7355` @ 35% | `var(--ink-muted)` | none | desaturated pane |
-| **sodium** — late, evening | `#FFB347` @ 12% | `var(--ink)` | `--neon` @ 15% | sodium lamp |
+| **heat**: scorching, hot, uv-extreme | `#F08A3C` @ 18% | `var(--warning)` | `--warning` @ 25% | glare |
+| **muggy**: muggy, oppressive | `#1B6F6A` @ 22% | `var(--accent-2)` | `--accent-2` @ 30% | droplets |
+| **cold**: chilly, cold, freezing, arctic | `#9FD8FF` @ 20% | `var(--accent-2)` | `--accent-2` @ 20% | frost creep at apparent ≤ −10° |
+| **rain**: drizzle, rain, downpour | `#2C3440` @ 30% | `var(--ink)` | none | streaks, three parallax speeds |
+| **snow**: snow, blizzard | `#DCE6EE` @ 26% | `var(--accent-2)` | `--accent-2` @ 20% | slow flakes |
+| **storm**: storm, hail, gale | `#2C3440` @ 40% | `var(--danger)` | `--danger` @ 30% | lightning frame |
+| **fog**: fog, smog, dust | `#8C7355` @ 35% | `var(--ink-muted)` | none | desaturated pane |
+| **sodium**: late, evening | `#FFB347` @ 12% | `var(--ink)` | `--neon` @ 15% | sodium lamp |
 | anything else | keep the default | `var(--paper-ink)` | transparent | none |
 
 `--stamp` is always one of the AA-checked paper inks. `--grade` only ever tints the window pane.
 
-### 3.6 Materials — build them exactly this way
+### 3.6 Materials: build them exactly this way
 
 ```css
-/* Mahogany / oak — the only texture in the app */
+/* Mahogany / oak, the only texture in the app */
 .wood {
   position: relative;
   background: linear-gradient(180deg, var(--surface) 0%, color-mix(in oklab, var(--surface), #000 18%) 100%);
@@ -431,10 +431,10 @@ Hard rules:
   opacity: var(--grain-opacity); mix-blend-mode: overlay;
 }
 
-/* Brass — one highlight, one shadow. Text on brass uses the flat --accent-ink. */
+/* Brass, one highlight, one shadow. Text on brass uses the flat --accent-ink. */
 .brass { background: var(--brass-gradient); color: var(--accent-ink); box-shadow: var(--shadow-1); }
 
-/* Coaster paper — pressed ring, never white */
+/* Coaster paper, pressed ring, never white */
 .coaster__face {
   position: relative; backface-visibility: hidden; -webkit-backface-visibility: hidden;
   border-radius: var(--radius-md); padding: var(--space-5);
@@ -445,7 +445,7 @@ Hard rules:
   border: 1px solid color-mix(in oklab, var(--paper-ink) 12%, transparent);
 }
 
-/* Neon — a tube, not a glow blob: 1.6px stroke + two drop-shadows, transparent fill */
+/* Neon, a tube, not a glow blob: 1.6px stroke + two drop-shadows, transparent fill */
 .neon {
   color: transparent; -webkit-text-stroke: 1.6px var(--neon);
   filter: drop-shadow(0 0 4px var(--neon-glow)) drop-shadow(0 0 14px var(--neon-glow));
@@ -458,7 +458,7 @@ Hard rules:
           drop-shadow(0 0 14px color-mix(in oklab, var(--success) 45%, transparent));
 }
 
-/* Window glass — 3-stop sky under a --grade tint, weather layers above, brass mullion on top */
+/* Window glass, 3-stop sky under a --grade tint, weather layers above, brass mullion on top */
 .window {
   position: relative; overflow: hidden; min-height: 260px;
   border: 2px solid var(--border-strong); border-radius: var(--radius-sm);
@@ -474,7 +474,7 @@ Hard rules:
     color-mix(in oklab, var(--brass-lo) 70%, transparent) calc(50% - 1px),
     color-mix(in oklab, var(--brass-lo) 70%, transparent) calc(50% + 1px), transparent calc(50% + 1px)); }
 
-/* The counter's leading edge — a 9px perspective lip so the wood has thickness */
+/* The counter's leading edge, a 9px perspective lip so the wood has thickness */
 .counter { position:relative; border-top: 2px solid var(--border-strong);
   background: linear-gradient(180deg, var(--surface) 0%, color-mix(in oklab, var(--surface), #000 18%) 100%); }
 .counter::before { content:''; position:absolute; left:0; right:0; top:-9px; height:9px; opacity:.9;
@@ -498,7 +498,7 @@ Three voices = three characters. **The sign** (Righteous) shouts. **The print** 
 
 | Role | Family | Fontsource package | Weights | Where |
 |---|---|---|---|---|
-| `--font-display` | **Righteous** (OFL) — a Googie/tiki sign letter | `@fontsource/righteous` (static 400, ~24 KB latin) | 400 only | Neon sign, drink name, intensifier stamp, BAR/BARISTA, "THE TAB" plate, empty-state lines. **Never below 20 px.** |
+| `--font-display` | **Righteous** (OFL): a Googie/tiki sign letter | `@fontsource/righteous` (static 400, ~24 KB latin) | 400 only | Neon sign, drink name, intensifier stamp, BAR/BARISTA, "THE TAB" plate, empty-state lines. **Never below 20 px.** |
 | `--font-body` | **Space Grotesk** (OFL, variable) | `@fontsource-variable/space-grotesk` (~60 KB latin) | 400 body · 500 bartender lines · 600 labels/buttons · 700 small caps | Coaster copy, recipe, settings, tooltips, tab rows |
 | `--font-mono` | **JetBrains Mono** (OFL, variable) | `@fontsource-variable/jetbrains-mono` | 400 · 600 | Receipt, dial window, register display, coordinates, local time, attribution, share card |
 
@@ -514,21 +514,21 @@ Rules:
 - Righteous: `letter-spacing: .02em` at display sizes, `.06em` for the small neon (BARISTA); always uppercase for signs; **Title Case for drink names** ("Dark 'n' Stormy" keeps its apostrophes).
 - Small-caps labels: uppercase, 13 px / 700, `letter-spacing: .08em`, `--ink-muted`.
 - Body: `letter-spacing: -.005em`, max measure **34em** on paper.
-- **Every figure is JetBrains Mono with `font-variant-numeric: tabular-nums`** — temperatures, dew point, wind, UV, AQI, coordinates, times — so nothing jitters when a number rolls. Degrees use the real `°`. **Negatives use U+2212 `−`, never a hyphen.**
+- **Every figure is JetBrains Mono with `font-variant-numeric: tabular-nums`**, temperatures, dew point, wind, UV, AQI, coordinates, times, so nothing jitters when a number rolls. Degrees use the real `°`. **Negatives use U+2212 `−`, never a hyphen.**
 - Place names come from Natural Earth's Latin `name` field, so no extra script coverage is required. Non-Latin names (only possible via the optional Nominatim lever) fall back through the stack to `system-ui`.
 
 ### 3.8 Spacing, radius, elevation, borders, grid
 
 - **Page inset** 16 px mobile / 32 px desktop; band gutters 24 px; coaster padding 24 px (32 px desktop); receipt padding 12 px 16 px.
-- **Radius:** 3 px buttons/plates · 6 px drawer/cards · 14 px bottom-sheet top corners and register · 24 px share card and the desktop coaster · full for the round coaster, pin head and dial. Squares and hairlines everywhere else — the bar is *built*, not blobbed.
+- **Radius:** 3 px buttons/plates · 6 px drawer/cards · 14 px bottom-sheet top corners and register · 24 px share card and the desktop coaster · full for the round coaster, pin head and dial. Squares and hairlines everywhere else, the bar is *built*, not blobbed.
 - **Elevation:** contact shadows only (`--shadow-1/2/3`). Day multiplies alpha by 0.6 via `--shadow-alpha`. **No glow shadows** except the neon and the coaster's `--drink-glow` ring.
-- **Borders:** hairlines 1 px `--border`; structural brass rails 2 px `--border-strong`. **Max one brass line per band** — the rail under the bottles, the meridian ring on the globe, the foot-rail on the counter.
+- **Borders:** hairlines 1 px `--border`; structural brass rails 2 px `--border-strong`. **Max one brass line per band**, the rail under the bottles, the meridian ring on the globe, the foot-rail on the counter.
 - **Grid:** 1200 px max content width. Desktop bands are 16 % / 52 % / 32 % of viewport height (counter min 260 px). Phone bands are 56 px / ~50 vh / remainder as a sheet. One `--globe-size` variable drives the canvas **and** the SVG cradle so they stay registered.
 - Use CSS **container queries** on the bar root (`container-type: inline-size; container-name: bar`) so the phone layout works inside a device frame as well as at a real narrow viewport: `@container bar (max-width: 899px)` and `@container bar (min-width: 900px)`.
 
 ### 3.9 Motion language
 
-**Principles.** (1) *Mass and surface* — nothing fades in from nowhere; things slide, drop, tilt, settle and cast a shadow while doing it. (2) *Print, don't type* — text is already on the coaster when it arrives; only the receipt prints line by line, because a receipt does. (3) *Weather moves like weather* — slow, continuous, low-contrast, **on the window only**. (4) *One overshoot per gesture* — the coaster lands with 6 px overshoot; nothing else bounces. (5) *Idle is cheap* — a drifting globe and a ticking display; no particle systems until a click.
+**Principles.** (1) *Mass and surface*, nothing fades in from nowhere; things slide, drop, tilt, settle and cast a shadow while doing it. (2) *Print, don't type*, text is already on the coaster when it arrives; only the receipt prints line by line, because a receipt does. (3) *Weather moves like weather*, slow, continuous, low-contrast, **on the window only**. (4) *One overshoot per gesture*, the coaster lands with 6 px overshoot; nothing else bounces. (5) *Idle is cheap*, a drifting globe and a ticking display; no particle systems until a click.
 
 Motion presets in `src/motion/springs.ts`: `soft = { stiffness: 220, damping: 26 }` (coaster), `snappy = { stiffness: 420, damping: 34 }` (toggles, sign), `drop = { stiffness: 500, damping: 18 }` (ice cubes). Wrap the app in `<MotionConfig reducedMotion="user">`.
 
@@ -549,29 +549,29 @@ Motion presets in `src/motion/springs.ts`: `soft = { stiffness: 220, damping: 26
 
 Scene durations: fly-to 1200 ms · coaster slide ~620 ms · frost creep 1600 ms · condensation bloom 1200 ms · receipt tear 260–420 ms.
 
-**Reduced motion** (`prefers-reduced-motion: reduce` **or** the Back Office `Motion: less` lever — both must produce the identical DOM):
+**Reduced motion** (`prefers-reduced-motion: reduce` **or** the Back Office `Motion: less` lever, both must produce the identical DOM):
 
 - Globe damping stays (it is user-driven) but auto-rotate is **off**.
 - Fly-to becomes a 480 ms opacity cross-fade with an instant camera cut.
 - Coaster, bottle and pin use 200 ms `opacity + translateY(8px)` only.
 - The receipt appears whole; ice cubes appear in place.
 - Window weather is a single static frame (`data-static="true"` on every layer); no frost creep.
-- Lightning becomes a static 300 ms brightness step — no flash.
+- Lightning becomes a static 300 ms brightness step, no flash.
 - The neon does not flicker.
-- **The dial needle still moves** (600 ms) because it carries information — but without overshoot.
+- **The dial needle still moves** (600 ms) because it carries information, but without overshoot.
 
 ### 3.10 The signature interactions
 
 **3.10.1 The Flick + the Pin.**
 1. Pointer-down on the globe stops the idle drift; dragging rotates with heavy bearing damping (A12). A flick above 0.6 rad/s plays the bearing whirr, its `playbackRate` following angular speed (0.8–1.6).
 2. Tap → `onGlobeClick({lat, lng})` → the brass pin drops (A2) with a "tink" and the ripple ring spreads; the camera flies (A3).
-3. In the ~300 ms before Open-Meteo answers, a **blank** coaster (pressed ring only) slides in (A1) so the bar reacts instantly. The printed coaster then replaces it **in the same DOM node** — no second slide.
+3. In the ~300 ms before Open-Meteo answers, a **blank** coaster (pressed ring only) slides in (A1) so the bar reacts instantly. The printed coaster then replaces it **in the same DOM node**, no second slide.
 *Haptics:* `impact Light` on pointer-down, `impact Medium` on pin drop, `selectionChanged` every 30° while dragging (cradle detents).
 
 **3.10.2 The Slide (the verdict).**
-1. The bartender pushes a cream coaster across the mahogany from his side — from the right on desktop, from below on mobile: 4° → 0° rotate, 6 px overshoot, a wooden "shhk".
+1. The bartender pushes a cream coaster across the mahogany from his side, from the right on desktop, from below on mobile: 4° → 0° rotate, 6 px overshoot, a wooden "shhk".
 2. It is already printed: place line, local time + dew point, one weather jab, the drink name in Righteous, the intensifier stamp rotated −4°, a mono receipt strip.
-3. Simultaneously the bottle nods (A4) and the dial swings (A5) — **you can see the decision before you read it.**
+3. Simultaneously the bottle nods (A4) and the dial swings (A5), **you can see the decision before you read it.**
 *Haptics:* `impact Light` on landing.
 
 **3.10.3 The Pour (ice / heat / weather on the glass).**
@@ -582,7 +582,7 @@ Scene durations: fly-to 1200 ms · coaster slide ~620 ms · frost creep 1600 ms 
 
 **3.10.4 The Barista Flip.**
 1. The small neon sign in the window reads **BAR** (amber). Tap it: a 240 ms clack, it swings on Y and now reads **BARISTA** in green neon.
-2. Spirits dim to 60 %; the tea tin, cocoa, ginger beer and syrups light up; the current coaster re-prints with the mocktail twin — **without re-scoring and without replaying the slide**.
+2. Spirits dim to 60 %; the tea tin, cocoa, ginger beer and syrups light up; the current coaster re-prints with the mocktail twin, **without re-scoring and without replaying the slide**.
 3. Auto-*suggested*, never forced, when the clicked spot's local hour is < 11: a brass tag on the coaster reads "It's 9 a.m. there. I am legally a barista now." with the flip as its action.
 4. Persisted (`localStorage` on web, `@capacitor/preferences` on Android). 44×44 target, `role="switch"`, `aria-checked`, accessible name "Alcohol-free menu".
 *Haptics:* `selectionChanged`.
@@ -590,12 +590,12 @@ Scene durations: fly-to 1200 ms · coaster slide ~620 ms · frost creep 1600 ms 
 **3.10.5 The Tear-off (share).**
 1. The register prints a thermal receipt (A6) with the verdict, the stats, a tiny dotted globe with the pin, the local time, and the attribution lines.
 2. Pull it down (mobile drag ≥ 56 px) or press the register's TEAR key: the paper rips along the perforation (the `tornEdge` filter, 260 ms) with a "zzzt".
-3. It becomes a **1080×1350 PNG** rendered on a canvas (after `document.fonts.load`, capped at a 2 s wait, then draw anyway) — Web Share on mobile, download on desktop, `@capacitor/share` in the APK.
+3. It becomes a **1080×1350 PNG** rendered on a canvas (after `document.fonts.load`, capped at a 2 s wait, then draw anyway), Web Share on mobile, download on desktop, `@capacitor/share` in the APK.
 *Haptics:* `impact Medium` on tear.
 
-### 3.11 Window weather layers — exact recipes (CSS/SVG only, never a shader pass)
+### 3.11 Window weather layers: exact recipes (CSS/SVG only, never a shader pass)
 
-All layers live inside `.window`, `z-index: 1` (the flash is `z-index: 4`), `pointer-events: none`, `opacity: 0` by default with `.is-on` switching to 1 over `--dur-slow`. **No layer's bounding box may ever intersect the coaster's rect** — this is an automated test.
+All layers live inside `.window`, `z-index: 1` (the flash is `z-index: 4`), `pointer-events: none`, `opacity: 0` by default with `.is-on` switching to 1 over `--dur-slow`. **No layer's bounding box may ever intersect the coaster's rect**, this is an automated test.
 
 ```css
 .wx { position:absolute; inset:0; z-index:1; pointer-events:none; opacity:0;
@@ -650,14 +650,14 @@ All layers live inside `.window`, `z-index: 1` (the flash is `z-index: 4`), `poi
 @keyframes strike { 0%{opacity:0} 6%{opacity:.9} 22%{opacity:.05} 30%{opacity:.55} 100%{opacity:0} }
 ```
 
-Only `transform` and `opacity` animate — everything stays on the compositor. Under reduced motion, every `animation` is `none` and each layer is one static frame.
+Only `transform` and `opacity` animate, everything stays on the compositor. Under reduced motion, every `animation` is `none` and each layer is one static frame.
 
 ### 3.12 Iconography and illustration
 
-- **Icons:** Lucide only, 20 px, 1.75 px stroke, `currentColor`, and **only** in the Back Office, the search box and sheet chrome. On the bar itself there are no icons — a bottle, a dial, a sign and a plate *are* the icons.
+- **Icons:** Lucide only, 20 px, 1.75 px stroke, `currentColor`, and **only** in the Back Office, the search box and sheet chrome. On the bar itself there are no icons, a bottle, a dial, a sign and a plate *are* the icons.
 - **Own SVG illustration (MIT with the repo), 2 px `--brass-lo` stroke, flat dark fill:**
   - 12 bottle silhouettes: rum, gin, whisky, tequila, vodka, vermouth, bitters, syrup, tea tin, cocoa tin, ginger beer, mint sprig. Total inline SVG ≤ 18 KB gzip.
-  - 9 glassware line-art shapes: rocks, highball, coupe, mug, copper mug, tiki, flute, pint, teacup — plus ice cube, crushed ice, steam wisp and a garnish set. Filled with the drink's `colour` and drawn with the correct ice type.
+  - 9 glassware line-art shapes: rocks, highball, coupe, mug, copper mug, tiki, flute, pint, teacup, plus ice cube, crushed ice, steam wisp and a garnish set. Filled with the drink's `colour` and drawn with the correct ice type.
   - The aneroid dial: bezel, engraved ring text on a `<textPath>` (`ARCTIC · FREEZING · CHILLY · FAIR · MUGGY · SOUP · SCORCHING`), needle (`transform-origin: 50px 50px`), mono window.
   - The neon tube wordmark and the BAR/BARISTA sign (SVG text set in Righteous; outline the glyphs at build time for the share card).
   - The brass cradle: back ring, front ring with degree ticks, turned-wood base; the brass pin; the foot-rail; the register (bakelite body + brass keys + VFD slot); the coaster pressed-ring mask; the receipt perforation and torn-edge filters; the dotted fallback globe generated from `land-dots.json` at build time.
@@ -684,24 +684,24 @@ Every sound is a bar sound; there are no UI beeps. Audio is silent until the fir
 
 Implementation: one Howler sprite (`public/sounds/bar.ogg` + `bar.json`) for the one-shots, a hand-built Web Audio graph for the beds. Every CC0 file is listed with its Freesound/Kenney id in `public/sounds/ATTRIBUTION.md` **and** `src/data/attribution.json`.
 
-**Haptics map** (Capacitor build; on the web only `navigator.vibrate(12)` on the pin drop): `impact Light` — globe pointer-down, coaster landing. `impact Medium` — pin drop, receipt tear. `impact Heavy` 40 ms — lightning. `selectionChanged` — 30° drag detents, sign flip, levers. `notification Warning` — a danger-tier insult. All haptics respect the Back Office lever **and** the system setting.
+**Haptics map** (Capacitor build; on the web only `navigator.vibrate(12)` on the pin drop): `impact Light`, globe pointer-down, coaster landing. `impact Medium`, pin drop, receipt tear. `impact Heavy` 40 ms, lightning. `selectionChanged`, 30° drag detents, sign flip, levers. `notification Warning`, a danger-tier insult. All haptics respect the Back Office lever **and** the system setting.
 
 ### 3.14 Accessibility rules
 
 - **Contrast:** all running text ≥ 4.5:1 against its actual background per §3.4. `--ink-faint` and `--danger`-on-wood are decorative or large-text (≥ 18 px / 600, 3:1) only. Axe runs on every screen in both shifts, and separately inside `.paper`.
 - **Focus:** `2px solid var(--focus)` with `2px` offset on **every** interactive element including the globe canvas wrapper. `:focus-visible` only; focus is never removed.
-- **Touch targets:** ≥ 44×44 px — bottles (padded hit area), pin, sign, dial, levers, coaster buttons, TEAR key, search rows. Tab rows are 56 px and the whole row is the target.
+- **Touch targets:** ≥ 44×44 px, bottles (padded hit area), pin, sign, dial, levers, coaster buttons, TEAR key, search rows. Tab rows are 56 px and the whole row is the target.
 - **Keyboard:** globe wrapper is `tabindex="0"`, arrow keys rotate 5°, Enter pours at the centre crosshair, `+`/`−` zoom. Tab order: sign → dial → menu → globe → search → where-am-I → register → tab. Escape closes any sheet and returns focus to its opener. No keyboard traps.
-- **Screen reader:** the globe is `role="application"` with `aria-label="World globe. Arrow keys rotate, Enter chooses the centre."`; the coaster is `role="article"` with `aria-live="polite"` announcing e.g. *"Verdict for ~12 km from Mumbai: aggressively iced Mojito"* exactly once when it prints; the dial is `role="meter"` with `aria-valuemin="-120" aria-valuemax="120" aria-valuenow` and `aria-valuetext="Feels like 31.5 degrees, tag: soup"`; bottles are buttons named e.g. `Rum — the bartender's pick`; neon signs are `role="switch"` with visible text; the receipt is a `<table>` with `<th scope="row">`; decorative SVGs are `aria-hidden="true"`.
-- **Motion:** §3.9 reduced-motion path, plus the Back Office switch. No auto-motion except the 0.18°/frame idle drift, which is off under reduced motion. **Nothing flashes above 3 Hz** — the lightning is one 80 ms frame, never repeated within 1 s.
-- **Colour independence:** hot / iced / storm are also carried by the stamp text, the glassware SVG (with an `aria-label` like `highball with crushed ice` / `mug with steam`) and the receipt — never by colour alone.
+- **Screen reader:** the globe is `role="application"` with `aria-label="World globe. Arrow keys rotate, Enter chooses the centre."`; the coaster is `role="article"` with `aria-live="polite"` announcing e.g. *"Verdict for ~12 km from Mumbai: aggressively iced Mojito"* exactly once when it prints; the dial is `role="meter"` with `aria-valuemin="-120" aria-valuemax="120" aria-valuenow` and `aria-valuetext="Feels like 31.5 degrees, tag: soup"`; bottles are buttons named e.g. `Rum, the bartender's pick`; neon signs are `role="switch"` with visible text; the receipt is a `<table>` with `<th scope="row">`; decorative SVGs are `aria-hidden="true"`.
+- **Motion:** §3.9 reduced-motion path, plus the Back Office switch. No auto-motion except the 0.18°/frame idle drift, which is off under reduced motion. **Nothing flashes above 3 Hz**, the lightning is one 80 ms frame, never repeated within 1 s.
+- **Colour independence:** hot / iced / storm are also carried by the stamp text, the glassware SVG (with an `aria-label` like `highball with crushed ice` / `mug with steam`) and the receipt, never by colour alone.
 - **Language:** insults target **weather and choices**, never people and never protected characteristics. A "gentler bartender" lever tones down the danger tier. A deny-list test (`src/wit/lint-denylist.json`) scans every grammar string.
 - **Text scaling:** rem-based throughout; the coaster reflows to a single column at 200 % zoom; the bands become scrollable on viewports under 600 px tall.
 
 ### 3.15 Android chrome
 
-- **Status bar:** `@capacitor/status-bar` with `overlaysWebView: true`, transparent background, `Style.Dark` (light icons) on the Night shift and `Style.Light` on the Day shift — flipped at runtime whenever `data-shift` changes. The back-bar strip pads by `env(safe-area-inset-top)`, the foot-rail by `env(safe-area-inset-bottom)`.
-- **Splash:** background `#1A0F0A` with the brass pin as the only mark — no text. `launchAutoHide: false`; the app calls `SplashScreen.hide()` once the neon sign has painted.
+- **Status bar:** `@capacitor/status-bar` with `overlaysWebView: true`, transparent background, `Style.Dark` (light icons) on the Night shift and `Style.Light` on the Day shift, flipped at runtime whenever `data-shift` changes. The back-bar strip pads by `env(safe-area-inset-top)`, the foot-rail by `env(safe-area-inset-bottom)`.
+- **Splash:** background `#1A0F0A` with the brass pin as the only mark, no text. `launchAutoHide: false`; the app calls `SplashScreen.hide()` once the neon sign has painted.
 - **Adaptive icon:** foreground = brass pin on a coaster ring; background `#1A0F0A`; monochrome layer = the pin silhouette. Themed-icon colours `#C9962B` on `#1A0F0A`.
 - **PWA manifest:** `theme_color` and `background_color` both `#1A0F0A`.
 - **WebView background** is set to `#1A0F0A` in `capacitor.config.ts` so there is no white flash before the first paint.
@@ -712,7 +712,7 @@ Implementation: one Howler sprite (`public/sounds/bar.ogg` + `bar.json`) for the
 
 Routes (hash router): `#/` The Bar · `#/v/:lat,:lng` The Verdict (deep-linkable) · `#/tab` The Tab · `#/office` Back Office · `#/about` Attribution. The recipe flip, the barista flip and the register are **states of The Bar**, not routes.
 
-### 4.1 The Bar (home / idle) — `#/`
+### 4.1 The Bar (home / idle): `#/`
 
 **Purpose:** make the object exist before anything is asked of it. The user should want to poke the globe within one second of arrival.
 
@@ -767,7 +767,7 @@ Phone (< 768 px):
     <WallDial/>                     // role="meter"
     <MenuButton/>                   // opens Back Office
   </BackBar>
-  <Mid>                             // band 2 — 2 columns ≥900px, stacked below
+  <Mid>                             // band 2, 2 columns ≥900px, stacked below
     <Window>
       <WindowSky/><WeatherLayers/><WindowGrade/><WindowMullion/><NeonWordmark/>
       <GlobeCradle>                 // brass rings + turned base + canvas | SvgGlobe
@@ -789,16 +789,16 @@ Phone (< 768 px):
 
 **States**
 
-- *empty* — the coaster lane shows "Spin. Tap. Survive." on a small brass plate plus one Space Grotesk line ("He has opinions about your humidity.") and a dashed ghost ring where the coaster will land. The window shows a neutral dusk (nothing asks for location).
-- *loading (first paint)* — the DOM bar renders first; **the LCP element is the neon sign + brass plate, never the canvas**. The globe canvas mounts lazily via `requestIdleCallback` with the 245 KB `earth-day.jpg`, then swaps to Blue Marble. While WebGL boots, the cradle holds the flat SVG dotted globe.
-- *offline* — search and Where-am-I are disabled with a tooltip; the register prints "NO SIGNAL · SERVING FROM THE TAB"; the neon flickers once; the last verdict is still openable from the Tab.
-- *no WebGL* — the dotted SVG globe stays and is still clickable (equirectangular hit-test); the rest of the bar is identical.
+- *empty*, the coaster lane shows "Spin. Tap. Survive." on a small brass plate plus one Space Grotesk line ("He has opinions about your humidity.") and a dashed ghost ring where the coaster will land. The window shows a neutral dusk (nothing asks for location).
+- *loading (first paint)*, the DOM bar renders first; **the LCP element is the neon sign + brass plate, never the canvas**. The globe canvas mounts lazily via `requestIdleCallback` with the 245 KB `earth-day.jpg`, then swaps to Blue Marble. While WebGL boots, the cradle holds the flat SVG dotted globe.
+- *offline*, search and Where-am-I are disabled with a tooltip; the register prints "NO SIGNAL · SERVING FROM THE TAB"; the neon flickers once; the last verdict is still openable from the Tab.
+- *no WebGL*, the dotted SVG globe stays and is still clickable (equirectangular hit-test); the rest of the bar is identical.
 
 **Gestures:** drag/flick the globe; tap the globe; pull the counter sheet up (mobile); tap the dial to open the receipt sheet; long-press the register display to pause the ticker.
 
-**Transitions:** opening the Tab or Back Office slides a drawer (`translateY(100%) → 0` on phone, `translateX(100%) → 0` on desktop, `--dur-slow --ease-out`) and fades in a scrim at 50 % (Night) / an oak scrim (Day) — the scene keeps breathing behind it.
+**Transitions:** opening the Tab or Back Office slides a drawer (`translateY(100%) → 0` on phone, `translateX(100%) → 0` on desktop, `--dur-slow --ease-out`) and fades in a scrim at 50 % (Night) / an oak scrim (Day), the scene keeps breathing behind it.
 
-### 4.2 The Verdict (coaster) — `#/v/19.08,72.88`
+### 4.2 The Verdict (coaster): `#/v/19.08,72.88`
 
 **Purpose:** deliver the joke and the data in one printed object.
 
@@ -870,18 +870,18 @@ Phone (the coaster is square and lives in the counter sheet):
 
 **States**
 
-- *skeleton* — the pressed ring plus three `.skel` bars in `--surface-2`. **No shimmer** — it is paper, not glass.
-- *success* — as drawn above.
-- *ocean* — the place line reads "You are in the Arabian Sea. There is no bar here."; the receipt strip gains `SST 28.9°` and `WAVES 2.4 M`; the credit line gains `· DWD`; the drink comes from the ocean family.
-- *polar* — the local-time line carries the hedge flag (`approximate: true`) and the grammar phrases it loosely; the polar joke closer fires.
-- *error* — "The models are not answering. Try again." with a brass RETRY plate; the window is unchanged.
-- *rate-limited* — "Bar's busy. Give it a minute." with RETRY disabled and a visible 60 s countdown.
-- *stale* — a brass tag "re-poured from memory".
-- *suggested-barista* — the brass tag "It's 9 a.m. there. I am legally a barista now." with a flip button.
+- *skeleton*, the pressed ring plus three `.skel` bars in `--surface-2`. **No shimmer**, it is paper, not glass.
+- *success*, as drawn above.
+- *ocean*, the place line reads "You are in the Arabian Sea. There is no bar here."; the receipt strip gains `SST 28.9°` and `WAVES 2.4 M`; the credit line gains `· DWD`; the drink comes from the ocean family.
+- *polar*, the local-time line carries the hedge flag (`approximate: true`) and the grammar phrases it loosely; the polar joke closer fires.
+- *error*, "The models are not answering. Try again." with a brass RETRY plate; the window is unchanged.
+- *rate-limited*, "Bar's busy. Give it a minute." with RETRY disabled and a visible 60 s countdown.
+- *stale*, a brass tag "re-poured from memory".
+- *suggested-barista*, the brass tag "It's 9 a.m. there. I am legally a barista now." with a flip button.
 
 **Gestures:** tap the coaster (outside controls) → flip; swipe left on mobile → the "second opinion" (next-best drink, no refetch); pull the receipt → tear; tap the dial → the receipt sheet.
 
-**Transition in:** A1 slide + A2 pin + A4 bottle nod + A5 dial swing all start in the same frame. The printed coaster replaces the skeleton **in place** — the same DOM node, no unmount, no second slide.
+**Transition in:** A1 slide + A2 pin + A4 bottle nod + A5 dial swing all start in the same frame. The printed coaster replaces the skeleton **in place**, the same DOM node, no unmount, no second slide.
 
 ### 4.3 The Recipe (coaster back face)
 
@@ -904,16 +904,16 @@ Phone (the coaster is square and lives in the counter sheet):
 ```
 
 **Components:** `RecipeTable` (a `<table>`; first column 74 px, mono, tabular, `--ink-muted`), `GlasswareSVG`, `MethodList` (`<ol>`, ≤ 3 items), `VirginToggle`, `CreditLine`.
-**States:** *alcoholic*; *virgin twin* (swaps in place, a green BARISTA stamp appears); *no twin* — "No virgin twin for this one. Have a lime soda and think about it."
+**States:** *alcoholic*; *virgin twin* (swaps in place, a green BARISTA stamp appears); *no twin*, "No virgin twin for this one. Have a lime soda and think about it."
 **Gestures:** tap anywhere outside the controls → flip back. Keyboard: Enter on the card flips, Escape flips back. The flip is A7 (420 ms).
 
-### 4.4 The Barista Flip — a state of 4.1 / 4.2
+### 4.4 The Barista Flip: a state of 4.1 / 4.2
 
 `window: [BAR] → clack → [BARISTA] (green neon) · shelf: spirits dim to 60 %, tea/cocoa/ginger/syrup light up · coaster re-prints: "Virgin Mojito. Same insult, no rum."`
 
 **States:** *off* (amber BAR) · *on* (green BARISTA, `--success`) · *suggested* (the brass tag on the coaster). Persisted. `role="switch" aria-checked`, accessible name "Alcohol-free menu", 44×44.
 
-### 4.5 The Register (share receipt) — a state of 4.2
+### 4.5 The Register (share receipt): a state of 4.2
 
 ```
 ┌ REGISTER ─────────────────────────┐
@@ -934,11 +934,11 @@ Phone (the coaster is square and lives in the counter sheet):
 └───────────────────────────────────┘
 ```
 
-The receipt prints (A6) when a verdict lands. Every line is **≤ 32 characters** (thermal width) — a property test over all fixtures. On desktop the register sits on the counter; on mobile it is a sheet opened from the dial or the coaster's "Tear off". The VFD is `#0B0703` with a `--brass-lo` border and `--neon` text with an 8 px text-shadow.
+The receipt prints (A6) when a verdict lands. Every line is **≤ 32 characters** (thermal width), a property test over all fixtures. On desktop the register sits on the counter; on mobile it is a sheet opened from the dial or the coaster's "Tear off". The VFD is `#0B0703` with a `--brass-lo` border and `--neon` text with an 8 px text-shadow.
 **States:** *printing* · *ready* · *torn* (a stub remains: "receipt torn 02:15") · *share failed* (falls back to download plus a toast "Saved to your device").
 **Share card:** 1080×1350 PNG on a paper field with a mahogany border and the neon wordmark in Righteous, carrying the same content plus the credit lines.
 
-### 4.6 The Tab (history) — `#/tab`
+### 4.6 The Tab (history): `#/tab`
 
 Desktop: a drawer under the counter (right third, 390 px). Phone: a full sheet (max 88 % height).
 
@@ -946,16 +946,16 @@ Desktop: a drawer under the counter (right third, 390 px). Phone: a full sheet (
 ┌ THE TAB (brass plate) ────────────────────────┐
 │ #0007  Mumbai, IN     02:14  Mojito      31.5°│ ← 56px row, whole row is the target
 │ #0006  Reykjavík, IS  23:40  Hot Toddy    2.1°│
-│ #0005  Arabian Sea    —      Dark 'n' Stormy  │
+│ #0005  Arabian Sea  ,      Dark 'n' Stormy  │
 │ ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ │
 │ [Export JSON] [Import] [Clear tab]            │
 └───────────────────────────────────────────────┘
 ```
 
-Row layout is `grid-template-columns: auto 1fr auto` — `.tabrow__id` (mono, `--ink-faint`), `.tabrow__place` + `.tabrow__sub` (mono, `--ink-muted`), `.tabrow__temp` (mono, tabular, `--accent`). Tapping a row re-flies the globe and re-prints from the stored verdict — **no refetch unless the row is older than 15 minutes**, in which case one fetch happens and a small "re-poured" tag appears. Long-press / right-click a row → tear-off PNG.
-**States:** *empty* ("No tab yet. Go somewhere." in Righteous `--text-xl`, `--ink-muted`, centred) · *list* · *importing* · *confirm clear* (an inline brass CONFIRM plate — **never a modal**).
+Row layout is `grid-template-columns: auto 1fr auto`, `.tabrow__id` (mono, `--ink-faint`), `.tabrow__place` + `.tabrow__sub` (mono, `--ink-muted`), `.tabrow__temp` (mono, tabular, `--accent`). Tapping a row re-flies the globe and re-prints from the stored verdict, **no refetch unless the row is older than 15 minutes**, in which case one fetch happens and a small "re-poured" tag appears. Long-press / right-click a row → tear-off PNG.
+**States:** *empty* ("No tab yet. Go somewhere." in Righteous `--text-xl`, `--ink-muted`, centred) · *list* · *importing* · *confirm clear* (an inline brass CONFIRM plate, **never a modal**).
 
-### 4.7 The Back Office (settings) — `#/office`
+### 4.7 The Back Office (settings): `#/office`
 
 ```
 ┌ BACK OFFICE ──────────────────────────┐
@@ -981,7 +981,7 @@ Row layout is `grid-template-columns: auto 1fr auto` — `.tabrow__id` (mono, `-
 
 Levers are bar-tap levers (`role="switch"`, 60×32 track with a 24 px brass knuckle that slides 26 px), radio groups are brass segmented controls (`.seg button[aria-checked="true"]` gets the brass gradient and `#1A0F0A` text), and the volume is a brass knob (`role="slider"`, min 0 max 100 step 5, ArrowUp/Right +5, ArrowDown/Left −5, Home/End, value announced). The AI-garnish rungs 1–3 are stretch work: ship rung 0 selected and the others disabled with a note.
 
-### 4.8 About — `#/about`
+### 4.8 About: `#/about`
 
 Renders `src/data/attribution.json` as a table plus the licence text for the app itself. Mono, `--text-xs`, `line-height: 1.7`.
 
@@ -989,10 +989,10 @@ Renders `src/data/attribution.json` as a table plus the licence text for the app
 
 - **First visit, no permission:** the window shows a neutral dusk. Nothing asks for location until "Where am I" is tapped.
 - **Offline:** the neon flickers once, the register prints "NO SIGNAL · SERVING FROM THE TAB", cached verdicts open, new clicks print the error coaster.
-- **WebGL context lost:** the cradle keeps the SVG dotted globe and a brass tag appears on the counter — "The globe's bearings seized. Tap to re-seat." — which remounts the canvas.
+- **WebGL context lost:** the cradle keeps the SVG dotted globe and a brass tag appears on the counter, "The globe's bearings seized. Tap to re-seat.", which remounts the canvas.
 - **Bad deep link:** the coaster prints "Nowhere on Earth has those coordinates. Impressive." with a "Back to the bar" plate.
 - **Dexie quota / blocked:** the verdict is still shown; the Tab write is skipped with a one-time toast "The Tab is full. Export and clear."
-- **Geolocation denied:** a tooltip — "The bar respects your privacy. Spin the globe instead."
+- **Geolocation denied:** a tooltip, "The bar respects your privacy. Spin the globe instead."
 - **Toasts** are brass tags on the counter edge, 4 s, one at a time.
 
 ### 4.10 Component inventory
@@ -1002,9 +1002,9 @@ Renders `src/data/attribution.json` as a table plus the licence text for the app
 | `NeonSign` | wordmark (5xl), BAR/BARISTA (4xl), caption | off (Day), on, flicker-on, barista (green) |
 | `BrassPlate` | caption, button, tag | default, hover (highlight shifts 6 %), pressed (120 ms inset), focus, disabled (`--ink-faint` engraving) |
 | `GlobeCradle` | globe.gl canvas, SVG fallback | idle drift, dragging, flying, pinned, context-lost |
-| `BrassPin` | — | dropped, hover (coords tooltip), dragging (re-pour on release) |
+| `BrassPin` |: | dropped, hover (coords tooltip), dragging (re-pour on release) |
 | `Bottle` | rum, gin, whisky, tequila, vodka, vermouth, bitters, syrup, tea, cocoa, ginger-beer, mint | default, picked (lit, −7°), dimmed, tooltip |
-| `WallDial` | full (desktop 124 px), roundel (phone 56 px, ring text hidden) | swinging, settled, unknown (needle at FAIR, window "—") |
+| `WallDial` | full (desktop 124 px), roundel (phone 56 px, ring text hidden) | swinging, settled, unknown (needle at FAIR, window ", ") |
 | `Window` | sky day/night, 8 weather layers, neon slot | per grade tag; static under reduced motion |
 | `Coaster` | round (desktop), square (phone sheet), skeleton, back face | sliding, printed, flipped, error, ocean, polar, suggested-barista, stale |
 | `IntensifierStamp` | hot, iced, storm, barista | stamped (−4°) |
@@ -1014,7 +1014,7 @@ Renders `src/data/attribution.json` as a table plus the licence text for the app
 | `Lever` | bar-tap, small | on/off, focus, disabled |
 | `BrassKnob` | volume | dragging, focus (keyboard) |
 | `Search` | counter, sheet | empty, typing, results (brass rows), no results ("Never heard of it.") |
-| `TabRow` | — | default, hover, active, stale |
+| `TabRow` |: | default, hover, active, stale |
 | `Sheet` / `Drawer` | counter sheet, register sheet, Back Office, Tab | peek, open, dragging, closed |
 | `Tooltip` / `Toast` | brass tag | info, error |
 
@@ -1042,7 +1042,7 @@ export interface PlaceHit {
 // ────────────── weather (normalised from Open-Meteo) ──────────────
 export interface WeatherSnapshot {
   fetchedAt: number;                 // epoch ms, client clock
-  cellKey: string;                   // "19,73" — see §6.7
+  cellKey: string;                   // "19,73", see §6.7
   timezone: string;                  // IANA, from timezone=auto
   utcOffsetSeconds: number;
   current: {
@@ -1108,7 +1108,7 @@ export interface Recipe {
 
 export interface Drink {                 // src/data/bar-menu.json entries
   id: string;                            // "mojito"
-  name: string;                          // "Mojito" — Title Case; "Dark 'n' Stormy" keeps its apostrophes
+  name: string;                          // "Mojito", Title Case; "Dark 'n' Stormy" keeps its apostrophes
   base: Base; alcoholic: boolean; abv: number; serve: Serve; glass: Glass;
   ice: 'cubes' | 'crushed' | 'none';
   colour: string;                        // fill for GlasswareSVG, e.g. "#CFE8D2"
@@ -1161,7 +1161,7 @@ export interface Settings {
 export interface TickerCity { name: string; tz: string; lat: number; lng: number }
 ```
 
-**Dexie schema** — `src/state/db.ts`:
+**Dexie schema**, `src/state/db.ts`:
 
 ```ts
 import Dexie, { type Table } from 'dexie';
@@ -1180,11 +1180,11 @@ export class BarDB extends Dexie {
 export const db = new BarDB();
 ```
 
-Indexes explained: `createdAt` powers the newest-first Tab list; `cell` powers "have I poured here recently"; `drinkId` powers future stats; `[lat+lng]` powers the deep-link lookup. **Migrations:** any change to either table bumps `this.version(N)` with an `upgrade()` that preserves every existing `verdicts` row — The Tab must survive app updates. Never ship an `upgrade()` that drops rows. On boot, prune `weatherCache` to the newest **200** rows.
+Indexes explained: `createdAt` powers the newest-first Tab list; `cell` powers "have I poured here recently"; `drinkId` powers future stats; `[lat+lng]` powers the deep-link lookup. **Migrations:** any change to either table bumps `this.version(N)` with an `upgrade()` that preserves every existing `verdicts` row, The Tab must survive app updates. Never ship an `upgrade()` that drops rows. On boot, prune `weatherCache` to the newest **200** rows.
 
 **Settings** live in Zustand with `persist`, through a storage adapter in `src/platform/prefs.ts` that resolves to `localStorage` on web and `@capacitor/preferences` on Android.
 
-**Export / import format** (Tab backup — the only file the app writes):
+**Export / import format** (Tab backup, the only file the app writes):
 
 ```jsonc
 {
@@ -1203,7 +1203,7 @@ Import validates with a ~30-line hand-written guard: `app === "barometer"` (else
 
 Everything in `src/engine/**` is **pure**: no `fetch`, no `Date.now()` (the caller passes `now`), no DOM, no React, no imports from `src/features`. This is what makes it 100 % testable and what makes GOAL's determinism criterion achievable. Budget: `judge()` runs in **≤ 5 ms**; `locate()` in **≤ 20 ms** warm.
 
-### 6.1 Comfort formulas — `engine/comfort.ts`
+### 6.1 Comfort formulas: `engine/comfort.ts`
 
 ```ts
 export const cToF = (c: number) => c * 9 / 5 + 32;
@@ -1242,7 +1242,7 @@ export function windChill(tempC: number, windKmh: number): number | null {
   return 13.12 + 0.6215 * tempC - 11.37 * v + 0.3965 * tempC * v;
 }
 
-/** Magnus dew point — used only when the API omits dew_point_2m. */
+/** Magnus dew point, used only when the API omits dew_point_2m. */
 export function dewPoint(tempC: number, rh: number): number | null {
   if (rh <= 0) return null;                       // ln(0) guard
   if (rh >= 100) return tempC;
@@ -1288,13 +1288,13 @@ export const euAqiBand = (a: number | null) =>
 | `uvBand` | 0 · 2.9 · 3 · 5.9 · 6 · 7.9 · 8 · 10.9 · 11 · 14 | low·low·moderate·moderate·high·high·very-high·very-high·extreme·extreme |
 | `euAqiBand` | 0 · 19.9 · 20 · 34 · 40 · 60 · 80 · 100.1 · null | good·good·fair·fair·moderate·poor·very-poor·extremely-poor·unknown |
 
-Edge cases that must not throw: `humidex(20, 25)` (dew above temp — return a number ≥ t and set `suspicious: true`); `dewPoint(t, 0)` → `null`; an unknown WMO code → `'unknown'`.
+Edge cases that must not throw: `humidex(20, 25)` (dew above temp, return a number ≥ t and set `suspicious: true`); `dewPoint(t, 0)` → `null`; an unknown WMO code → `'unknown'`.
 
-### 6.2 WMO weather codes — `engine/wmo.ts`
+### 6.2 WMO weather codes: `engine/wmo.ts`
 
 `0` clear · `1/2/3` cloudy · `45/48` fog · `51/53/55` drizzle · `56/57` freezing-drizzle · `61/63` rain · `65` downpour · `66/67` freezing-rain · `71/73` snow · `75` heavy-snow · `77` snow-grains · `80/81` showers · `82` downpour · `85` snow-showers · `86` heavy-snow-showers · `95` storm · `96/99` hail · **anything else → `'unknown'`, never a throw.**
 
-### 6.3 Features → tags — `engine/tags.ts` (the contract)
+### 6.3 Features → tags: `engine/tags.ts` (the contract)
 
 One tag per family, except that `hail` may sit alongside another precipitation tag and `blizzard` *replaces* `snow`. `intensity` is how far into the band the value sits, clamped to 0..1. **`weight = base × (1 + intensity)`.** The array is sorted by `weight` descending.
 
@@ -1331,7 +1331,7 @@ Evaluate temperature top-down on the **API `apparent_temperature`** (falling bac
 | place | `ocean` | `place.kind === 'ocean'` | 0 | 1.5 |
 | place | `polar` | \|lat\| ≥ 66.5 | 0 | 1.2 |
 
-Notes that matter: `39 ≤ v < 62` with gusts under 60 produces **no** wind tag — that gap is deliberate. `hail` does **not** also emit `storm`. `bone-dry` needs **both** halves of its condition.
+Notes that matter: `39 ≤ v < 62` with gusts under 60 produces **no** wind tag, that gap is deliberate. `hail` does **not** also emit `storm`. `bone-dry` needs **both** halves of its condition.
 
 ```ts
 export function extractTags(f: Features): TagScore[] {
@@ -1365,7 +1365,7 @@ export function extractTags(f: Features): TagScore[] {
 }
 ```
 
-**Driving tag** — the tag that sets the dial grade, the stamp family and the window tint. It is **not** `tags[0]`; it is the first match in this priority list (C6):
+**Driving tag**, the tag that sets the dial grade, the stamp family and the window tint. It is **not** `tags[0]`; it is the first match in this priority list (C6):
 
 ```
 hail, storm, arctic, scorching, blizzard, oppressive, downpour, freezing, dust, smog,
@@ -1373,7 +1373,7 @@ uv-extreme, gale, snow, hot, muggy, rain, cold, fog, drizzle, chilly, bone-dry,
 breezy, warm, mild, still, ocean, polar, <the day-part tag>
 ```
 
-`ocean` and `polar` sit near the bottom on purpose: the ocean never drives the dial — the coaster copy handles it.
+`ocean` and `polar` sit near the bottom on purpose: the ocean never drives the dial, the coaster copy handles it.
 
 **Grade family** from the driving tag: `scorching|hot|uv-extreme → heat` · `muggy|oppressive → muggy` · `chilly|cold|freezing|arctic → cold` · `rain|drizzle|downpour → rain` · `snow|blizzard → snow` · `storm|hail|gale → storm` · `fog|smog|dust → fog` · `late|evening → sodium` · anything else → `none`. §3.5 turns the family into `--grade`, `--stamp` and `--drink-glow`.
 
@@ -1387,13 +1387,13 @@ breezy, warm, mild, still, ocean, polar, <the day-part tag>
 | `dubai-noon` | **scorching**, uv-extreme, smog, dust, afternoon | SCORCHING | day |
 | `arabian-sea` | **oppressive**, hot, breezy, ocean, late | SOUP | night |
 | `south-pole` | **arctic**, polar, morning (clock only) | ARCTIC | night |
-| `denver-hail` | **hail**, warm, **gale** (C7 — gusts 78 ≥ 60), afternoon | FAIR | day |
+| `denver-hail` | **hail**, warm, **gale** (C7: gusts 78 ≥ 60), afternoon | FAIR | day |
 | `lisbon-golden` | warm, **golden** | FAIR | day |
 | `oslo-brunch` | mild, **brunch** | FAIR | day |
 
 Boundary assertions to write: A `−25` → arctic and `−24.9` → freezing; `38` → scorching and `37.9` → hot; `28` → warm and `28.1` → hot; Td `24` → oppressive, `23.9` → muggy, `17.9` → neither; v `62` → gale, `61.9` with g `60` → gale, g `59.9` → not gale; uv `8` → uv-extreme, `7.9` → not; AQI `60` → smog; dust `100` → dust; WMO 73 with v 39 → `blizzard` (not `snow`), with v 38.9 → `snow`; (Td 2, RH 20) → `bone-dry`, (Td 2, RH 30) → not. Priority: {hot, storm, oppressive} → `storm`; {oppressive, hot} → `oppressive`; {mild, still, evening} → `mild`; {ocean, mild, late} → `mild`. Exactly one day-part tag exists for every fixture.
 
-### 6.4 Local time, day-part and the dial — `engine/daypart.ts`, `engine/dial.ts`
+### 6.4 Local time, day-part and the dial: `engine/daypart.ts`, `engine/dial.ts`
 
 ```ts
 export function localClock(now: Date, tz: string) {
@@ -1411,9 +1411,9 @@ export function localClock(now: Date, tz: string) {
 
 **The engine never reads the browser's timezone.** It always formats with the `timezone` string that came back from the API. A test proves this by running the identical fixture under `TZ=UTC` and asserting an identical result.
 
-Day-part ladder (evaluate in this exact order — the first match wins):
+Day-part ladder (evaluate in this exact order, the first match wins):
 
-1. **Polar with no sunrise/sunset row** → clock only: `23:00–03:59` → `late`; `04:00–09:59` → `morning`; `10:00–17:59` → `afternoon`; else `evening`. Set `polarApproximateTime = true` (polar timezones from `timezone=auto` are valid IANA names but arbitrary guesses — the copy hedges).
+1. **Polar with no sunrise/sunset row** → clock only: `23:00–03:59` → `late`; `04:00–09:59` → `morning`; `10:00–17:59` → `afternoon`; else `evening`. Set `polarApproximateTime = true` (polar timezones from `timezone=auto` are valid IANA names but arbitrary guesses, the copy hedges).
 2. `m ≥ 23:00` or `m < 04:00` → **`late`**.
 3. `|now − sunrise| ≤ 45 min` → **`dawn`**.
 4. `goldenHourStart ≤ now ≤ sunset` (from `suncalc.getTimes(now, lat, lng).goldenHour`) → **`golden`**.
@@ -1423,12 +1423,12 @@ Day-part ladder (evaluate in this exact order — the first match wins):
 8. otherwise → **`afternoon`**.
 
 `minutesToSunrise` / `minutesToSunset` come from the `daily.sunrise` / `daily.sunset` local ISO strings minus `current.time` (both local, no offset arithmetic needed); when the strings are empty they are `±Infinity`. The API's `is_day` is authoritative for the **shift**; sunrise/sunset only refine the day-part.
-`suggestBarista = localHour < 11 && menu === 'bar' && dayPart !== 'late'` — at 00:45 the bartender does not offer you a coffee, he makes a remark about the hour.
+`suggestBarista = localHour < 11 && menu === 'bar' && dayPart !== 'late'`, at 00:45 the bartender does not offer you a coffee, he makes a remark about the hour.
 Also expose `sunsetIn` as a formatted `"5h42m"` / `"23m"` string and `sunsetSoon = minutesToSunset > 0 && minutesToSunset <= 45` (which unlocks the "drink faster" copy hook).
 
 Fixture expectations: `mumbai` 00:45 → `late`, weekday Sunday · `yakutsk` 03:10 → `late` (and `03:59` → `late`, `04:00` → `morning` unless inside the dawn window) · `reykjavik` 14:30 sunset 20:12 → `afternoon`, `sunsetIn === '5h42m'` · `lisbon-golden` 19:35 sunset 19:58 → `golden`, `sunsetIn === '23m'`, `sunsetSoon === true` · `oslo-brunch` 10:40 Sunday → `brunch`, but the same clock on Monday → `afternoon` · `dubai-noon` 12:30 Monday → `afternoon` · `south-pole` 07:15 → `morning` with `polarApproximateTime === true` · sunrise 06:22 with local 05:40 → `dawn`, 07:06 → `dawn`, 07:08 → `morning`.
 
-**The dial.** The needle reports the **thermal tag** — the highest-weight tag in the `temp` + `humidity` families — because the dial is a thermometer, while the *stamp* is the judgment. That is why a hailstorm at 27.6 °C leaves the needle at FAIR.
+**The dial.** The needle reports the **thermal tag**, the highest-weight tag in the `temp` + `humidity` families, because the dial is a thermometer, while the *stamp* is the judgment. That is why a hailstorm at 27.6 °C leaves the needle at FAIR.
 
 ```ts
 const RING = ['ARCTIC','FREEZING','CHILLY','FAIR','MUGGY','SOUP','SCORCHING'] as const;
@@ -1440,16 +1440,16 @@ const DIAL: Record<string, typeof RING[number]> = {
 export function dial(thermalTag: Tag | null, apparentC: number | null) {
   const label = (thermalTag && DIAL[thermalTag]) ?? 'FAIR';
   const angle = RING.indexOf(label) * 40 - 120;               // −120 … +120
-  const window = apparentC === null ? '—' : fmtTemp(apparentC);
+  const window = apparentC === null ? ', ' : fmtTemp(apparentC);
   return { label, angle, window,
     valuetext: apparentC === null ? 'No reading'
       : `Feels like ${apparentC.toFixed(1)} degrees, tag: ${label.toLowerCase()}` };
 }
 ```
 
-Ring positions: ARCTIC −120 · FREEZING −80 · CHILLY −40 · FAIR 0 · MUGGY +40 · SOUP +80 · SCORCHING +120. `mumbai` → `{ label:'SOUP', angle:80, window:'31.5°', valuetext:'Feels like 31.5 degrees, tag: soup' }`. No data → `{ label:'FAIR', angle:0, window:'—' }`.
+Ring positions: ARCTIC −120 · FREEZING −80 · CHILLY −40 · FAIR 0 · MUGGY +40 · SOUP +80 · SCORCHING +120. `mumbai` → `{ label:'SOUP', angle:80, window:'31.5°', valuetext:'Feels like 31.5 degrees, tag: soup' }`. No data → `{ label:'FAIR', angle:0, window:', ' }`.
 
-### 6.5 Drink scoring and the pick — `engine/score.ts`, `engine/pick.ts`
+### 6.5 Drink scoring and the pick: `engine/score.ts`, `engine/pick.ts`
 
 ```ts
 const WARM_SIDE: Tag[] = ['hot', 'scorching', 'muggy', 'oppressive'];
@@ -1513,7 +1513,7 @@ export function pick(
 }
 ```
 
-**Worked example A — Mumbai, BAR menu.** Tags: `oppressive` 1.43, `hot` 1.35, `late` 1.02, `drizzle` 0.78, `still` 0.20. (Both worked tables below show a **selection** of the 20 bar drinks — the three that make the top three plus three more that show the serve bonus at work. The full ranking over the §6.11 menu is snapshot-pinned; `scripts/check-menu.mjs` re-derives it and asserts the top three and the margin quoted here.)
+**Worked example A, Mumbai, BAR menu.** Tags: `oppressive` 1.43, `hot` 1.35, `late` 1.02, `drizzle` 0.78, `still` 0.20. (Both worked tables below show a **selection** of the 20 bar drinks, the three that make the top three plus three more that show the serve bonus at work. The full ranking over the §6.11 menu is snapshot-pinned; `scripts/check-menu.mjs` re-derives it and asserts the top three and the margin quoted here.)
 
 | Drink | serve | Σ affinity × weight | serve bonus | **score** |
 |---|---|---|---|---|
@@ -1524,9 +1524,9 @@ export function pick(
 | Dark 'n' Stormy | iced | 1·1.35 = 1.35 | +2 | 3.35 |
 | Hot Toddy | hot | 2·0.78 = 1.56 | −3 | −1.44 |
 
-Margin 12.79 − 10.54 = 2.25 < 4 ⇒ a seeded roll among Mojito / Caipirinha / Espresso Martini with seed `19.1|72.9|0|bar`. The draw is **85 / 11 / 4**, so Mojito wins exactly 85 % of seeds; the negative-score drinks are never drawn. The pinned seed is not a hope: `seedrandom('19.1|72.9|0|bar')()` returns **0.320658…**, which is < 0.85, so `idx === 0` and **Mumbai deterministically prints the Mojito** — that is what makes DoD item 2 a fact rather than a probability. (Companion values, same generator: `19.1|72.9|0|barista` → 0.065045 ⇒ Virgin Mojito; `19.1|72.9|0|voice` → 0.993421.) Day-1 verification D1-19 re-runs these three against the real `seedrandom@3` package and corrects this paragraph if the package's ARC4 output differs by so much as a digit; if a future affinity edit ever pushes the roll into the 15 % tail, raise Mojito's `late` affinity from 1 to 2 (margin 12.79 + 1.02 − 10.54 = 3.27) or its `oppressive` from 4 to 5 (margin 3.68) rather than re-tuning the split.
+Margin 12.79 − 10.54 = 2.25 < 4 ⇒ a seeded roll among Mojito / Caipirinha / Espresso Martini with seed `19.1|72.9|0|bar`. The draw is **85 / 11 / 4**, so Mojito wins exactly 85 % of seeds; the negative-score drinks are never drawn. The pinned seed is not a hope: `seedrandom('19.1|72.9|0|bar')()` returns **0.320658…**, which is < 0.85, so `idx === 0` and **Mumbai deterministically prints the Mojito**, that is what makes DoD item 2 a fact rather than a probability. (Companion values, same generator: `19.1|72.9|0|barista` → 0.065045 ⇒ Virgin Mojito; `19.1|72.9|0|voice` → 0.993421.) Day-1 verification D1-19 re-runs these three against the real `seedrandom@3` package and corrects this paragraph if the package's ARC4 output differs by so much as a digit; if a future affinity edit ever pushes the roll into the 15 % tail, raise Mojito's `late` affinity from 1 to 2 (margin 12.79 + 1.02 − 10.54 = 3.27) or its `oppressive` from 4 to 5 (margin 3.68) rather than re-tuning the split.
 
-**Worked example B — Yakutsk, BAR menu.** Tags: `arctic` 2.73, `snow` 1.17, `late` 0.80, `still` 0.20.
+**Worked example B, Yakutsk, BAR menu.** Tags: `arctic` 2.73, `snow` 1.17, `late` 0.80, `still` 0.20.
 
 | Drink | serve | Σ affinity × weight | serve bonus | **score** |
 |---|---|---|---|---|
@@ -1535,11 +1535,11 @@ Margin 12.79 − 10.54 = 2.25 < 4 ⇒ a seeded roll among Mojito / Caipirinha / 
 | Hot Toddy | hot | 2·2.73 + 2·1.17 = 7.80 | +2 | 9.80 |
 | Mojito | iced | 0 | −3 | −3.00 |
 
-Margin 6.26 ≥ 4 ⇒ **dominant, no roll** — Yakutsk always prints Hot Buttered Rum, which satisfies "the Yakutsk fixture prints a hot dark-rum drink".
+Margin 6.26 ≥ 4 ⇒ **dominant, no roll**, Yakutsk always prints Hot Buttered Rum, which satisfies "the Yakutsk fixture prints a hot dark-rum drink".
 
-**Determinism properties to test:** the same seed twice gives the same pick; 19.07 and 19.08 share a seed (`19.1`) and therefore a pick; 19.14 and 19.16 differ (`19.1` vs `19.2`); neighbouring clicks 0.5° apart do not print two identical coasters in a row when the top scores are within 5 points. All `pick()` outputs across the nine fixtures × {bar, barista} are committed as Vitest snapshots after the first green run — **pin, then guard**: changing a `bar-menu.json` affinity must update the snapshot deliberately.
+**Determinism properties to test:** the same seed twice gives the same pick; 19.07 and 19.08 share a seed (`19.1`) and therefore a pick; 19.14 and 19.16 differ (`19.1` vs `19.2`); neighbouring clicks 0.5° apart do not print two identical coasters in a row when the top scores are within 5 points. All `pick()` outputs across the nine fixtures × {bar, barista} are committed as Vitest snapshots after the first green run, **pin, then guard**: changing a `bar-menu.json` affinity must update the snapshot deliberately.
 
-### 6.6 The intensifier stamp — `engine/intensify.ts`
+### 6.6 The intensifier stamp: `engine/intensify.ts`
 
 ```ts
 const COLD_INTEN: Tag[] = ['chilly', 'cold', 'freezing', 'arctic'];
@@ -1571,7 +1571,7 @@ export function stampFor(
 }
 ```
 
-`src/wit/grammar/intensifiers.json` — **the single source for every stamp string** (C12):
+`src/wit/grammar/intensifiers.json`, **the single source for every stamp string** (C12):
 
 ```jsonc
 {
@@ -1589,11 +1589,11 @@ export function stampFor(
 }
 ```
 
-Worked: **Mumbai** — Mojito (iced), 0.35 + 0.10 + 0.5 = 0.95 → tier 1 → **AGGRESSIVELY ICED**. **Yakutsk** — Hot Buttered Rum (hot), 0.948 + 0.5 = 1.448 → tier 2 → **SCALDING. DO NOT GO OUTSIDE.** **Reykjavík** — Hot Toddy (hot), chilly intensity 0.79 → tier 1 → **HOT, NO ARGUMENTS.** **Denver** — hail ⇒ storm family, forced tier 2 → **DO NOT GO OUTSIDE.** (with `gentler: true` it drops to tier 1, **INDOORS. NOW.**). **Dubai** — a frozen/iced drink, 0.975 + 0 + 0.5 = 1.475 → tier 2 → **SERVED IN A BUCKET** (or the frozen ladder's tier 2 if the pick is frozen). In barista mode the `ink` becomes `barista` (green) while the text ladder is unchanged.
+Worked: **Mumbai**, Mojito (iced), 0.35 + 0.10 + 0.5 = 0.95 → tier 1 → **AGGRESSIVELY ICED**. **Yakutsk**, Hot Buttered Rum (hot), 0.948 + 0.5 = 1.448 → tier 2 → **SCALDING. DO NOT GO OUTSIDE.** **Reykjavík**, Hot Toddy (hot), chilly intensity 0.79 → tier 1 → **HOT, NO ARGUMENTS.** **Denver**, hail ⇒ storm family, forced tier 2 → **DO NOT GO OUTSIDE.** (with `gentler: true` it drops to tier 1, **INDOORS. NOW.**). **Dubai**, a frozen/iced drink, 0.975 + 0 + 0.5 = 1.475 → tier 2 → **SERVED IN A BUCKET** (or the frozen ladder's tier 2 if the pick is frozen). In barista mode the `ink` becomes `barista` (green) while the text ladder is unchanged.
 
-**What colours the stamp — settle this once.** `--stamp`, set from the **grade family** by the §3.5 table, is the *only* thing that colours `.coaster__stamp`; §4.2's markup contract reads that variable and nothing else. `stamp.ink` does **not** compete with it: it exists solely to (a) carry the barista-green override, which is the one case where the drink beats the weather, and (b) populate the `data-ink` attribute that the component tests assert. So Reykjavík's stamp is `--ink` (grade family `rain`) even though `stamp.ink === 'hot'`, and that is correct, not a bug. Never derive a colour from `stamp.ink` in CSS; never derive `data-ink` from the grade family.
+**What colours the stamp, settle this once.** `--stamp`, set from the **grade family** by the §3.5 table, is the *only* thing that colours `.coaster__stamp`; §4.2's markup contract reads that variable and nothing else. `stamp.ink` does **not** compete with it: it exists solely to (a) carry the barista-green override, which is the one case where the drink beats the weather, and (b) populate the `data-ink` attribute that the component tests assert. So Reykjavík's stamp is `--ink` (grade family `rain`) even though `stamp.ink === 'hot'`, and that is correct, not a bug. Never derive a colour from `stamp.ink` in CSS; never derive `data-ink` from the grade family.
 
-### 6.7 Weather cache keys — `engine/cache.ts` / `api/cache.ts`
+### 6.7 Weather cache keys: `engine/cache.ts` / `api/cache.ts`
 
 ```ts
 const q = (n: number) => Math.round(n * 4) / 4;                       // 0.25° quantisation
@@ -1609,16 +1609,16 @@ Pinned values: `cellKey(19.07, 72.88) === '19,73'` · `cellKey(19.08, 72.88) ===
 
 Two-tier storage: an in-memory `Map` in front of the Dexie `weatherCache` table (C9). TTL 15 minutes for a fresh hit; up to **24 hours** for a *stale* hit when the network fails. Marine responses live in the same row under a `marine` sub-field, so re-clicking an ocean cell inside 15 minutes makes **zero** requests. Prune to the newest 200 rows on boot.
 
-### 6.8 Offline reverse geocoding — `engine/geocode/`
+### 6.8 Offline reverse geocoding: `engine/geocode/`
 
 **Build step** (`scripts/prep-geo.mjs`, run once, output committed):
 
-1. For every Natural Earth country feature, ensure d3's spherical winding: **`if (geoArea(feature) > 2π) reverse every ring`** — an inverted polygon covers "everything except the country" and is the single most likely silent bug in this module.
+1. For every Natural Earth country feature, ensure d3's spherical winding: **`if (geoArea(feature) > 2π) reverse every ring`**, an inverted polygon covers "everything except the country" and is the single most likely silent bug in this module.
 2. Attach `bbox` from `geoBounds(feature)`.
-3. Keep only `ADMIN, NAME, ISO_A2, CONTINENT, SUBREGION`. When `ISO_A2 === '-99'` (a Natural Earth quirk for e.g. Kosovo and N. Cyprus), fall back to `ISO_A2_EH`, then `'??'` — **never throw**.
+3. Keep only `ADMIN, NAME, ISO_A2, CONTINENT, SUBREGION`. When `ISO_A2 === '-99'` (a Natural Earth quirk for e.g. Kosovo and N. Cyprus), fall back to `ISO_A2_EH`, then `'??'`, **never throw**.
 4. Populated places: strip to `{ name, adm0name, iso_a2, lat, lng, pop_max, featurecla }` (~7,300 points, ~400 KB).
 5. Marine polygons (50 m): keep `{ name, featurecla, bbox }`.
-6. Emit `land-dots.json` — a decimated point cloud of `ne_110m_land` for the SVG fallback globe.
+6. Emit `land-dots.json`, a decimated point cloud of `ne_110m_land` for the SVG fallback globe.
 
 ```ts
 import { geoContains, geoDistance } from 'd3-geo';
@@ -1665,38 +1665,38 @@ export function locate(lat: number, lng: number): PlaceHit {
   if (polar) return { kind: 'ice', polar, label: lat > 0 ? 'On the Arctic ice' : 'On the Antarctic ice' };
 
   return { kind: 'ocean', polar, ...near,
-    // Branch on `city`, never `city!` — non-null assertions are banned outside tests (§13).
+    // Branch on `city`, never `city!`, non-null assertions are banned outside tests (§13).
     label: city && distanceKm < 400 ? `Open water, ~${Math.round(distanceKm)} km off ${city.name}`
                                     : 'The middle of nowhere, at sea' };
 }
 ```
 
-**Precedence:** a marine-polygon hit wins over a country hit (this is what makes the Caspian behave), then country, then polar ice, then "no country and no city within 400 km ⇒ open water". `polar` is purely a latitude test and is independent of `kind`. **The order of the two `find` calls in the code above is the contract** — ARCHITECTURE §5.7 and TESTING §2.5 both state it the same way, and (42.0, 51.0) → Caspian Sea is the golden row that fails the moment someone reorders them.
+**Precedence:** a marine-polygon hit wins over a country hit (this is what makes the Caspian behave), then country, then polar ice, then "no country and no city within 400 km ⇒ open water". `polar` is purely a latitude test and is independent of `kind`. **The order of the two `find` calls in the code above is the contract**, ARCHITECTURE §5.7 and TESTING §2.5 both state it the same way, and (42.0, 51.0) → Caspian Sea is the golden row that fails the moment someone reorders them.
 
-`geokdbush.around(index, **lng**, **lat**, 1, 400)` — the argument order is `lng, lat`. Getting it backwards is the classic bug in this library; write a test with a point where swapping changes the answer.
+`geokdbush.around(index, **lng**, **lat**, 1, 400)`, the argument order is `lng, lat`. Getting it backwards is the classic bug in this library; write a test with a point where swapping changes the answer.
 
 Expected results (distances ±5 %):
 
 | Point | Country | Nearest place | Sea / ocean | kind |
 |---|---|---|---|---|
-| 19.07, 72.88 | IN | Mumbai (≤ 15 km — pin the exact value on day 1) | — | land |
+| 19.07, 72.88 | IN | Mumbai (≤ 15 km: pin the exact value on day 1) |: | land |
 | 15.00, 65.00 | none | Mumbai ≈ 942 km ⇒ beyond 400 km | **Arabian Sea** | ocean |
-| −17.7, 179.9 | FJ (polygon crosses the antimeridian) | Suva | — | land/coastal, **never "ocean"** |
-| −17.7, −179.9 | FJ | Suva | — | same as above |
-| −29.6, 28.2 | **LS** (enclave — must not return ZA) | Maseru | — | land |
-| 64.13, −21.90 | IS | Reykjavík ≈ 3 km, `isCapital: true` | — | land |
-| 62.03, 129.73 | RU | Yakutsk < 1 km | — | land |
-| −89.9, 0 | AQ | > 400 km | — | land + `polar` |
+| −17.7, 179.9 | FJ (polygon crosses the antimeridian) | Suva |: | land/coastal, **never "ocean"** |
+| −17.7, −179.9 | FJ | Suva |: | same as above |
+| −29.6, 28.2 | **LS** (enclave: must not return ZA) | Maseru |: | land |
+| 64.13, −21.90 | IS | Reykjavík ≈ 3 km, `isCapital: true` |: | land |
+| 62.03, 129.73 | RU | Yakutsk < 1 km |: | land |
+| −89.9, 0 | AQ | > 400 km |: | land + `polar` |
 | 89.9, 100 | none | > 400 km | Arctic Ocean | ocean + `polar` |
-| 42.0, 51.0 | none | Aktau < 400 km | Caspian Sea | **ocean** — the sea polygon beats "a city within 400 km" |
+| 42.0, 51.0 | none | Aktau < 400 km | Caspian Sea | **ocean**: the sea polygon beats "a city within 400 km" |
 | 40.0, −30.0 | none | Ponta Delgada ≈ 451 km | North Atlantic Ocean | ocean |
 | 0.0, −140.0 | none | > 400 km | Pacific (pin North/South on day 1) | ocean |
 
-Plus: 200 random open-ocean points return no country. `featurecla === 'Admin-0 capital'` sets `isCapital: true` (Reykjavík and Maseru true, Mumbai false) — the grammar uses it for extra sass.
+Plus: 200 random open-ocean points return no country. `featurecla === 'Admin-0 capital'` sets `isCapital: true` (Reykjavík and Maseru true, Mumbai false), the grammar uses it for extra sass.
 
 **Costs:** 177 country features × a bbox test ≈ 10 µs; `geoContains` on the 1–5 surviving candidates ≈ 1–3 ms; the kdbush query < 0.1 ms. Well under the 20 ms budget. `countries-50m.json` (3.1 MB) is fetched lazily **after** the first verdict and swapped in for finer coastlines; the 110 m file (0.8 MB) is precached. Index build over ~7,300 points must complete in < 30 ms.
 
-### 6.9 The globe — `features/globe/`, `engine/terminator.ts`
+### 6.9 The globe: `features/globe/`, `engine/terminator.ts`
 
 ```ts
 globe.onGlobeClick(({ lat, lng }) => pour(lat, lng));
@@ -1728,7 +1728,7 @@ export function subsolar(now = new Date()): [lng: number, lat: number] {
 
 **Register ticker** (recomputed every 60 s, from `src/data/cities-ticker.json`, ~80 cities, iterated in longitude order so tests can assert it): `LAST ORDERS IN <CITY> · HH:MM` when a city's local time is in `[23:30, 00:15)`; `FIRST COFFEE IN <CITY> · HH:MM` when it is in `[06:30, 07:15)`; else `SUN SETTING OVER <CITY>` when `suncalc.getTimes(now, lat, lng).sunset` is within ±20 min; fallback `THE BAR IS OPEN · HH:MM UTC`. Format regex: `/^(LAST ORDERS|FIRST COFFEE) IN [A-Z ]+ · \d{2}:\d{2}$/`.
 
-### 6.10 The voice — `src/wit/`
+### 6.10 The voice: `src/wit/`
 
 `voice.json` is a Tracery grammar. Symbols: `origin` → `#placeLine# #timeLine# #jab# #drinkLine# #serveLine# #closer#`; per-tag jab pools `jab_oppressive`, `jab_arctic`, `jab_rain`, … (**one pool per `Tag`, ≥ 8 variants each**, plus `jab_default`); `serveLine_frozen|iced|chilled|neat|warm|hot`; `closer_late`, `closer_brunch`, `closer_ocean`, `closer_polar`, `closer_default`; `hedge` lines for model data ("the models say", "allegedly", "on paper, anyway").
 
@@ -1754,21 +1754,21 @@ export function speak(v: Omit<Verdict, 'lines'>, grammarJson: Grammar, drink: Dr
 }
 ```
 
-`closerKey` prefers `polar` → `ocean` → the day-part tag → `default`. If a per-tag pool is missing, fall back to `jab_default` — but a unit test asserts every `Tag` has a pool of ≥ 8, so that never ships.
+`closerKey` prefers `polar` → `ocean` → the day-part tag → `default`. If a per-tag pool is missing, fall back to `jab_default`, but a unit test asserts every `Tag` has a pool of ≥ 8, so that never ships.
 
 **Marking the intensifier.** The drink line marks the shouted words with **`«…»`**; the renderer replaces them with `<em class="intensifier">` set in Righteous at 1.6×, uppercase, `vertical-align: -0.08em`. Example output for Mumbai at seed `19.1|72.9|0|bar|voice`:
 
 > "~38 km from Mumbai, India. 00:45 local · dew point 24°. The air is soup. You are not sweating, you are marinating. «AGGRESSIVELY ICED» Mojito. Served in a bucket. It is almost one in the morning. Drink it and go to bed."
 
-Rules enforced by tests: no `#` survives a flatten; no `((`/`))` residue; no double spaces; ≤ 260 characters; ends with terminal punctuation; the drink name appears exactly once; the stamp word is marked. The whole file passes a protected-characteristics deny-list (`src/wit/lint-denylist.json`) — **the bartender judges weather and choices, never people.** The "gentler bartender" lever tones the danger tier down (§6.6) and prefers the softer half of each pool.
+Rules enforced by tests: no `#` survives a flatten; no `((`/`))` residue; no double spaces; ≤ 260 characters; ends with terminal punctuation; the drink name appears exactly once; the stamp word is marked. The whole file passes a protected-characteristics deny-list (`src/wit/lint-denylist.json`), **the bartender judges weather and choices, never people.** The "gentler bartender" lever tones the danger tier down (§6.6) and prefers the softer half of each pool.
 
 `node scripts/sample-voice.mjs mumbai 1000` must report **≥ 300 distinct jab lines**, and two clicks 0.5° apart must not produce identical coasters.
 
-### 6.11 The bar menu — `src/data/bar-menu.json` (40 drinks)
+### 6.11 The bar menu: `src/data/bar-menu.json` (40 drinks)
 
-20 cocktails, each with a `virginTwin`, and 20 mocktails — one twin per cocktail. `affinity` values run 0–8; the tag vocabulary is the `Tag` union. Recipes are resolved from `drinks.json` at build time so the runtime needs one file. The menu is sized by a hard rule, not by taste: **every one of the 34 tags must have at least 3 drinks (counting both menus) at affinity ≥ 3**, so that no tag — not `hail`, not `polar`, not `bone-dry` — can ever leave the scorer with nothing to say. `scripts/check-menu.mjs` asserts it (§10.1).
+20 cocktails, each with a `virginTwin`, and 20 mocktails, one twin per cocktail. `affinity` values run 0–8; the tag vocabulary is the `Tag` union. Recipes are resolved from `drinks.json` at build time so the runtime needs one file. The menu is sized by a hard rule, not by taste: **every one of the 34 tags must have at least 3 drinks (counting both menus) at affinity ≥ 3**, so that no tag, not `hail`, not `polar`, not `bone-dry`, can ever leave the scorer with nothing to say. `scripts/check-menu.mjs` asserts it (§10.1).
 
-**The bar (alcoholic — 20)**
+**The bar (alcoholic, 20)**
 
 | id | name | base | serve | glass | ice | bottle | twin | key affinities |
 |---|---|---|---|---|---|---|---|---|
@@ -1793,36 +1793,36 @@ Rules enforced by tests: no `#` survives a flatten; no `((`/`))` residue; no dou
 | `michelada` | Michelada | beer | chilled | pint | none | ginger-beer | `virgin-michelada` | smog 3, dust 3, brunch 3, afternoon 3, hot 2, muggy 2 |
 | `hot-whisky-mac` | Hot Whisky Mac | whisky | hot | mug | none | whisky | `ginger-honey-warmer` | blizzard 4, hail 3, downpour 3, gale 3, polar 3, freezing 3, arctic 2, snow 2, storm 2 |
 
-**The barista (non-alcoholic — 20)**
+**The barista (non-alcoholic, 20)**
 
 | id | name | base | serve | glass | ice | bottle | twin | key affinities |
 |---|---|---|---|---|---|---|---|---|
-| `virgin-mojito` | Virgin Mojito | none | iced | highball | crushed | mint | — | oppressive 4, muggy 3, hot 3, scorching 3, morning 2, brunch 2 |
-| `salted-lime-soda` | Salted Lime Soda | soda | iced | highball | cubes | syrup | — | hot 3, oppressive 3, scorching 3, bone-dry 3, still 1 |
-| `virgin-stormy` | Virgin Stormy | soda | iced | highball | cubes | ginger-beer | — | **ocean 7**, hail 5, downpour 4, storm 4, gale 4, breezy 3, rain 3, warm 2 |
-| `cucumber-tonic` | Cucumber Tonic | soda | iced | highball | cubes | syrup | — | warm 3, afternoon 3, golden 3, hot 2, muggy 2, mild 2 |
-| `virgin-negroni` | Virgin Negroni | juice | chilled | rocks | cubes | bitters | — | evening 3, golden 3, mild 3, still 3, cold 1 |
-| `virgin-margarita` | Virgin Margarita | juice | iced | coupe | none | syrup | — | scorching 4, hot 3, uv-extreme 3, bone-dry 3, dust 3 |
-| `frozen-limeade` | Frozen Limeade | juice | frozen | coupe | crushed | syrup | — | scorching 5, uv-extreme 3, hot 2 |
-| `espresso-tonic` | Espresso Tonic | coffee | chilled | highball | cubes | tea | — | late 4, dawn 3, evening 2, hot 1, fog 1 |
-| `virgin-mary` | Virgin Mary | juice | chilled | highball | cubes | syrup | — | brunch 4, morning 3, smog 3, dust 3, chilly 1 |
-| `smoked-cherry-soda` | Smoked Cherry Soda | soda | chilled | rocks | cubes | bitters | — | chilly 3, cold 3, evening 3, late 3, still 3, fog 3, smog 3 |
-| `hot-lemon-ginger` | Hot Lemon & Ginger | tea | hot | teacup | none | tea | — | chilly 4, cold 4, freezing 4, rain 4, drizzle 3, dawn 3, downpour 3, fog 3, snow 2 |
-| `hot-chocolate` | Hot Chocolate | cocoa | hot | mug | none | cocoa | — | **arctic 5**, polar 4, freezing 4, blizzard 3, snow 3, gale 3, late 1 |
-| `spiced-apple-warmer` | Spiced Apple Warmer | juice | hot | mug | none | syrup | — | freezing 4, arctic 3, cold 3, snow 3, blizzard 3, polar 3, drizzle 3, evening 2 |
-| `masala-chai` | Masala Chai | tea | hot | teacup | none | tea | — | dawn 3, morning 3, cold 3, fog 3, rain 3, smog 3, drizzle 3, storm 3, downpour 3, chilly 2 |
-| `ginger-switchel` | Ginger Switchel | soda | iced | copper-mug | cubes | ginger-beer | — | hot 3, warm 3, muggy 3, brunch 3, breezy 3 |
-| `virgin-painkiller` | Virgin Painkiller | juice | iced | tiki | crushed | syrup | — | ocean 4, muggy 3, warm 3, breezy 3, hot 2, scorching 2, golden 2, oppressive 1 |
-| `sunrise-fizz` | Sunrise Fizz | juice | chilled | flute | none | syrup | — | brunch 4, morning 3, mild 3, dawn 3, golden 2 |
-| `virgin-paloma` | Virgin Paloma | soda | iced | highball | cubes | syrup | — | bone-dry 3, afternoon 3, warm 3, scorching 2, hot 2, dust 2, uv-extreme 2 |
-| `virgin-michelada` | Virgin Michelada | juice | chilled | pint | none | bitters | — | smog 3, dust 3, brunch 3, afternoon 3, hot 2, muggy 2 |
-| `ginger-honey-warmer` | Ginger & Honey Warmer | tea | hot | mug | none | ginger-beer | — | blizzard 4, hail 3, downpour 3, gale 3, polar 3, freezing 3, arctic 2, snow 2, storm 2 |
+| `virgin-mojito` | Virgin Mojito | none | iced | highball | crushed | mint |: | oppressive 4, muggy 3, hot 3, scorching 3, morning 2, brunch 2 |
+| `salted-lime-soda` | Salted Lime Soda | soda | iced | highball | cubes | syrup |: | hot 3, oppressive 3, scorching 3, bone-dry 3, still 1 |
+| `virgin-stormy` | Virgin Stormy | soda | iced | highball | cubes | ginger-beer |: | **ocean 7**, hail 5, downpour 4, storm 4, gale 4, breezy 3, rain 3, warm 2 |
+| `cucumber-tonic` | Cucumber Tonic | soda | iced | highball | cubes | syrup |: | warm 3, afternoon 3, golden 3, hot 2, muggy 2, mild 2 |
+| `virgin-negroni` | Virgin Negroni | juice | chilled | rocks | cubes | bitters |: | evening 3, golden 3, mild 3, still 3, cold 1 |
+| `virgin-margarita` | Virgin Margarita | juice | iced | coupe | none | syrup |: | scorching 4, hot 3, uv-extreme 3, bone-dry 3, dust 3 |
+| `frozen-limeade` | Frozen Limeade | juice | frozen | coupe | crushed | syrup |: | scorching 5, uv-extreme 3, hot 2 |
+| `espresso-tonic` | Espresso Tonic | coffee | chilled | highball | cubes | tea |: | late 4, dawn 3, evening 2, hot 1, fog 1 |
+| `virgin-mary` | Virgin Mary | juice | chilled | highball | cubes | syrup |: | brunch 4, morning 3, smog 3, dust 3, chilly 1 |
+| `smoked-cherry-soda` | Smoked Cherry Soda | soda | chilled | rocks | cubes | bitters |: | chilly 3, cold 3, evening 3, late 3, still 3, fog 3, smog 3 |
+| `hot-lemon-ginger` | Hot Lemon & Ginger | tea | hot | teacup | none | tea |: | chilly 4, cold 4, freezing 4, rain 4, drizzle 3, dawn 3, downpour 3, fog 3, snow 2 |
+| `hot-chocolate` | Hot Chocolate | cocoa | hot | mug | none | cocoa |: | **arctic 5**, polar 4, freezing 4, blizzard 3, snow 3, gale 3, late 1 |
+| `spiced-apple-warmer` | Spiced Apple Warmer | juice | hot | mug | none | syrup |: | freezing 4, arctic 3, cold 3, snow 3, blizzard 3, polar 3, drizzle 3, evening 2 |
+| `masala-chai` | Masala Chai | tea | hot | teacup | none | tea |: | dawn 3, morning 3, cold 3, fog 3, rain 3, smog 3, drizzle 3, storm 3, downpour 3, chilly 2 |
+| `ginger-switchel` | Ginger Switchel | soda | iced | copper-mug | cubes | ginger-beer |: | hot 3, warm 3, muggy 3, brunch 3, breezy 3 |
+| `virgin-painkiller` | Virgin Painkiller | juice | iced | tiki | crushed | syrup |: | ocean 4, muggy 3, warm 3, breezy 3, hot 2, scorching 2, golden 2, oppressive 1 |
+| `sunrise-fizz` | Sunrise Fizz | juice | chilled | flute | none | syrup |: | brunch 4, morning 3, mild 3, dawn 3, golden 2 |
+| `virgin-paloma` | Virgin Paloma | soda | iced | highball | cubes | syrup |: | bone-dry 3, afternoon 3, warm 3, scorching 2, hot 2, dust 2, uv-extreme 2 |
+| `virgin-michelada` | Virgin Michelada | juice | chilled | pint | none | bitters |: | smog 3, dust 3, brunch 3, afternoon 3, hot 2, muggy 2 |
+| `ginger-honey-warmer` | Ginger & Honey Warmer | tea | hot | mug | none | ginger-beer |: | blizzard 4, hail 3, downpour 3, gale 3, polar 3, freezing 3, arctic 2, snow 2, storm 2 |
 
 All nine `Glass` shapes are in play (`rocks`, `highball`, `coupe`, `mug`, `copper-mug`, `tiki`, `flute`, `pint`, `teacup`) and all twelve `BottleId` bottles are nodded to by at least one drink, so the back bar never has a dead button.
 
 **Schema tests** (`src/data/bar-menu.test.ts`, plus `scripts/check-menu.mjs` in CI): every `virginTwin` resolves to an existing non-alcoholic drink and no twin is claimed twice; exactly 20 alcoholic and 20 non-alcoholic rows; every `bottle` is a valid `BottleId`, every `glass` a valid `Glass`, every `ice` one of `cubes|crushed|none`; every affinity key is a valid `Tag` and every value an integer 0–8; **every one of the 34 `Tag`s has at least 3 drinks (counting both menus) with affinity ≥ 3**; the two hand-checked score tables in §6.5 still reproduce; and the nine fixtures × {bar, barista} snapshot is unchanged. `colour` values are flat, muted fills for the glassware (e.g. Mojito `#CFE8D2`, Hot Buttered Rum `#B77B3E`, Dark 'n' Stormy `#6B3A1E`, Painkiller `#E8A85C`, Mimosa `#F0C24A`, Michelada `#C4652A`, Hot Whisky Mac `#A8571F`).
 
-### 6.12 Composition — `engine/index.ts`
+### 6.12 Composition: `engine/index.ts`
 
 ```ts
 export function judge(input: {
@@ -1884,7 +1884,7 @@ Response shape (real, probed):
 - Pick the `hourly` row whose `time` shares the hour of `current.time`.
 - `is_day` is `0 | 1` → coerce to boolean. `null` fields become `undefined`, **never `0`**.
 - Send `Accept: application/json`. No other headers are required or useful.
-- `timezone=auto` returns a valid IANA name for **any** coordinate, including open ocean (`Etc/GMT+9`), Antarctica (`Antarctica/Troll`, `Antarctica/McMurdo`), the poles (`Etc/GMT-7`) and the antimeridian (`Etc/GMT-12`). Polar answers are pragmatic guesses — the copy hedges (§6.4).
+- `timezone=auto` returns a valid IANA name for **any** coordinate, including open ocean (`Etc/GMT+9`), Antarctica (`Antarctica/Troll`, `Antarctica/McMurdo`), the poles (`Etc/GMT-7`) and the antimeridian (`Etc/GMT-12`). Polar answers are pragmatic guesses, the copy hedges (§6.4).
 
 ### 7.2 Open-Meteo Air Quality (best-effort, ~1 call)
 
@@ -1893,7 +1893,7 @@ GET https://air-quality-api.open-meteo.com/v1/air-quality
   ?latitude=&longitude=&current=european_aqi,us_aqi,pm2_5,pm10,ozone,uv_index,dust&timezone=auto
 ```
 
-`current.interval` is **3600** (hourly), not 900. Credit **CAMS ENSEMBLE (Copernicus)**. A failure here only removes the `smog`/`dust` tags — the coaster still prints, with `AQI —` on the receipt.
+`current.interval` is **3600** (hourly), not 900. Credit **CAMS ENSEMBLE (Copernicus)**. A failure here only removes the `smog`/`dust` tags, the coaster still prints, with `AQI, ` on the receipt.
 
 ### 7.3 Open-Meteo Marine (ocean clicks only, ~0.5 call)
 
@@ -1902,7 +1902,7 @@ GET https://marine-api.open-meteo.com/v1/marine
   ?latitude=&longitude=&current=wave_height,sea_surface_temperature,wind_wave_height&timezone=auto
 ```
 
-Credit **DWD**. Some coastal, inland and lake cells return an error or nulls — treat that as "no marine data" and carry on.
+Credit **DWD**. Some coastal, inland and lake cells return an error or nulls, treat that as "no marine data" and carry on.
 
 ### 7.4 Open-Meteo Geocoding (forward search box only)
 
@@ -1911,11 +1911,11 @@ GET https://geocoding-api.open-meteo.com/v1/search?name=Mumbai&count=5&language=
 → results[{ name, country, admin1, latitude, longitude, timezone, population }]
 ```
 
-**Forward only — there is no reverse endpoint**, which is exactly why §6.8 exists. Debounce 250 ms, minimum 2 characters, no autocomplete under 250 ms. No results → "Never heard of it."
+**Forward only, there is no reverse endpoint**, which is exactly why §6.8 exists. Debounce 250 ms, minimum 2 characters, no autocomplete under 250 ms. No results → "Never heard of it."
 
 ### 7.5 Rate limits, weighting and error handling
 
-Limits are 600/min · 5,000/h · 10,000/day · 300,000/month **per IP**. Requests with more than 10 weather variables count as **fractional multiple calls** — the forecast request above is ≈ 2 weighted calls, so the budget is **two numbers, not one**: a **land** pour costs ≤ **3 weighted calls** (forecast ≈ 2 + AQI 1) and an **ocean** pour costs ≤ **4** (the marine request adds ≈ 1). Both are CI gates (§10.8). The 0.25° / 15-minute cache makes repeats free; a second click inside the same cell within 15 minutes makes **zero** requests.
+Limits are 600/min · 5,000/h · 10,000/day · 300,000/month **per IP**. Requests with more than 10 weather variables count as **fractional multiple calls**, the forecast request above is ≈ 2 weighted calls, so the budget is **two numbers, not one**: a **land** pour costs ≤ **3 weighted calls** (forecast ≈ 2 + AQI 1) and an **ocean** pour costs ≤ **4** (the marine request adds ≈ 1). Both are CI gates (§10.8). The 0.25° / 15-minute cache makes repeats free; a second click inside the same cell within 15 minutes makes **zero** requests.
 
 - One `AbortController` with a **6 s** timeout covers all three requests.
 - A dev-time guard in the URL builder **throws** if `current + hourly + daily` variables exceed 23 or `forecast_days > 1`.
@@ -1929,7 +1929,7 @@ Limits are 600/min · 5,000/h · 10,000/day · 300,000/month **per IP**. Request
 
 "Weather data by Open-Meteo.com" (CC BY 4.0, as a link) appears on **the coaster receipt strip, the share card and the About page**. Air quality adds "CAMS ENSEMBLE (Copernicus)"; marine adds "DWD". Textures credit "NASA Earth Observatory" with no implied endorsement. Natural Earth is public domain (credited anyway). Drink data credits `rasmusab/iba-cocktails` and `alfg/opendrinks` (both MIT). Fonts credit SIL OFL 1.1. Every CC0 sound is listed with its source id. OpenStreetMap (ODbL) is credited **only when** the Nominatim lever is on.
 
-### 7.7 Nominatim (optional lever, off by default — stretch)
+### 7.7 Nominatim (optional lever, off by default: stretch)
 
 ```
 GET https://nominatim.openstreetmap.org/reverse?lat=&lon=&format=jsonv2&zoom=10
@@ -1951,13 +1951,13 @@ Rules, all mandatory if it ships: a client throttle of **≥ 1.1 s** between cal
 | Blue Marble NG (monthly) | NASA Earth Observatory, 5400×2700 or 21600×10800 JPEG, downloaded by hand into `raw/` | Public domain | `prep-textures.mjs` (sharp, quality 82, no alpha) | `bmng-{mm}-{4k,8k}.webp` |
 | Black Marble 2016 | NASA Earth Observatory, 3600×1800 or 13500×6750 | Public domain | `prep-textures.mjs` | `black-marble-{4k,8k}.webp` |
 
-`prep-drinks.mjs` normalises both repos into the `Recipe` interface, tags each with `source` and `sourceLicence`, **drops every image URL** and every ingredient string longer than 60 characters, and must produce ≥ 120 recipes including ≥ 25 non-alcoholic. Re-running it must produce an empty `git diff`. **Method text is rewritten in-house** — the imported prose is never shipped.
+`prep-drinks.mjs` normalises both repos into the `Recipe` interface, tags each with `source` and `sourceLicence`, **drops every image URL** and every ingredient string longer than 60 characters, and must produce ≥ 120 recipes including ≥ 25 non-alcoholic. Re-running it must produce an empty `git diff`. **Method text is rewritten in-house**, the imported prose is never shipped.
 
-`raw/` is git-ignored. Keep a `raw/SOURCES.txt` listing every URL and its download date, and back the folder up externally — the NASA pages move.
+`raw/` is git-ignored. Keep a `raw/SOURCES.txt` listing every URL and its download date, and back the folder up externally, the NASA pages move.
 
 ---
 
-## 8. Platform integration (Capacitor 8 — the optional Android tier)
+## 8. Platform integration (Capacitor 8: the optional Android tier)
 
 Everything native sits behind an adapter in `src/platform/`, chosen by `Capacitor.isNativePlatform()`. **No custom native code exists in this project.**
 
@@ -1996,7 +1996,7 @@ export default config;
 
 ### 8.3 Manifest edits
 
-`android/app/src/main/AndroidManifest.xml` — Capacitor never overwrites this on `cap sync`. Add exactly four lines beyond the template's `INTERNET`:
+`android/app/src/main/AndroidManifest.xml`, Capacitor never overwrites this on `cap sync`. Add exactly four lines beyond the template's `INTERNET`:
 
 ```xml
 <uses-permission android:name="android.permission.VIBRATE" />
@@ -2005,7 +2005,7 @@ export default config;
 <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 ```
 
-`VIBRATE` powers the haptics. The two location permissions exist **only** for "Where am I", are requested at tap time and never at launch, and the resulting coordinates are resolved by the **offline** Natural Earth lookup — no network geocoder is ever called.
+`VIBRATE` powers the haptics. The two location permissions exist **only** for "Where am I", are requested at tap time and never at launch, and the resulting coordinates are resolved by the **offline** Natural Earth lookup, no network geocoder is ever called.
 
 **Deliberately absent, and a review must keep them absent:** `CAMERA`, any `READ_MEDIA_*`, `POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`, `RECORD_AUDIO`, and share-target intent filters. Barometer has no camera, gallery, notification or alarm feature, so the entire Android 13/14/15 media-permission minefield does not apply.
 
@@ -2053,48 +2053,48 @@ android {
 // apply from: 'capacitor.build.gradle', and the google-services try/catch.
 ```
 
-Toolchain: AGP **8.13.0**, Gradle wrapper **8.14.3**, `compileSdk`/`targetSdk` **36**, `minSdk` **24**, **Temurin JDK 21** (Capacitor 8 targets Java 21; the `ubuntu-24.04` runner defaults to 17). **Never run `npx cap build android`** — it signs v1-only with `jarsigner` and the result will not install on Android 11+.
+Toolchain: AGP **8.13.0**, Gradle wrapper **8.14.3**, `compileSdk`/`targetSdk` **36**, `minSdk` **24**, **Temurin JDK 21** (Capacitor 8 targets Java 21; the `ubuntu-24.04` runner defaults to 17). **Never run `npx cap build android`**, it signs v1-only with `jarsigner` and the result will not install on Android 11+.
 
-`npx cap add android` runs locally **without a JDK or SDK** — it only writes files. A Gradle-sync warning is expected and fine. Commit the whole `android/` folder; git-ignore `android/local.properties`, `android/app/release/` and `android/.gradle/`.
+`npx cap add android` runs locally **without a JDK or SDK**, it only writes files. A Gradle-sync warning is expected and fine. Commit the whole `android/` folder; git-ignore `android/local.properties`, `android/app/release/` and `android/.gradle/`.
 
 ### 8.5 Web ↔ Android behavioural differences
 
 | Concern | Web | Android |
 |---|---|---|
-| Service worker | Registered (`registerType: 'prompt'`) | **Never registered** — `Capacitor.isNativePlatform()` guard. `chrome://inspect` showing one is a regression. |
+| Service worker | Registered (`registerType: 'prompt'`) | **Never registered**: `Capacitor.isNativePlatform()` guard. `chrome://inspect` showing one is a regression. |
 | Base path | `/barometer/` | `/` (Capacitor serves from `https://localhost/`) |
 | Textures | 8K WebP, DPR cap 1.75 | 4K WebP, DPR cap 1.5 (`VITE_PLATFORM=android`) |
 | Haptics | `navigator.vibrate(12)` on the pin drop only | The full §3.13 map |
 | Share | Web Share API, falling back to a download | `@capacitor/share` with the PNG file attached |
 | Settings storage | `localStorage` | `@capacitor/preferences` |
-| Status bar | — | Flipped per shift, transparent, overlaying |
+| Status bar |: | Flipped per shift, transparent, overlaying |
 | Back gesture | Browser history | `@capacitor/app` `backButton` closes sheets first |
-| WebGPU / WebLLM rung | Available on desktop Chrome/Edge | **Absent** — Android System WebView has no WebGPU; hide the rung entirely |
+| WebGPU / WebLLM rung | Available on desktop Chrome/Edge | **Absent**: Android System WebView has no WebGPU; hide the rung entirely |
 
 ### 8.6 Gestures and insets
 
 - Pad the back-bar strip by `env(safe-area-inset-top)` and the foot-rail by `env(safe-area-inset-bottom)`. Edge-to-edge is mandatory on API 35+.
 - Inside the globe cradle: `touch-action: none` plus `preventDefault()` on `touchmove`, with a **24 px dead margin on both horizontal edges** of the canvas so a drag from the screen edge does not trigger the system back gesture.
 - The counter sheet's drag handle sits **≥ 16 px** above the bottom system gesture zone.
-- Predictive back is on by default on Android 16 and `onBackPressed()` is not called. If the `backButton` listener does not fire on the test device, the documented temporary opt-out is `android:enableOnBackInvokedCallback="false"` on `<application>` — record it if you use it.
+- Predictive back is on by default on Android 16 and `onBackPressed()` is not called. If the `backButton` listener does not fire on the test device, the documented temporary opt-out is `android:enableOnBackInvokedCallback="false"` on `<application>`, record it if you use it.
 - Orientation locks are ignored at ≥ 600 dp, so the tablet/foldable three-band layout must simply work.
 - On rotation the globe resizes via `--globe-size`, the SVG cradle stays registered with the canvas, and the verdict survives in Zustand with **no refetch**.
 
 ### 8.7 Icons and splash
 
-`design/icon.svg` is the single source. `@vite-pwa/assets-generator` produces the web/PWA set into `public/icons/` (192, 512, maskable 1024, favicon 32/180). `npx @capacitor/assets generate --android` produces the adaptive/monochrome Android set. **That second command is unverified** — if it demands anything beyond Node, hand-export the five `mipmap-*` densities from the SVG and commit them, and record the decision.
+`design/icon.svg` is the single source. `@vite-pwa/assets-generator` produces the web/PWA set into `public/icons/` (192, 512, maskable 1024, favicon 32/180). `npx @capacitor/assets generate --android` produces the adaptive/monochrome Android set. **That second command is unverified**, if it demands anything beyond Node, hand-export the five `mipmap-*` densities from the SVG and commit them, and record the decision.
 
 ---
 
 ## 9. Build order with checkpoints
 
-Six phases, ~120 hours total. Tasks are sized at half a day or less. **Every task has a verification step — do not proceed past a red one.** A "Weekend MVP" fast path is at the end; build that first if you need a win.
+Six phases, ~120 hours total. Tasks are sized at half a day or less. **Every task has a verification step, do not proceed past a red one.** A "Weekend MVP" fast path is at the end; build that first if you need a win.
 
-### Phase 0 — Setup, CI, live on day 1 (~13 h)
+### Phase 0: Setup, CI, live on day 1 (~13 h)
 
 **Day 1 is one sitting and ends with a working URL.**
 
-**0.1 Scaffold in place.** `npm create vite@latest . -- --template react-ts` in the project folder — choose *"Ignore files and continue"* so `docs/` and `design/` survive. Then `npm install` and the dependency installs from §2.1.
+**0.1 Scaffold in place.** `npm create vite@latest . -- --template react-ts` in the project folder, choose *"Ignore files and continue"* so `docs/` and `design/` survive. Then `npm install` and the dependency installs from §2.1.
 → *Run `npm run dev`; verify the template serves at `localhost:5173`, `git status` shows no deleted docs.*
 
 **0.2 Pin the toolchain.** Add `"engines": { "node": ">=22.12" }`; `npx biome init` and configure 2-space indent, single quotes, organise-imports on; paste the full `scripts` block (§10.1) into `package.json`.
@@ -2103,7 +2103,7 @@ Six phases, ~120 hours total. Tasks are sized at half a day or less. **Every tas
 **0.3 Base path and hash router.** `vite.config.ts`: `base: process.env.VITE_BASE_PATH ?? '/'`, `@tailwindcss/vite`, `rollup-plugin-visualizer` emitting JSON for the bundle gate. `src/app/router.tsx`: `createHashRouter` with `#/`, `#/v/:coords`, `#/tab`, `#/office`, `#/about` rendering placeholders.
 → *Run `VITE_BASE_PATH=/barometer/ npm run build && npx vite preview --base /barometer/`; verify all five hash routes render and every asset URL in `dist/index.html` starts with `/barometer/`.*
 
-**0.4 Tokens, fonts, hello-world bar.** Paste §3.3 verbatim into `src/styles/tokens.css`; import the three Fontsource packages; add the `@theme inline` bridge; render one screen — mahogany background, brass plate, `THE GLOBE BAR` in Righteous with the neon filter, `Spin. Tap. Survive.`
+**0.4 Tokens, fonts, hello-world bar.** Paste §3.3 verbatim into `src/styles/tokens.css`; import the three Fontsource packages; add the `@theme inline` bridge; render one screen, mahogany background, brass plate, `THE GLOBE BAR` in Righteous with the neon filter, `Spin. Tap. Survive.`
 → *Verify `body` computes to `rgb(26, 15, 10)`, DevTools → Network shows **zero** third-party rows, and `document.fonts.check('1em Righteous')` is true after load.*
 
 **0.5 Deploy.** Write `.github/workflows/pages.yml` (§11.2), `git init -b main`, `gh repo create barometer --public --source=. --push`, then **Settings → Pages → Source: "GitHub Actions"**.
@@ -2131,7 +2131,7 @@ Six phases, ~120 hours total. Tasks are sized at half a day or less. **Every tas
 → *Verify the decision is recorded in `src/data/attribution.json` **and** the README table.*
 
 **0.13 Seed `attribution.json` + the `#/about` route.**
-→ *Verify a Vitest diffs `attribution.json` against the README table and fails on drift — the harness exists before there is anything to attribute.*
+→ *Verify a Vitest diffs `attribution.json` against the README table and fails on drift, the harness exists before there is anything to attribute.*
 
 **0.14 Add the Android shell.** `npx cap init "The Globe Bar" com.rahul.barometer --web-dir dist`, `npx cap add android`, merge the §8.4 gradle block, add the `.gitattributes` / `.gitignore` lines.
 → *Verify it succeeds with **no** JDK/SDK on the machine (a Gradle-sync warning is expected) and `android/` is committed.*
@@ -2144,9 +2144,9 @@ Six phases, ~120 hours total. Tasks are sized at half a day or less. **Every tas
 
 **Phase 0 is done when:** the Pages URL renders the tokens; `ci.yml` and `pages.yml` are green and independent; `public/geo/*`, `public/textures/*`, `src/data/drinks.json` and `attribution.json` are generated and committed; the keystore is backed up; a signed hello-world APK has installed on a real phone.
 
-### Phase 1 — Design system and skeleton screens (~20 h)
+### Phase 1: Design system and skeleton screens (~20 h)
 
-The bar exists, statically, at the quality bar of §3 — before it knows anything about weather.
+The bar exists, statically, at the quality bar of §3, before it knows anything about weather.
 
 **1.1 Materialise the token layer.** `src/styles/index.css` with the Tailwind bridge plus the material recipes from §3.6 (wood grain, brass gradient, `.paper` scope, neon stack, grain overlay). Register the colour tokens with `@property`.
 → *Verify a Playwright computed-style test asserts the §10.7 token table in Night, and that `.paper` descendants resolve `--ink` to `rgb(28, 18, 12)` in **both** shifts.*
@@ -2166,7 +2166,7 @@ The bar exists, statically, at the quality bar of §3 — before it knows anythi
 **1.6 The window and its sky.** The gradient stack, the neon slot, the brass mullion, and empty named layer mounts for all eight weather layers.
 → *Verify no layer's bounding box intersects the coaster rect at 1440 px and 375 px.*
 
-**1.7 The cradle and the SVG fallback globe.** Brass rings, degree ticks, turned-wood base; inside, the `land-dots.json` dotted globe with an equirectangular hit-test. **This ships before globe.gl** — it is both the no-WebGL path and the pre-mount placeholder.
+**1.7 The cradle and the SVG fallback globe.** Brass rings, degree ticks, turned-wood base; inside, the `land-dots.json` dotted globe with an equirectangular hit-test. **This ships before globe.gl**, it is both the no-WebGL path and the pre-mount placeholder.
 → *Verify with `getContext('webgl')` stubbed to `null`, clicking the Mumbai pixel yields 19.07, 72.88 ± 0.5°.*
 
 **1.8 The counter.** Coaster lane with the empty-state plate and ghost ring, the classified-ad `Search` box (static rows), `Where am I`, the register housing with a VFD slot, the THE TAB plate.
@@ -2175,7 +2175,7 @@ The bar exists, statically, at the quality bar of §3 — before it knows anythi
 **1.9 `Coaster` in skeleton and printed-static form.** Round (desktop) and square (phone) variants, pressed-ring mask, `role="article"` + `aria-live="polite"`, `IntensifierStamp`, `ReceiptStrip`, and the recipe back face.
 → *Verify against a hard-coded Mumbai verdict object (the engine does not exist yet) and that the skeleton has **no** shimmer class.*
 
-**1.10 Restyle the shadcn/Base UI primitives.** `BrassPlate`, `Lever`, `BrassKnob`, `Sheet`/`Drawer`, `Tooltip`, `Toast` — tokens only, no forks.
+**1.10 Restyle the shadcn/Base UI primitives.** `BrassPlate`, `Lever`, `BrassKnob`, `Sheet`/`Drawer`, `Tooltip`, `Toast`, tokens only, no forks.
 → *Verify roles, keyboard steps and announcements, and a 2 px `--focus` ring at 2 px offset on every `:focus-visible`.*
 
 **1.11 Phone layout and the counter sheet.** 56 px strip, ~50 vh window, draggable sheet with peek/open, square coaster, thumb-reach ordering.
@@ -2185,9 +2185,9 @@ The bar exists, statically, at the quality bar of §3 — before it knows anythi
 → *Verify axe reports zero violations in both shifts.*
 
 **1.13 Freeze the visual baselines.** Capture the eight states × {Night, Day} × {desktop, Pixel 7} with the canvas masked and the clock pinned.
-→ *Verify `npm run test:visual` is green twice in a row on CI with Linux baselines committed.* **Do this inside Phase 1, not at the end of the project — preview-vs-app drift is the classic failure of this kind of build.**
+→ *Verify `npm run test:visual` is green twice in a row on CI with Linux baselines committed.* **Do this inside Phase 1, not at the end of the project, preview-vs-app drift is the classic failure of this kind of build.**
 
-### Phase 2a — The pure engine, no React (~16 h)
+### Phase 2a: The pure engine, no React (~16 h)
 
 This is pure Node work; it is the safest thing to do on a low-energy evening and it is fully parallel to Phase 1.
 
@@ -2204,27 +2204,27 @@ This is pure Node work; it is the safest thing to do on a low-energy evening and
 → *Verify Mumbai → SOUP + tier 1 AGGRESSIVELY ICED; Yakutsk → ARCTIC + tier 2; Denver → storm family, forced tier 2, `--stamp: var(--danger)`.*
 
 **2a.5 `engine/daypart.ts` + `engine/units.ts`** (§6.4).
-→ *Verify all fixture day-parts, and — critically — that running the identical fixture under `TZ=UTC` gives an identical answer.*
+→ *Verify all fixture day-parts, and, critically, that running the identical fixture under `TZ=UTC` gives an identical answer.*
 
 **2a.6 `engine/geocode/`** (§6.8).
 → *Verify all twelve rows of the §6.8 table including Lesotho (must not return ZA) and both signs of the Fiji antimeridian; 200 random ocean points return no country; bench p95 ≤ 20 ms (110 m) and ≤ 60 ms (50 m); index build ≤ 30 ms.*
 
-**2a.7 Author `src/data/bar-menu.json`** — the 40 drinks of §6.11 (20 bar + 20 barista), and write `scripts/check-menu.mjs` alongside it.
-→ *Verify `node scripts/check-menu.mjs` exits 0: 40 rows, every twin resolving and unclaimed, every bottle/glass/ice/tag valid, and **every one of the 34 Tags carrying ≥ 3 drinks at affinity ≥ 3** (the menu as shipped has a minimum of 4). Verify both hand-checked score tables in §6.5 reproduce exactly, and that `denver-hail` gives Dark 'n' Stormy 17.53 with a 7.45 margin and `south-pole` gives Hot Buttered Rum 20.80 with a 6.80 margin — both dominant, neither a coin-flip.*
+**2a.7 Author `src/data/bar-menu.json`**, the 40 drinks of §6.11 (20 bar + 20 barista), and write `scripts/check-menu.mjs` alongside it.
+→ *Verify `node scripts/check-menu.mjs` exits 0: 40 rows, every twin resolving and unclaimed, every bottle/glass/ice/tag valid, and **every one of the 34 Tags carrying ≥ 3 drinks at affinity ≥ 3** (the menu as shipped has a minimum of 4). Verify both hand-checked score tables in §6.5 reproduce exactly, and that `denver-hail` gives Dark 'n' Stormy 17.53 with a 7.45 margin and `south-pole` gives Hot Buttered Rum 20.80 with a 6.80 margin, both dominant, neither a coin-flip.*
 
 **2a.8 `engine/score.ts` + `engine/pick.ts`** (§6.5).
 → *Verify Mojito scores 12.79 and Hot Buttered Rum 19.95; Yakutsk is dominant and never rolls; two clicks 0.1° apart produce different seeds; a negative-score drink is never drawn.*
 
-**2a.9 Write `voice.json` and `intensifiers.json`** — ≥ 8 variants per slot per tag.
+**2a.9 Write `voice.json` and `intensifiers.json`**, ≥ 8 variants per slot per tag.
 → *Verify the lint test passes: every `Tag` has a `jab_` pool of ≥ 8, no unexpanded `#slot#` ever escapes, and the protected-characteristics deny-list is clean.*
 
 **2a.10 `src/wit/tracery.ts`** (§6.10).
 → *Verify the Mumbai seed reproduces the documented line, snapshots are committed after the first green run, and `node scripts/sample-voice.mjs mumbai 1000` reports ≥ 300 distinct jabs.*
 
-**2a.11 `engine/index.ts` — `judge()`** (§6.12).
+**2a.11 `engine/index.ts`, `judge()`** (§6.12).
 → *Verify all nine weather fixtures produce their expected `drinkId`, `drivingTag`, `dial` and stamp tier in one table-driven test, and that 1,000 calls average ≤ 5 ms.*
 
-### Phase 2b — The network and the globe (~15 h)
+### Phase 2b: The network and the globe (~15 h)
 
 **2b.1 `api/openMeteo.ts`** (§7).
 → *Verify the URL builders match §7 exactly, the weighting guard throws above 23 variables, a 5xx retries **once** after 1.5 s and a 429 **never** retries.*
@@ -2235,10 +2235,10 @@ This is pure Node work; it is the safest thing to do on a low-energy evening and
 **2b.3 Mount globe.gl in the cradle** (§6.9). Lazy `import()` after first paint, `earth-day.jpg` first, click → pin → fly-to → ripple, damping, idle auto-rotate, `visibilitychange` pause, `webglcontextlost` → the SVG globe.
 → *Verify context loss shows the "bearings seized" tag and re-seating mounts a **new** `<canvas>`; verify **exactly one** forecast request per pour under React 19 StrictMode.*
 
-**2b.4 Expose the `window.__bar` test hook** — only when `import.meta.env.MODE === 'test'`: `freeze()`, `pour(lat, lng)`, `textures('flat')`.
+**2b.4 Expose the `window.__bar` test hook**, only when `import.meta.env.MODE === 'test'`: `freeze()`, `pour(lat, lng)`, `textures('flat')`.
 → *Verify `grep __bar dist/assets/*.js` is empty in a production build and the hook exists in the test build.*
 
-**2b.5 `features/verdict/pour.ts` — the orchestrator.** Pin + fly immediately; blank coaster within 100 ms; `locate()` and `getWeather()` in parallel; `judge()`; write to Zustand and Dexie; update the route to `#/v/lat,lng`.
+**2b.5 `features/verdict/pour.ts`, the orchestrator.** Pin + fly immediately; blank coaster within 100 ms; `locate()` and `getWeather()` in parallel; `judge()`; write to Zustand and Dexie; update the route to `#/v/lat,lng`.
 → *Verify end to end: skeleton ≤ 100 ms, printed coaster ≤ 2 s, URL updated, dial SOUP, rum bottle picked, `html[data-shift=night]`.*
 
 **2b.6 Wire the coaster, dial, bottle and shift to the verdict.** Replace the hard-coded object with the store; derive `data-shift`; set `--grade` / `--stamp` / `--drink-glow` on `:root`.
@@ -2261,18 +2261,18 @@ This is pure Node work; it is the safest thing to do on a low-energy evening and
 
 **Phase 2 is done when:** clicking anywhere on the globe produces a deterministic verdict in under 2 s (p50 < 1.2 s); all nine fixtures pass table-driven; engine coverage ≥ 95 % with 100 % on `comfort`, `tags`, `score`, `geocode` and `cache`; the Tab, Back Office, deep links, error states and the PWA all work.
 
-### Phase 3 — Polish: motion, weather, sound, the register (~26 h)
+### Phase 3: Polish: motion, weather, sound, the register (~26 h)
 
-**3.1 A1 + A2 + A3** — the slide, the pin, the fly.
+**3.1 A1 + A2 + A3**, the slide, the pin, the fly.
 → *Verify no frame exceeds 32 ms during the 620 ms slide on desktop and that the printed coaster replaces the skeleton in the **same DOM node** (hold a ref).*
 
-**3.2 A4 + A5** — bottle nod and dial swing.
+**3.2 A4 + A5**, bottle nod and dial swing.
 → *Verify the dial's `aria-valuetext` updates **once**, after the swing settles, not per frame, and that both animations start in the same frame as the slide.*
 
-**3.3 A7 + A8** — coaster flip and shift change.
+**3.3 A7 + A8**, coaster flip and shift change.
 → *Verify the Day-shift computed colours pass **after** the transition completes and that there is no flash of the wrong palette on first paint.*
 
-**3.4 Window weather layers** (§3.11) — droplets, three rain speeds, snow, fog, glare.
+**3.4 Window weather layers** (§3.11), droplets, three rain speeds, snow, fog, glare.
 → *Verify the bounding-box rule still holds and desktop idle stays ≥ 55 fps with a layer active.*
 
 **3.5 A10 frost creep and A11 lightning.**
@@ -2302,9 +2302,9 @@ This is pure Node work; it is the safest thing to do on a low-energy evening and
 **3.13 Search and Where-am-I** (§4.1, §7.4).
 → *Verify **zero** requests to `bigdatacloud` / `api-bdc.io` on the Where-am-I path and that both controls are disabled with a tooltip when offline.*
 
-### Phase 4 — Android packaging (~11 h, optional tier)
+### Phase 4: Android packaging (~11 h, optional tier)
 
-**4.1 Finish the platform adapters** (§8.5) — each with a web branch and a Capacitor branch, each with a jsdom unit test mocking Capacitor both ways.
+**4.1 Finish the platform adapters** (§8.5), each with a web branch and a Capacitor branch, each with a jsdom unit test mocking Capacitor both ways.
 → *Verify no SW registration on native.*
 
 **4.2 Wire the haptics map** (§3.13).
@@ -2328,20 +2328,20 @@ This is pure Node work; it is the safest thing to do on a low-energy evening and
 **4.8 Run the full manual device checklist** (§10.10).
 → *Verify every box is ticked or explicitly waived with a written reason, and that 20 consecutive pours show no context loss and a stable heap.*
 
-### Phase 5 — Testing, hardening, launch (~20 h)
+### Phase 5: Testing, hardening, launch (~20 h)
 
-**5.1 Close the unit gates** — ≥ 95 % lines on `src/engine` with **100 %** on `comfort.ts`, `tags.ts`, `score.ts`, `geocode.ts`, `cache.ts`; review and re-approve every wit snapshot.
-**5.2 Complete the e2e suite** — all of §10.6, `page.clock` pinned, Open-Meteo always routed to fixtures. → *Green three consecutive CI runs; flake budget zero.*
+**5.1 Close the unit gates**, ≥ 95 % lines on `src/engine` with **100 %** on `comfort.ts`, `tags.ts`, `score.ts`, `geocode.ts`, `cache.ts`; review and re-approve every wit snapshot.
+**5.2 Complete the e2e suite**, all of §10.6, `page.clock` pinned, Open-Meteo always routed to fixtures. → *Green three consecutive CI runs; flake budget zero.*
 **5.3 Re-approve the visual suite** against the finished, animated build, plus the reduced-motion variant.
-**5.4 Accessibility sign-off** — automated axe, then manual NVDA + Chrome on desktop, TalkBack on the phone, 130 % system font, 200 % zoom.
-**5.5 Performance gates** — every row of §10.8, plus a Lighthouse assertion **and** a custom audit proving the LCP element is the neon `<svg>`/plate rather than the canvas.
-**5.6 Privacy, licence and CSP gates** — every row of §10.9.
-**5.7 Offline and update-flow verification** — including a real two-reload update test on the deployed site.
+**5.4 Accessibility sign-off**, automated axe, then manual NVDA + Chrome on desktop, TalkBack on the phone, 130 % system font, 200 % zoom.
+**5.5 Performance gates**, every row of §10.8, plus a Lighthouse assertion **and** a custom audit proving the LCP element is the neon `<svg>`/plate rather than the canvas.
+**5.6 Privacy, licence and CSP gates**, every row of §10.9.
+**5.7 Offline and update-flow verification**, including a real two-reload update test on the deployed site.
 **5.8 Walk the deployment doc end to end** against the real repo; every command in §11 has been run at least once and produced the documented result.
 **5.9 Close the day-1 list** (§9.7) and refresh the live probe.
 **5.10 Launch.** README status → Live, release notes, `git tag v1.0.0`.
 
-### Phase 6 — Stretch (unordered; none may break the release gate)
+### Phase 6: Stretch (unordered; none may break the release gate)
 
 R3F shader globe behind the same `globeMaterial` seam (day/night terminator, city lights, specular oceans, cloud shell, Fresnel halo, bloom) with a one-line revert to globe.gl · wit rung 1 (keyless Cloudflare Workers AI through a Worker, fail-open to rung 0) · wit rung 2 (BYO free Gemini / OpenRouter `:free` / Groq key in a WebCrypto vault, "session only" by default) · wit rung 3 (WebLLM on desktop WebGPU, hidden on Android) · the Nominatim precision lever · 60+ drinks with a twin for every cocktail and all nine glassware SVGs · seasonal specials · a gentler and a multilingual bartender · a PWA→TWA build as an alternative to Capacitor.
 
@@ -2349,7 +2349,7 @@ R3F shader globe behind the same `globeMaterial` seam (day/night terminator, cit
 
 The shortest route to *"I clicked Mumbai and a bartender insulted me."* No Android, no sound, no window weather, no PWA.
 
-**Saturday (~6 h):** 0.1 scaffold · 0.2 toolchain · 0.3 base path + router (60 min) → 0.4 tokens + fonts + neon hello-world (45 min) → **0.5 `pages.yml`, the URL is live (30 min) — stop here if the day dies** → 0.9 `prep-geo.mjs` (60 min) → 0.10 `prep-drinks.mjs` (45 min) → 2a.1 the `mumbai`, `yakutsk` and `reykjavik` fixtures only (30 min) → 2a.2 `comfort.ts` + tests (45 min) → 2a.3 `tags.ts` + tests (60 min).
+**Saturday (~6 h):** 0.1 scaffold · 0.2 toolchain · 0.3 base path + router (60 min) → 0.4 tokens + fonts + neon hello-world (45 min) → **0.5 `pages.yml`, the URL is live (30 min), stop here if the day dies** → 0.9 `prep-geo.mjs` (60 min) → 0.10 `prep-drinks.mjs` (45 min) → 2a.1 the `mumbai`, `yakutsk` and `reykjavik` fixtures only (30 min) → 2a.2 `comfort.ts` + tests (45 min) → 2a.3 `tags.ts` + tests (60 min).
 
 **Sunday (~5 h):** 2a.7 a **10-drink** menu (5 cocktails, 5 mocktails) instead of 40, with the coverage rule relaxed to the tags the three MVP fixtures actually raise (45 min) → 2a.8 `score.ts` + `pick.ts` (45 min) → 2a.9/2a.10 a **3-tag** `voice.json` (`oppressive`, `arctic`, `rain`) with 8 jabs each + `tracery.ts` (60 min) → 2a.6 `geocode/` with countries + nearest city only, marine deferred (45 min) → 2b.1/2b.2 `openMeteo.ts` + the in-memory half of the cache (45 min) → 2b.3 globe.gl with `earth-day.jpg`, click and fly-to (45 min) → 2b.5 `pour.ts` + a plain unanimated coaster (60 min).
 
@@ -2362,7 +2362,7 @@ Run these on day 1 and record the date and result next to each. Anything that fa
 | # | Claim to verify | How |
 |---|---|---|
 | D1-1 | Open-Meteo forecast/AQI/marine still return `access-control-allow-origin: *` **from the real Pages origin** | `curl -sI -H "Origin: https://<owner>.github.io" …` plus DevTools on the phone |
-| D1-2 | `timezone=auto` for 15°N 65°E and 0°,−140° — pin both strings into the fixtures | `curl` both |
+| D1-2 | `timezone=auto` for 15°N 65°E and 0°,−140°: pin both strings into the fixtures | `curl` both |
 | D1-3 | Marine API returns real numbers (not `null`) for coastal/lake points such as the Caspian (42, 51); decide whether the Caspian is `ocean` | `curl marine-api…latitude=42&longitude=51` |
 | D1-4 | Natural Earth marine polygon `name` at (15, 65) = "Arabian Sea", (0, −140) = North/South Pacific, (42, 51) = "Caspian Sea"; pin the exact Mumbai `distanceKm` | a Node script over `public/geo/*` |
 | D1-5 | `npx cap add android` succeeds with **no** JDK/SDK locally | run it |
@@ -2372,12 +2372,12 @@ Run these on day 1 and record the date and result next to each. Anything that fa
 | D1-9 | The three Fontsource packages exist and ship the needed subsets/weights | `npm view <pkg> version` |
 | D1-10 | `suncalc@2.0.2` imports as ESM under Vite/Vitest and the scanner exclusion holds | `npm run check:licenses` |
 | D1-11 | `actions/setup-node@v7` accepts `cache: npm` (else drop it, +40 s build) | the first `pages.yml` run log |
-| D1-12 | Polar `timezone=auto` results are acceptable for the copy — keep the `approximate` hedge | judgement call after seeing the copy |
+| D1-12 | Polar `timezone=auto` results are acceptable for the copy: keep the `approximate` hedge | judgement call after seeing the copy |
 | D1-13 | globe.gl `onGlobeClick` survives React 19 StrictMode double-mount | the one-request-per-pour e2e assertion |
 | D1-14 | `gl.MAX_TEXTURE_SIZE ≥ 4096` in the phone's WebView; 4K WebP decodes without context loss | `chrome://inspect` on the debug APK |
 | D1-15 | WebGPU absent in Android System WebView (so the WebLLM rung stays hidden) | `'gpu' in navigator` on the debug APK |
 | D1-16 | Capacitor 8 predictive back fires `@capacitor/app` `backButton` on Android 16 | the device checklist |
-| D1-17 | Natural Earth raster (NE1/NE2) usability for a stylised globe skin | **N/A — stretch only (Phase 6), deliberately deferred; it does not gate the release** |
+| D1-17 | Natural Earth raster (NE1/NE2) usability for a stylised globe skin | **N/A: stretch only (Phase 6), deliberately deferred; it does not gate the release** |
 | D1-18 | No `timeapi.io` code path exists | `grep -r timeapi.io src dist` |
 | D1-19 | A Mumbai (land) pour costs ≤ 3 weighted calls and an Arabian-Sea pour ≤ 4; `seedrandom` on the three §6.5 seeds returns 0.320658 / 0.065045 / 0.993421 | DevTools + node |
 | D1-20 | Pages serves `manifest.webmanifest` and `sw.js` under `/barometer/` with correct MIME types; PWA installable on Chrome desktop and Android | `curl -I`, Lighthouse |
@@ -2410,16 +2410,16 @@ Nothing is "done" until the tests below exist and are green.
 
 Playwright runs Chromium desktop 1440×900 plus a "Pixel 7" profile, launched with `--use-gl=angle --use-angle=swiftshader` so globe.gl gets a WebGL context headless.
 
-**Determinism rules — all mandatory:**
+**Determinism rules, all mandatory:**
 
 - The house instant is **2026-09-06T00:45 Asia/Kolkata** = `2026-09-05T19:15:00Z` = epoch `1788635700`. Engine tests pass `now` explicitly; Playwright runs `await page.clock.install({ time: new Date('2026-09-05T19:15:00Z') })` **before** navigation.
 - Process timezone pinned: `TZ=Asia/Kolkata` in `vitest.config.ts` and `timezoneId: 'Asia/Kolkata'` in `playwright.config.ts`. One test proves the engine ignores it entirely by re-running a fixture under `TZ=UTC`.
-- Seeds are pinned; drink picks and Tracery lines are committed as snapshots after the first green run — **pin, then guard**.
+- Seeds are pinned; drink picks and Tracery lines are committed as snapshots after the first green run, **pin, then guard**.
 - globe.gl is non-deterministic, so test builds expose `window.__bar`: `freeze()` (stop auto-rotate, pin `pointOfView({lat:0,lng:0,altitude:2.5})`), `pour(lat,lng)` (the same code path as `onGlobeClick`), `textures('flat')` (force `earth-day.jpg`, disable the Blue Marble swap). Visual tests also `mask: [canvas]`.
 - Sound is muted in tests; Howler is stubbed in jsdom.
-- **Open-Meteo is always mocked in CI** via `page.route`. Never hit the live API from a test — it is non-commercial, rate-limited and non-deterministic. Only the `@live` weekly probe touches it.
+- **Open-Meteo is always mocked in CI** via `page.route`. Never hit the live API from a test, it is non-commercial, rate-limited and non-deterministic. Only the `@live` weekly probe touches it.
 
-### 10.2 The golden fixtures (C5 — this roster and no other)
+### 10.2 The golden fixtures (C5: this roster and no other)
 
 Each is a `{ forecast, airQuality, marine? }` triple in the **exact** shape the live API returns, in `src/test/fixtures/openmeteo/`.
 
@@ -2434,28 +2434,28 @@ Each is a `{ forecast, airQuality, marine? }` triple in the **exact** shape the 
 | `denver-hail` | 39.74, −104.99 | `America/Denver` / −21600 | `2026-06-15T16:40` | 27.0 / 55 / **27.6** / 17.3 | 45.0 / 78.0 | 96 storm + hail | 1 | 30 / 48 | uv 7, precip prob 90 |
 | `lisbon-golden` | 38.72, −9.14 | `Europe/Lisbon` / 3600 | `2026-09-06T19:35` | 24.0 / 60 / **24.3** / 15.8 | 18.0 / 26.0 | 1 | 1 | 25 / 42 | sunset 19:58 → golden hour |
 | `oslo-brunch` | 59.91, 10.75 | `Europe/Oslo` / 7200 | `2026-09-06T10:40` (Sunday) | 12.0 / 70 / **10.9** / 6.7 | 9.0 / 14.0 | 2 | 1 | 15 / 25 | weekend brunch window |
-| `error-429` | any | — | — | HTTP 429, body `{"error":true,"reason":"Minutely API request limit exceeded"}` | | | | | rate-limit coaster |
-| `error-network` | any | — | — | `page.route` aborts with `failed` | | | | | "models not answering" coaster |
+| `error-429` | any |: |: | HTTP 429, body `{"error":true,"reason":"Minutely API request limit exceeded"}` | | | | | rate-limit coaster |
+| `error-network` | any |: |: | `page.route` aborts with `failed` | | | | | "models not answering" coaster |
 
 Geo fixtures live in `src/test/fixtures/geo/` as trimmed extracts covering only the features the §6.8 points touch (India, Fiji, Russia, Lesotho, South Africa, Iceland, Antarctica, Norway, UAE, Portugal, USA, Kiribati; ~40 places; Arabian Sea, South Pacific and Caspian polygons). A `menu.mini.json` five-drink fixture supports hand-checkable scoring, and a `menu.tie.json` supports the repeat-penalty order-flip test.
 
-*If a test disagrees with a golden value, suspect the code first, then the golden — and record any correction in this file.*
+*If a test disagrees with a golden value, suspect the code first, then the golden, and record any correction in this file.*
 
-### 10.3 Unit tests — `src/engine/**`
+### 10.3 Unit tests: `src/engine/**`
 
 One file per module, table-driven. Cover:
 
-- **comfort** — every row of §6.1's golden table to ±0.1; `applies: false` for Mumbai returning the simple value and never `NaN`; `dew > temp` returns a number with `suspicious: true` and no throw; `rh = 0` → `null`; `rh = 100` → `t`; unknown WMO `42` → `'unknown'`; `null` AQI → `'unknown'`.
-- **tags** — one test per fixture asserting the exact tag **set** and the driving tag; every boundary in §6.3; exactly one day-part tag per fixture (a property test).
-- **dial** — all seven ring positions and angles; Mumbai's full object including `aria-valuetext`; `denver-hail` sitting at FAIR while its stamp is the danger tier; the no-data case.
-- **daypart** — every fixture; the `TZ=UTC` invariance test; dawn window edges; Sunday-vs-Monday brunch; the polar clock-only path with `polarApproximateTime`; the barista-suggestion rule including "late overrides".
-- **score / pick** — the two worked tables of §6.5 exactly; barista filtering; the repeat penalty flipping order only when the margin is under 2; determinism across repeat calls; seed neighbourhood behaviour; the weighted **85 / 11 / 4** draw over 1,000 seeds landing on index 0 in 85 % ± 3 %, index 1 in 11 % ± 3 % and index 2 in 4 % ± 2 % of them, with negative-score drinks never drawn; `seedrandom('19.1|72.9|0|bar')() === 0.320658…` (< 0.85 ⇒ Mumbai's pick is the Mojito, not a 15 % gamble); the virgin-twin path including "no twin"; the ocean rule forcing a marine drink; the gentler lever downgrading tier 2 → 1; a committed snapshot of all nine fixtures × {bar, barista}.
-- **wit** — for every fixture × mode × 50 seeds the output has no `#`, no `((`/`))`, no double spaces, ≤ 260 characters, terminal punctuation, the drink name exactly once and the stamp marked with `«»`; ≥ 8 variants per pool; determinism per seed; hedge lines when `precipitation_probability ≤ 60` and a precip tag is present; the deny-list lint; a committed snapshot; and — for any future LLM rung — `garnish(text)` falling back to the rung-0 text unchanged on timeout, non-200, empty body, output > 2× input length, or output missing the drink name.
-- **cache** — every pinned key and bucket; the TTL; the LRU/prune behaviour; marine sub-field reuse.
-- **openMeteo** — URL builders byte-for-byte; the weighting guard; 2 requests for land and 3 for ocean; a failed AQI not failing the verdict but a failed forecast doing so; local-time parsing; `is_day` coercion; `null` → `undefined`; the two error types with `retryAfterMs`; and an allow-list assertion that no request ever targets `bigdatacloud`, `api-bdc.io`, `thecocktaildb.com` or `timeapi.io`.
-- **geocode** — all twelve §6.8 rows (distances ±5 %); the index build under 30 ms; the `lng, lat` argument-order test; the `ISO_A2 === '-99'` fallback chain; the capital flag.
-- **units / receipt / ticker** — `fmtTemp(31.5,'C') === '31.5°'`, `fmtTemp(31.5,'F') === '88.7°'`, `fmtTemp(−48.7,'C') === '−48.7°'` **with U+2212**; `fmtWind(1.9,…)` → `'2 km/h'` / `'1 mph'` / `'1 kn'`; the exact Mumbai receipt line list (note the receipt uses **US AQI 55** while the coaster shows the EU band — both are labelled); the ocean receipt adding `SST 28.9°`, `WAVES 2.4 M` and `· DWD`; **every line ≤ 32 characters** as a property over all fixtures; the ticker crossing computed by `solar-calculator` and cross-checked against a brute-force `suncalc` altitude≈0 search to ±2 min.
-- **Tab repo** (with `fake-indexeddb`) — schema and newest-first listing; export → import round-trip with ids re-assigned and `createdAt` preserved; `app !== 'barometer'` rejected with `WrongTabError`; staleness at > 15 min; `clear()`; two Dexie instances seeing each other's inserts via `liveQuery`.
+- **comfort**, every row of §6.1's golden table to ±0.1; `applies: false` for Mumbai returning the simple value and never `NaN`; `dew > temp` returns a number with `suspicious: true` and no throw; `rh = 0` → `null`; `rh = 100` → `t`; unknown WMO `42` → `'unknown'`; `null` AQI → `'unknown'`.
+- **tags**, one test per fixture asserting the exact tag **set** and the driving tag; every boundary in §6.3; exactly one day-part tag per fixture (a property test).
+- **dial**, all seven ring positions and angles; Mumbai's full object including `aria-valuetext`; `denver-hail` sitting at FAIR while its stamp is the danger tier; the no-data case.
+- **daypart**, every fixture; the `TZ=UTC` invariance test; dawn window edges; Sunday-vs-Monday brunch; the polar clock-only path with `polarApproximateTime`; the barista-suggestion rule including "late overrides".
+- **score / pick**, the two worked tables of §6.5 exactly; barista filtering; the repeat penalty flipping order only when the margin is under 2; determinism across repeat calls; seed neighbourhood behaviour; the weighted **85 / 11 / 4** draw over 1,000 seeds landing on index 0 in 85 % ± 3 %, index 1 in 11 % ± 3 % and index 2 in 4 % ± 2 % of them, with negative-score drinks never drawn; `seedrandom('19.1|72.9|0|bar')() === 0.320658…` (< 0.85 ⇒ Mumbai's pick is the Mojito, not a 15 % gamble); the virgin-twin path including "no twin"; the ocean rule forcing a marine drink; the gentler lever downgrading tier 2 → 1; a committed snapshot of all nine fixtures × {bar, barista}.
+- **wit**, for every fixture × mode × 50 seeds the output has no `#`, no `((`/`))`, no double spaces, ≤ 260 characters, terminal punctuation, the drink name exactly once and the stamp marked with `«»`; ≥ 8 variants per pool; determinism per seed; hedge lines when `precipitation_probability ≤ 60` and a precip tag is present; the deny-list lint; a committed snapshot; and, for any future LLM rung, `garnish(text)` falling back to the rung-0 text unchanged on timeout, non-200, empty body, output > 2× input length, or output missing the drink name.
+- **cache**, every pinned key and bucket; the TTL; the LRU/prune behaviour; marine sub-field reuse.
+- **openMeteo**, URL builders byte-for-byte; the weighting guard; 2 requests for land and 3 for ocean; a failed AQI not failing the verdict but a failed forecast doing so; local-time parsing; `is_day` coercion; `null` → `undefined`; the two error types with `retryAfterMs`; and an allow-list assertion that no request ever targets `bigdatacloud`, `api-bdc.io`, `thecocktaildb.com` or `timeapi.io`.
+- **geocode**, all twelve §6.8 rows (distances ±5 %); the index build under 30 ms; the `lng, lat` argument-order test; the `ISO_A2 === '-99'` fallback chain; the capital flag.
+- **units / receipt / ticker**, `fmtTemp(31.5,'C') === '31.5°'`, `fmtTemp(31.5,'F') === '88.7°'`, `fmtTemp(−48.7,'C') === '−48.7°'` **with U+2212**; `fmtWind(1.9,…)` → `'2 km/h'` / `'1 mph'` / `'1 kn'`; the exact Mumbai receipt line list (note the receipt uses **US AQI 55** while the coaster shows the EU band, both are labelled); the ocean receipt adding `SST 28.9°`, `WAVES 2.4 M` and `· DWD`; **every line ≤ 32 characters** as a property over all fixtures; the ticker crossing computed by `solar-calculator` and cross-checked against a brute-force `suncalc` altitude≈0 search to ±2 min.
+- **Tab repo** (with `fake-indexeddb`), schema and newest-first listing; export → import round-trip with ids re-assigned and `createdAt` preserved; `app !== 'barometer'` rejected with `WrongTabError`; staleness at > 15 min; `clear()`; two Dexie instances seeing each other's inserts via `liveQuery`.
 
 **Coverage gates:** ≥ 95 % lines on `src/engine`, **100 %** on `comfort.ts`, `tags.ts`, `score.ts`, `geocode.ts`, `cache.ts`. Enforced in `vitest.config.ts`; the build fails below them.
 
@@ -2471,7 +2471,7 @@ The Bar loads with the neon wordmark visible **before** the canvas mounts · pou
 
 ### 10.6 Offline / PWA tests
 
-First load online, then offline+reload renders the shell, prints "NO SIGNAL · SERVING FROM THE TAB", flickers the neon once, disables search and Where-am-I with tooltips, and still opens the last verdict · an offline pour prints the error coaster with no hanging skeleton beyond 4 s · the precache manifest contains the shell, `tokens.css`, the three woff2 files, `earth-day.jpg`, `earth-topology.png`, `earth-water.png`, `night-sky.png`, the four `geo/*.json` files (110 m countries, places, marine, land-dots), the data JSON and the sound sprite — and **does not** contain the 4K/8K WebP or `countries-50m.json` · `start_url` and `scope` both equal `import.meta.env.BASE_URL`, `display: standalone`, `theme_color` and `background_color` `#1A0F0A`, icons 192/512 + maskable 1024 · the update flow shows the brass "New bottles in stock. Restock?" prompt and never hard-reloads mid-verdict · a same-cell same-bucket offline pour prints from cache with zero requests · and the SW is **not** registered under Capacitor.
+First load online, then offline+reload renders the shell, prints "NO SIGNAL · SERVING FROM THE TAB", flickers the neon once, disables search and Where-am-I with tooltips, and still opens the last verdict · an offline pour prints the error coaster with no hanging skeleton beyond 4 s · the precache manifest contains the shell, `tokens.css`, the three woff2 files, `earth-day.jpg`, `earth-topology.png`, `earth-water.png`, `night-sky.png`, the four `geo/*.json` files (110 m countries, places, marine, land-dots), the data JSON and the sound sprite, and **does not** contain the 4K/8K WebP or `countries-50m.json` · `start_url` and `scope` both equal `import.meta.env.BASE_URL`, `display: standalone`, `theme_color` and `background_color` `#1A0F0A`, icons 192/512 + maskable 1024 · the update flow shows the brass "New bottles in stock. Restock?" prompt and never hard-reloads mid-verdict · a same-cell same-bucket offline pour prints from cache with zero requests · and the SW is **not** registered under Capacitor.
 
 ### 10.7 Visual tests and token assertions
 
@@ -2504,7 +2504,7 @@ Baselines are generated on **Linux Chromium in CI only** (Windows runs use `--up
 
 | Metric | Budget |
 |---|---|
-| **Initial JS (route `#/`, excluding the globe chunk), gzip** | **≤ 180 KB** (C3 — hard) |
+| **Initial JS (route `#/`, excluding the globe chunk), gzip** | **≤ 180 KB** (C3: hard) |
 | Globe chunk (`three` + `globe.gl` + `three-globe`), gzip, lazy | ≤ 320 KB |
 | Geo data (110 m countries + places + 50 m marine), gzip | ≤ 900 KB; the lazy 50 m countries ≤ 1.2 MB |
 | Drinks + voice JSON, gzip | ≤ 150 KB |
@@ -2539,7 +2539,7 @@ Measure on `vite preview --base /barometer/` with Playwright throttling (Slow 4G
 
 ### 10.10 Manual Android checklist (before every `v*` tag, if the APK tier ships)
 
-Run on the owner's phone with a `workflow_dispatch` APK built with `CAP_WEBVIEW_DEBUG: '1'`, driven from desktop `chrome://inspect#devices` — **no `adb` needed**. Barometer has no camera, gallery, notification or alarm features, so those sections are absent by design.
+Run on the owner's phone with a `workflow_dispatch` APK built with `CAP_WEBVIEW_DEBUG: '1'`, driven from desktop `chrome://inspect#devices`, **no `adb` needed**. Barometer has no camera, gallery, notification or alarm features, so those sections are absent by design.
 
 **Install & first run:** installs over the previous version (same key, higher `versionCode`) with only Chrome's one-time "install unknown apps" prompt · splash is `#1A0F0A` with the brass pin only, adaptive icon shows the pin-on-coaster, themed icon is brass on mahogany · cold start to neon visible ≤ 2.5 s with **no white flash** · **no service worker registered**.
 **Globe / WebGL:** 4K textures (not 8K), `MAX_TEXTURE_SIZE ≥ 4096`, DPR 1.5 · flick spins ~2.5 turns with damping, idle drift after 8 s, stops on touch · tap → pin + ripple + fly at ≥ 30 fps · 20 consecutive pours with no context loss, no crash, a stable heap · backgrounding 30 s pauses and resumes correctly · a forced low-end profile shows the clickable SVG fallback.
@@ -2559,9 +2559,9 @@ Three independent pipelines, none of which costs anything:
 
 | Target | Artifact | Trigger | Lands at |
 |---|---|---|---|
-| **Web (PWA)** — the product | `dist/` built with `VITE_BASE_PATH=/barometer/` | push to `main` | `https://<owner>.github.io/barometer/` |
-| **Android (optional)** — the same `dist/` in a Capacitor shell (`VITE_BASE_PATH=/`) | signed `barometer-<version>.apk` | push tag `v*` | GitHub Releases → sideload |
-| **Cloudflare Worker (stretch only)** — keyless Workers AI paraphrase | `worker/` | push to `main` touching `worker/**` | `https://barometer-wit.<subdomain>.workers.dev` |
+| **Web (PWA)**: the product | `dist/` built with `VITE_BASE_PATH=/barometer/` | push to `main` | `https://<owner>.github.io/barometer/` |
+| **Android (optional)**: the same `dist/` in a Capacitor shell (`VITE_BASE_PATH=/`) | signed `barometer-<version>.apk` | push tag `v*` | GitHub Releases → sideload |
+| **Cloudflare Worker (stretch only)**: keyless Workers AI paraphrase | `worker/` | push to `main` touching `worker/**` | `https://barometer-wit.<subdomain>.workers.dev` |
 
 ### 11.1 `vite.config.ts`, the base path, PWA scope and CSP
 
@@ -2616,7 +2616,7 @@ export default defineConfig({
                                   || url.pathname.endsWith('countries-50m.json'),
             handler: 'CacheFirst',
             options: { cacheName: 'bar-heavy-v1',
-                       expiration: { maxEntries: 4,              // C4 — four, not eight
+                       expiration: { maxEntries: 4,              // C4, four, not eight
                                      maxAgeSeconds: 60 * 60 * 24 * 30 } } },
           // NEVER let Workbox answer a weather call: Dexie is the cache and staleness is a UI state.
           { urlPattern: /^https:\/\/[a-z-]*\.?open-meteo\.com\//, handler: 'NetworkOnly' },
@@ -2628,7 +2628,7 @@ export default defineConfig({
 });
 ```
 
-Five rules that go with it — each one is a way a sub-path deploy breaks **silently**:
+Five rules that go with it, each one is a way a sub-path deploy breaks **silently**:
 
 1. **Never `fetch('/geo/places.json')`.** Every runtime asset read is `` fetch(`${import.meta.env.BASE_URL}geo/places.json`) ``. `vite dev` at `/` will not catch a mistake here; `npm run build && npx vite preview --base /barometer/` will.
 2. **Hash routing** (`createHashRouter`) means deep links need no server rewrite. The `404.html` copy in the workflow is belt-and-braces.
@@ -2642,7 +2642,7 @@ if (!Capacitor.isNativePlatform() && 'serviceWorker' in navigator) {
 }
 ```
 
-4. **CSP lives in `index.html` as a meta tag** — GitHub Pages cannot send headers:
+4. **CSP lives in `index.html` as a meta tag**, GitHub Pages cannot send headers:
 
 ```html
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'
@@ -2652,7 +2652,7 @@ if (!Capacitor.isNativePlatform() && 'serviceWorker' in navigator) {
   object-src 'none'; base-uri 'none'">
 ```
 
-Vite only substitutes `%VITE_*%` placeholders for variables that are **defined**, so commit a repo-root `.env` containing `VITE_WIT_PROXY=` (empty) or the literal `%VITE_WIT_PROXY%` ships to users and the CSP breaks. Never add `'unsafe-eval'`. BYO-LLM hosts are appended only in the settings-enabled build-flag path, from a documented list — **never a wildcard**.
+Vite only substitutes `%VITE_*%` placeholders for variables that are **defined**, so commit a repo-root `.env` containing `VITE_WIT_PROXY=` (empty) or the literal `%VITE_WIT_PROXY%` ships to users and the CSP breaks. Never add `'unsafe-eval'`. BYO-LLM hosts are appended only in the settings-enabled build-flag path, from a documented list, **never a wildcard**.
 
 5. **`public/` files are not content-hashed by Vite.** When a texture or geo file changes, change its filename (`bmng-2026-09-4k.webp` already encodes the month) or bump `bar-heavy-v1` → `-v2`, or Workbox's CacheFirst entry serves the old bytes for 30 days.
 
@@ -2710,7 +2710,7 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-Keep Playwright, the licence scan and the bundle gate **out** of this workflow — a flaky headless-WebGL test must never block a deploy. Until the first test exists, delete the `npm test` line rather than letting the deploy fail.
+Keep Playwright, the licence scan and the bundle gate **out** of this workflow, a flaky headless-WebGL test must never block a deploy. Until the first test exists, delete the `npm test` line rather than letting the deploy fail.
 
 **Post-deploy smoke checks** (run once, then before each release):
 
@@ -2719,13 +2719,13 @@ BASE=https://<owner>.github.io/barometer
 curl -sI  $BASE/                       # 200, text/html
 curl -sI  $BASE/manifest.webmanifest   # 200, application/manifest+json
 curl -sI  $BASE/sw.js                  # 200, text/javascript, no long immutable cache
-curl -sI  $BASE/geo/places.json        # 200, application/json — proves the sub-path asset prefix
+curl -sI  $BASE/geo/places.json        # 200, application/json, proves the sub-path asset prefix
 curl -sI -H "Origin: https://<owner>.github.io" \
   "https://api.open-meteo.com/v1/forecast?latitude=19.07&longitude=72.88&current=temperature_2m" \
   | grep -i access-control-allow-origin
 ```
 
-With the Actions Pages source the artifact is served as-is — **no `.nojekyll` needed** and `_`-prefixed paths are safe (only branch-source Pages runs Jekyll). Site size lands around 15–40 MB, far under the 1 GB cap; the 100 GB/month bandwidth soft limit is unreachable for a personal toy.
+With the Actions Pages source the artifact is served as-is, **no `.nojekyll` needed** and `_`-prefixed paths are safe (only branch-source Pages runs Jekyll). Site size lands around 15–40 MB, far under the 1 GB cap; the 100 GB/month bandwidth soft limit is unreachable for a personal toy.
 
 ### 11.3 `.github/workflows/ci.yml`
 
@@ -2867,7 +2867,7 @@ jobs:
 
 Four repo secrets, set once with `gh secret set`: `ANDROID_KEYSTORE_BASE64` (from the `.p12.b64`), `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` (= `release`), `ANDROID_KEY_PASSWORD` (PKCS12 → identical to the store password). **Delete the `.b64` from disk afterwards; keep the `.p12` backed up.** GitHub can never show a secret back to you, and the same key must sign every future APK forever.
 
-For the manual QA pass, dispatch this workflow on a scratch branch with `CAP_WEBVIEW_DEBUG: '1'` added to the build step's `env:` — **never tag a release from that branch.**
+For the manual QA pass, dispatch this workflow on a scratch branch with `CAP_WEBVIEW_DEBUG: '1'` added to the build step's `env:`, **never tag a release from that branch.**
 
 ### 11.5 `.github/workflows/live.yml`
 
@@ -2892,15 +2892,15 @@ jobs:
           BASE_URL: https://${{ github.repository_owner }}.github.io/barometer/
 ```
 
-GitHub disables scheduled workflows after 60 days of repo inactivity — if the probe stops mailing you, that is why; re-enable it from the Actions tab.
+GitHub disables scheduled workflows after 60 days of repo inactivity, if the probe stops mailing you, that is why; re-enable it from the Actions tab.
 
-### 11.6 The optional Worker (stretch only — skip it to ship)
+### 11.6 The optional Worker (stretch only: skip it to ship)
 
 Barometer's MVP calls only no-key, CORS-open endpoints, so there is **no proxy**. If wit rung 1 is ever built:
 
 ```
 worker/
-├── index.ts          # handles OPTIONS itself; calls env.AI.run(...) — no key at all
+├── index.ts          # handles OPTIONS itself; calls env.AI.run(...), no key at all
 ├── package.json
 └── wrangler.toml
 ```
@@ -2911,7 +2911,7 @@ main = "index.ts"
 compatibility_date = "2026-09-01"
 
 [vars]
-ALLOWED_ORIGIN = "https://<owner>.github.io"   # ORIGIN ONLY — Origin headers carry no path
+ALLOWED_ORIGIN = "https://<owner>.github.io"   # ORIGIN ONLY, Origin headers carry no path
 UPSTREAM_BASE  = "https://api.cloudflare.com/client/v4/accounts/<account-id>/ai/run"
 
 [ai]
@@ -2921,7 +2921,7 @@ binding = "AI"        # env.AI.run(model, ...) needs no key, so there is no secr
 enabled = true
 ```
 
-Two mandatory details: the origin allow-list **must** accept the Capacitor WebView, which serves from `https://localhost` (not `http://`), or the APK gets a 403 from its own proxy —
+Two mandatory details: the origin allow-list **must** accept the Capacitor WebView, which serves from `https://localhost` (not `http://`), or the APK gets a 403 from its own proxy:
 
 ```ts
 const allowed = origin === env.ALLOWED_ORIGIN
@@ -2929,11 +2929,11 @@ const allowed = origin === env.ALLOWED_ORIGIN
   || origin.startsWith('http://localhost');  // vite dev
 ```
 
-— and the Worker must be **fail-open**: a 429, a timeout past 6 s, or a malformed response leaves the procedural rung-0 coaster exactly as printed. A user must never be able to tell the Worker is down. Deploy it with a `worker.yml` filtered to `paths: ['worker/**']` using `cloudflare/wrangler-action@v4` and the two Cloudflare secrets; bake the deployed URL in as `VITE_WIT_PROXY` in **both** the Pages and the Android build steps so the CSP substitution works.
+,  and the Worker must be **fail-open**: a 429, a timeout past 6 s, or a malformed response leaves the procedural rung-0 coaster exactly as printed. A user must never be able to tell the Worker is down. Deploy it with a `worker.yml` filtered to `paths: ['worker/**']` using `cloudflare/wrangler-action@v4` and the two Cloudflare secrets; bake the deployed URL in as `VITE_WIT_PROXY` in **both** the Pages and the Android build steps so the CSP substitution works.
 
 ### 11.7 Environment and configuration
 
-There are **no secrets in any build**. Anything prefixed `VITE_` is inlined into the shipped bundle by design — which is exactly why no key exists in this project.
+There are **no secrets in any build**. Anything prefixed `VITE_` is inlined into the shipped bundle by design, which is exactly why no key exists in this project.
 
 | Variable | Pages | APK | Local dev | Effect |
 |---|---|---|---|---|
@@ -2941,22 +2941,22 @@ There are **no secrets in any build**. Anything prefixed `VITE_` is inlined into
 | `VITE_PLATFORM` | unset | `android` | unset | 4K (not 8K) textures, DPR cap 1.5, hides the WebLLM rung |
 | `VITE_WIT_PROXY` | empty | empty | empty | Worker URL for the stretch rung; empty ⇒ hidden in the Back Office and absent from the CSP |
 | `__APP_VERSION__` | `define` from `package.json` + git sha | same | same | Rendered in About and on the share-card footer |
-| `CAP_WEBVIEW_DEBUG` | — | `1` only on a scratch QA branch | — | Enables `chrome://inspect` on the APK |
-| `TZ` | — | — | — | CI/tests only: `Asia/Kolkata` |
+| `CAP_WEBVIEW_DEBUG` |: | `1` only on a scratch QA branch |: | Enables `chrome://inspect` on the APK |
+| `TZ` |: |: |: | CI/tests only: `Asia/Kolkata` |
 
-Commit a repo-root `.env` containing exactly `VITE_WIT_PROXY=`. **Never** create a `VITE_*` key for Gemini/Groq/OpenRouter — those are the *user's* keys, entered in the Back Office and stored WebCrypto-wrapped on-device.
+Commit a repo-root `.env` containing exactly `VITE_WIT_PROXY=`. **Never** create a `VITE_*` key for Gemini/Groq/OpenRouter, those are the *user's* keys, entered in the Back Office and stored WebCrypto-wrapped on-device.
 
 ### 11.8 Repo hygiene, versioning, rollback, backups, runbook
 
-**`.gitignore`** (before the first commit — the repo is public forever): `node_modules/`, `dist/`, `dist-ssr/`, `coverage/`, `playwright-report/`, `test-results/`, `raw/`, `android/local.properties`, `android/app/release/`, `android/.gradle/`, `*.p12`, `*.jks`, `*.keystore`, `.env.local`, `.env.*.local`.
+**`.gitignore`** (before the first commit, the repo is public forever): `node_modules/`, `dist/`, `dist-ssr/`, `coverage/`, `playwright-report/`, `test-results/`, `raw/`, `android/local.properties`, `android/app/release/`, `android/.gradle/`, `*.p12`, `*.jks`, `*.keystore`, `.env.local`, `.env.*.local`.
 **`.gitattributes`** (a Windows checkout must not break the Gradle wrapper): `android/gradlew text eol=lf`, `*.sh text eol=lf`, `*.webp binary`, `*.jpg binary`, `*.png binary`.
-Repo settings: leave workflow permissions at read-only (each workflow declares its own); no branch protection (a solo dev pushing to `main` *is* the release process); **and never add ads, sponsor links, affiliate links or a donate button** — Open-Meteo's free tier is non-commercial and that is a deployment constraint.
+Repo settings: leave workflow permissions at read-only (each workflow declares its own); no branch protection (a solo dev pushing to `main` *is* the release process); **and never add ads, sponsor links, affiliate links or a donate button**, Open-Meteo's free tier is non-commercial and that is a deployment constraint.
 
-**Versioning:** SemVer `0.y.z` until the full feature set ships, then `1.y.z`, sourced from `package.json` and displayed as `version+gitsha`. The git tag `vX.Y.Z` **is** the release. APK `versionName` = the tag minus its `v`; APK `versionCode` = `${{ github.run_number }}` — strictly increasing, never reset, never reused. Dexie schema versions bump with an `upgrade()`. Bump rules: **patch** = copy, affinity tweaks, bug fixes; **minor** = a new screen, a new tag family, a texture pipeline, a Dexie version; **major** = a route or export-format break. Grammar and menu edits are patches.
+**Versioning:** SemVer `0.y.z` until the full feature set ships, then `1.y.z`, sourced from `package.json` and displayed as `version+gitsha`. The git tag `vX.Y.Z` **is** the release. APK `versionName` = the tag minus its `v`; APK `versionCode` = `${{ github.run_number }}`, strictly increasing, never reset, never reused. Dexie schema versions bump with an `upgrade()`. Bump rules: **patch** = copy, affinity tweaks, bug fixes; **minor** = a new screen, a new tag family, a texture pipeline, a Dexie version; **major** = a route or export-format break. Grammar and menu edits are patches.
 
-**Rollback.** Web: fix forward — `git revert <bad-sha> && git push` redeploys in ~2 minutes; Pages keeps only the latest deployment, so a revert commit *is* the rollback. Two caveats: (a) with `registerType: 'prompt'` the **service worker outlives the rollback** — users keep the bad build until they accept the update; if a build is genuinely dangerous, ship one build with `VitePWA({ selfDestroying: true })` to unregister every client, confirm, then deploy normally; (b) bad weather data self-heals because the cache TTL is 15 minutes — but `verdicts` is **user data**: never clear it as part of a rollback. Android: you cannot downgrade over an install; fix forward with a new tag, mark the bad release pre-release and delete its `.apk` asset.
+**Rollback.** Web: fix forward, `git revert <bad-sha> && git push` redeploys in ~2 minutes; Pages keeps only the latest deployment, so a revert commit *is* the rollback. Two caveats: (a) with `registerType: 'prompt'` the **service worker outlives the rollback**, users keep the bad build until they accept the update; if a build is genuinely dangerous, ship one build with `VitePWA({ selfDestroying: true })` to unregister every client, confirm, then deploy normally; (b) bad weather data self-heals because the cache TTL is 15 minutes, but `verdicts` is **user data**: never clear it as part of a rollback. Android: you cannot downgrade over an install; fix forward with a new tag, mark the bad release pre-release and delete its `.apk` asset.
 
-**Backups.** The `.p12` **and** its passphrase, in two separate places outside any repo — this is the only unrecoverable asset in the project; verify the copy opens yearly. A note of the secret inventory in the same password-manager entry (GitHub can never show a secret back). The Tab, via the in-app JSON export, whenever it matters. `raw/` (NASA JPEGs and the cloned drink repos) to an external drive with `raw/SOURCES.txt`. The repo itself: `git bundle create /d/backups/barometer-$(date +%F).bundle --all` monthly. **Never back anything up *into* the repo — it is public.**
+**Backups.** The `.p12` **and** its passphrase, in two separate places outside any repo, this is the only unrecoverable asset in the project; verify the copy opens yearly. A note of the secret inventory in the same password-manager entry (GitHub can never show a secret back). The Tab, via the in-app JSON export, whenever it matters. `raw/` (NASA JPEGs and the cloned drink repos) to an external drive with `raw/SOURCES.txt`. The repo itself: `git bundle create /d/backups/barometer-$(date +%F).bundle --all` monthly. **Never back anything up *into* the repo, it is public.**
 
 **Runbook.**
 
@@ -2967,7 +2967,7 @@ Repo settings: leave workflow permissions at read-only (each workflow declares i
 | Chrome won't offer "Install" | `start_url`/`scope` ≠ `/barometer/`, or the SW registered at the wrong scope | Fix via `base`; unregister the old SW and hard-reload |
 | `actions/deploy-pages` permission error | Pages source is not "GitHub Actions" | Settings → Pages → Source |
 | Deploy queues forever | the `pages` concurrency group is waiting (deliberate, `cancel-in-progress: false`) | Let it finish; never cancel a live production deploy |
-| Weather works on desktop, fails on the phone | — | Not CORS: the WebView sends `Origin: https://localhost` and Open-Meteo answers `*`. Suspect DNS or a captive portal |
+| Weather works on desktop, fails on the phone |: | Not CORS: the WebView sends `Origin: https://localhost` and Open-Meteo answers `*`. Suspect DNS or a captive portal |
 | `gradlew: Permission denied` | execute bit lost on a Windows checkout | The workflow runs `chmod +x`; also `git update-index --chmod=+x android/gradlew` |
 | `cp: app-release.apk: No such file` | signing env vars missing ⇒ Gradle emitted `app-release-unsigned.apk` | Check the four secrets. **This failure is intentional and must never be "fixed" by shipping the unsigned file.** |
 | APK installs but won't update an old install | `applicationId` changed, different key, or `versionCode` not higher | Restore `com.rahul.barometer` and the original `.p12` |
@@ -2975,7 +2975,7 @@ Repo settings: leave workflow permissions at read-only (each workflow declares i
 | Users stuck on an old web build | they never accepted "Restock?" | Expected with `registerType: 'prompt'`; only a `selfDestroying` build forces it |
 | Scheduled `live-probe` stopped | 60 days of repo inactivity | Re-enable from the Actions tab |
 
-**Escape hatch (documented, not planned):** if Pages ever becomes the constraint — COOP/COEP headers, real HTTP status codes on deep links, `_headers` control — migrate to **Cloudflare Workers with static assets** (free, unlimited static requests, SPA fallback). That would mean a `wrangler.toml` with an `[assets]` block pointing at `dist/`, deploying with `cloudflare/wrangler-action` instead of the three Pages actions, and `VITE_BASE_PATH=/` because the site would live at the domain root — which also makes the web build identical to the APK build. Nothing in Barometer needs this today.
+**Escape hatch (documented, not planned):** if Pages ever becomes the constraint, COOP/COEP headers, real HTTP status codes on deep links, `_headers` control, migrate to **Cloudflare Workers with static assets** (free, unlimited static requests, SPA fallback). That would mean a `wrangler.toml` with an `[assets]` block pointing at `dist/`, deploying with `cloudflare/wrangler-action` instead of the three Pages actions, and `VITE_BASE_PATH=/` because the site would live at the domain root, which also makes the web build identical to the APK build. Nothing in Barometer needs this today.
 
 ---
 
@@ -3002,15 +3002,15 @@ Ship only when **every** box below is true.
 
 ☐ `npm run test:all` green on `main` · ☐ engine coverage ≥ 95 % with 100 % on the five named modules · ☐ wit snapshots reviewed, not blindly regenerated · ☐ `npm run test:e2e` green three consecutive CI runs with a **zero** flake budget · ☐ every visual baseline eyeballed and defensible · ☐ Lighthouse mobile LCP ≤ 2.5 s with a DOM LCP element and PWA installable · ☐ `check:bundle` passing every §10.8 row · ☐ `check:licenses` passing with only the documented `suncalc@2.0.2` exclusion · ☐ the privacy spec proving the network allow-list and the on-load zero-request rule · ☐ `attribution.json` ↔ About ↔ README matching three ways · ☐ manual NVDA pass on desktop · ☐ the §10.10 device checklist fully ticked (or the Android tier explicitly dropped) · ☐ `test:live` green from the deployed origin within the last 7 days · ☐ no §9.7 row left unticked that affects the release · ☐ the keystore `.p12` and passphrase backup **confirmed present** before the first tag, then yearly.
 
-### 12.4 Non-goals — do not build these
+### 12.4 Non-goals: do not build these
 
-Not a forecast app: **no** hourly strip, 7-day view, radar, alerts, notifications or charts. One "right now" verdict per click; forecast fields are fetched only to hedge the copy. No street map, no tiles, no place search beyond Open-Meteo's forward geocoder. No accounts, no cloud sync, no server of ours. No owner API key anywhere. No commercial use, ads, donations or store listing. No user-authored drinks or recipe editing — the menu is curated in the repo. **No insults that target people** — the bartender judges weather and choices, never protected characteristics. No iOS build.
+Not a forecast app: **no** hourly strip, 7-day view, radar, alerts, notifications or charts. One "right now" verdict per click; forecast fields are fetched only to hedge the copy. No street map, no tiles, no place search beyond Open-Meteo's forward geocoder. No accounts, no cloud sync, no server of ours. No owner API key anywhere. No commercial use, ads, donations or store listing. No user-authored drinks or recipe editing, the menu is curated in the repo. **No insults that target people**, the bartender judges weather and choices, never protected characteristics. No iOS build.
 
 ---
 
 ## 13. Code quality rules
 
-**TypeScript.** `strict: true`, plus `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `noFallthroughCasesInSwitch`. **`any` is banned** — use `unknown` and narrow. No non-null assertions (`!`) outside test files and the two documented spots in `localClock`. **The engine snippets in §6.5 (`pick`) and §6.8 (`locate`) are written the awkward way on purpose** — destructured locals instead of `top[0].score`, a conditional spread instead of `nearestCity: city && …`, a `city ?` branch instead of `city!.name` — because that is what these three flags require. Do not "tidy" them back; `npx tsc --noEmit` is a CI gate and will fail. No `as` casts to silence the compiler; if a cast is genuinely needed, write a type guard instead. Every exported function has an explicit return type. `npx tsc --noEmit` is a CI gate.
+**TypeScript.** `strict: true`, plus `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `noFallthroughCasesInSwitch`. **`any` is banned**, use `unknown` and narrow. No non-null assertions (`!`) outside test files and the two documented spots in `localClock`. **The engine snippets in §6.5 (`pick`) and §6.8 (`locate`) are written the awkward way on purpose**, destructured locals instead of `top[0].score`, a conditional spread instead of `nearestCity: city && …`, a `city ?` branch instead of `city!.name`, because that is what these three flags require. Do not "tidy" them back; `npx tsc --noEmit` is a CI gate and will fail. No `as` casts to silence the compiler; if a cast is genuinely needed, write a type guard instead. Every exported function has an explicit return type. `npx tsc --noEmit` is a CI gate.
 
 **Biome is the only linter and formatter.** 2-space indent, single quotes, organise-imports on, run as `npx biome ci .` in CI. No ESLint, no Prettier, no per-file disable comments without a one-line reason on the same line.
 
@@ -3020,22 +3020,22 @@ Not a forecast app: **no** hourly strip, 7-day view, radar, alerts, notification
 
 - One component per file, named the same as the file, default-exported only at route boundaries; named exports elsewhere.
 - Props interfaces are declared above the component and are never `any` or inline-`{}` for more than two fields.
-- No business logic in components — a component may format and arrange, but tags, scores, picks, stamps and lines all come from `src/engine`.
+- No business logic in components, a component may format and arrange, but tags, scores, picks, stamps and lines all come from `src/engine`.
 - No inline `style={{}}` except for a genuinely dynamic single custom property (e.g. `style={{ ['--drink-glow' as string]: glow }}`).
 - **No hard-coded colours, sizes, durations or easings anywhere outside `tokens.css`.** A grep for raw hex outside `src/styles/` must return nothing. Same for `px` values that should be `--space-*`, and for `ms` values that should be `--dur-*`.
 - Tailwind is for layout utilities only (flex/grid/gap/inset/z). Materials, colour and type live in hand-written CSS reading tokens.
-- Every interactive element gets a real semantic role, an accessible name, a `:focus-visible` ring and a ≥ 44×44 hit area — at the moment it is written, not in a later pass.
-- Feature folders own their components, hooks, logic and tests. Cross-feature imports go through `src/components/ui`, `src/engine`, `src/state` or `src/platform` — never directly into another feature's internals.
+- Every interactive element gets a real semantic role, an accessible name, a `:focus-visible` ring and a ≥ 44×44 hit area, at the moment it is written, not in a later pass.
+- Feature folders own their components, hooks, logic and tests. Cross-feature imports go through `src/components/ui`, `src/engine`, `src/state` or `src/platform`, never directly into another feature's internals.
 - Platform differences live **only** in `src/platform/*`. A `Capacitor.isNativePlatform()` check anywhere else is a bug.
 
 **State.** Zustand holds UI state and the current verdict; **Dexie is the source of truth** for The Tab and the weather cache. `features/verdict/pour.ts` is the **only** writer of `verdict`. Reads of the Tab go through `useLiveQuery`. Settings are persisted through the `src/platform/prefs.ts` adapter, never `localStorage` directly.
 
-**No dead code.** No commented-out blocks, no `TODO` without an owner and a date, no unused exports, no unreachable branches, no "just in case" abstractions, no files left from an abandoned approach. If a feature is deferred to Phase 6, it does not exist in `src/` — it exists in this document. Delete rather than comment; git remembers.
+**No dead code.** No commented-out blocks, no `TODO` without an owner and a date, no unused exports, no unreachable branches, no "just in case" abstractions, no files left from an abandoned approach. If a feature is deferred to Phase 6, it does not exist in `src/`, it exists in this document. Delete rather than comment; git remembers.
 
-**Errors.** Every failure mode in §4.9 and §7.5 has a named error type and a user-visible bar-voiced message. Nothing is swallowed silently except the deliberately best-effort AQI and marine fetches (`.catch(() => undefined)`, which only removes tags). **Nothing is reported anywhere** — no Sentry, no console spam in production; a `console.log` left in `src/` fails review.
+**Errors.** Every failure mode in §4.9 and §7.5 has a named error type and a user-visible bar-voiced message. Nothing is swallowed silently except the deliberately best-effort AQI and marine fetches (`.catch(() => undefined)`, which only removes tags). **Nothing is reported anywhere**, no Sentry, no console spam in production; a `console.log` left in `src/` fails review.
 
-**Testing discipline.** Engine modules land with their test file green in the **same commit** — never "tests later". Snapshots are reviewed line by line when they change, never regenerated blindly ("pin, then guard"). Fixtures are the exact live API shape, not a convenience type. If a test and a golden value disagree, suspect the code first, then the golden — and record any correction in this document.
+**Testing discipline.** Engine modules land with their test file green in the **same commit**, never "tests later". Snapshots are reviewed line by line when they change, never regenerated blindly ("pin, then guard"). Fixtures are the exact live API shape, not a convenience type. If a test and a golden value disagree, suspect the code first, then the golden, and record any correction in this document.
 
-**Commit cadence.** Small, single-purpose commits with imperative subjects, one per task from §9 (`engine: tags.ts with the §6.3 table and boundary tests`). Push to `main` — that *is* the release process for a solo project. Never commit `raw/`, a `.p12`, `android/local.properties`, `dist/`, coverage output or a Playwright report. Every commit leaves `main` deployable: if `ci.yml` is red, the next commit fixes it before anything else is written. Bump `package.json` and tag only from `main`.
+**Commit cadence.** Small, single-purpose commits with imperative subjects, one per task from §9 (`engine: tags.ts with the §6.3 table and boundary tests`). Push to `main`, that *is* the release process for a solo project. Never commit `raw/`, a `.p12`, `android/local.properties`, `dist/`, coverage output or a Playwright report. Every commit leaves `main` deployable: if `ci.yml` is red, the next commit fixes it before anything else is written. Bump `package.json` and tag only from `main`.
 
-**Documentation.** This file is the specification; when reality diverges from it — a threshold changes, a fixture value is corrected, a day-1 verification fails — **edit this file in the same commit**. The README's Attribution table, `src/data/attribution.json` and the About screen are updated together, always, and a test enforces it.
+**Documentation.** This file is the specification; when reality diverges from it, a threshold changes, a fixture value is corrected, a day-1 verification fails, **edit this file in the same commit**. The README's Attribution table, `src/data/attribution.json` and the About screen are updated together, always, and a test enforces it.

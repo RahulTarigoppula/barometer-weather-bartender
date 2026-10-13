@@ -1,5 +1,5 @@
 # Weekly probe: Open-Meteo still answers with CORS, and the deployed bar still serves.
-# GitHub disables scheduled workflows after 60 days of repo inactivity — re-enable from the Actions tab.
+# GitHub disables scheduled workflows after 60 days of repo inactivity: re-enable from the Actions tab.
 name: live-probe
 
 on:

@@ -125,7 +125,7 @@ export interface Served {
 }
 
 /**
- * What is actually on the coaster for a verdict under the current menu and "second opinion" index —
+ * What is actually on the coaster for a verdict under the current menu and "second opinion" index:
  * the barista flip swaps in the twin WITHOUT re-scoring; the second opinion walks the runners-up.
  */
 export function served(v: Verdict, drinks: Drink[], menu: Menu, opinion: number, gentler: boolean): Served {

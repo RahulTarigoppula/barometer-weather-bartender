@@ -1,4 +1,4 @@
-# Barometer — DEPLOYMENT.md
+# Barometer: DEPLOYMENT.md
 
 **Project:** 04 · The Contextual Weather Bartender (codename "Barometer", design "The Globe Bar") · **Written:** 2026-09-06
 **Binding inputs:** `_shared/DECISIONS.md` (D2 hosting + repo name, D3 Android, D4 wit ladder, D5 licences, D6 layout, D9.1 "day 1 = live"), `_shared/research/HOSTING.md` (§A GitHub Pages, §B Worker, pitfalls), `_shared/research/ANDROID-PACKAGING.md` (Capacitor 8 steps, Android 13–16 gotchas), `docs/ARCHITECTURE.md` (§7 PWA, §8 Android, §9 APIs, §10 security, §11 budgets), `docs/DESIGN.md` (§14 Android, §16 assets), `docs/TESTING.md` (§11 day-1 list, §12 Android manual QA, §13 release gate).
@@ -7,11 +7,11 @@ Barometer has **no backend and no secret of ours**. Deployment is therefore thre
 
 | Target | Artifact | Trigger | Where it lands |
 |---|---|---|---|
-| **Web (PWA)** — the product | `dist/` built with `VITE_BASE_PATH=/barometer/` | push to `main` | `https://<owner>.github.io/barometer/` |
-| **Android (optional)** — Capacitor 8 shell around the same `dist/` (`VITE_BASE_PATH=/`) | signed `barometer-<version>.apk` | push tag `v*` | GitHub Releases → sideload |
-| **Cloudflare Worker (optional, "Someday")** — keyless Workers AI paraphrase, wit-ladder rung 1 | `worker/` | push to `main` touching `worker/**` | `https://barometer-wit.<subdomain>.workers.dev` |
+| **Web (PWA)**: the product | `dist/` built with `VITE_BASE_PATH=/barometer/` | push to `main` | `https://<owner>.github.io/barometer/` |
+| **Android (optional)**: Capacitor 8 shell around the same `dist/` (`VITE_BASE_PATH=/`) | signed `barometer-<version>.apk` | push tag `v*` | GitHub Releases → sideload |
+| **Cloudflare Worker (optional, "Someday")**: keyless Workers AI paraphrase, wit-ladder rung 1 | `worker/` | push to `main` touching `worker/**` | `https://barometer-wit.<subdomain>.workers.dev` |
 
-Nothing here costs money and nothing asks for a card (D9.5). Substitute your GitHub username for `<owner>` throughout — it is the same person as the `rahul` in the Android `appId` `com.rahul.barometer`.
+Nothing here costs money and nothing asks for a card (D9.5). Substitute your GitHub username for `<owner>` throughout, it is the same person as the `rahul` in the Android `appId` `com.rahul.barometer`.
 
 ---
 
@@ -25,18 +25,18 @@ Nothing here costs money and nothing asks for a card (D9.5). Substitute your Git
 | GitHub account, Free plan | yes | Public repo is mandatory for Pages + unlimited Actions minutes (HOSTING pitfall 10) |
 | Java / Android SDK / Flutter | **no, and not needed** | every APK is built on `ubuntu-24.04` runners (D3) |
 
-Optional, only if the Worker is ever built: a free Cloudflare account (no card — HOSTING "claims to verify" #1: confirm at sign-up).
+Optional, only if the Worker is ever built: a free Cloudflare account (no card, HOSTING "claims to verify" #1: confirm at sign-up).
 
 ---
 
 ## 2. Create the repository
 
-The project folder *is* the repo, so `docs/`, `design/` and `GOAL.md` ship with the code (D6). Repo name is **`barometer`**, taken verbatim from DECISIONS §D2's suggested-names list — the name also becomes the Pages sub-path and the `VITE_BASE_PATH`, so do not rename it later without redoing §3 and the PWA scope.
+The project folder *is* the repo, so `docs/`, `design/` and `GOAL.md` ship with the code (D6). Repo name is **`barometer`**, taken verbatim from DECISIONS §D2's suggested-names list, the name also becomes the Pages sub-path and the `VITE_BASE_PATH`, so do not rename it later without redoing §3 and the PWA scope.
 
 ```bash
 cd /c/Work/Personal_Projects/04-barometer-weather-bartender
 
-# Ignore rules BEFORE the first commit — the repo is public forever.
+# Ignore rules BEFORE the first commit: the repo is public forever.
 cat >> .gitignore <<'EOF'
 node_modules/
 dist/
@@ -68,10 +68,10 @@ git init -b main
 git add -A
 git commit -m "Barometer: docs, design contract and scaffold"
 gh repo create barometer --public --source=. --push \
-  --description "The Globe Bar — click anywhere on the planet, get judged, get a drink."
+  --description "The Globe Bar, click anywhere on the planet, get judged, get a drink."
 ```
 
-Then, once: **Settings → Pages → Build and deployment → Source: "GitHub Actions"**. Nothing else on that page. (CLI equivalent, unverified — confirm the page settings afterwards: `gh api -X POST repos/<owner>/barometer/pages -f build_type=workflow`.)
+Then, once: **Settings → Pages → Build and deployment → Source: "GitHub Actions"**. Nothing else on that page. (CLI equivalent, unverified, confirm the page settings afterwards: `gh api -X POST repos/<owner>/barometer/pages -f build_type=workflow`.)
 
 Repo settings worth doing at the same time:
 
@@ -153,9 +153,9 @@ export default defineConfig({
 });
 ```
 
-Rules that go with it (each has a test in TESTING §6/§10 — they are the things that silently break a sub-path deploy):
+Rules that go with it (each has a test in TESTING §6/§10, they are the things that silently break a sub-path deploy):
 
-1. **Never `fetch('/geo/places.json')`.** Every runtime asset read is `fetch(\`${import.meta.env.BASE_URL}geo/places.json\`)` (HOSTING pitfall 2). Verify locally with `npm run build && npx vite preview --base /barometer/` before the first push — `vite dev` at `/` will not catch it.
+1. **Never `fetch('/geo/places.json')`.** Every runtime asset read is `fetch(\`${import.meta.env.BASE_URL}geo/places.json\`)` (HOSTING pitfall 2). Verify locally with `npm run build && npx vite preview --base /barometer/` before the first push, `vite dev` at `/` will not catch it.
 2. **Hash routing** (`createHashRouter`) means deep links `#/v/19.08,72.88` need no server rewrite; the `404.html` copy in the workflow is belt-and-braces for a mistyped path.
 3. **Register the service worker web-only**, in `src/app/main.tsx`:
    ```ts
@@ -165,7 +165,7 @@ Rules that go with it (each has a test in TESTING §6/§10 — they are the thin
      registerSW({ onNeedRefresh: () => useBarStore.getState().showRestockTag() });
    }
    ```
-4. **CSP** lives in `index.html` as a meta tag (Pages cannot set headers — D2). Copy it verbatim from ARCHITECTURE §10, with the optional Worker host injected through Vite's HTML env replacement:
+4. **CSP** lives in `index.html` as a meta tag (Pages cannot set headers, D2). Copy it verbatim from ARCHITECTURE §10, with the optional Worker host injected through Vite's HTML env replacement:
    ```html
    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'
      https://api.open-meteo.com https://air-quality-api.open-meteo.com https://marine-api.open-meteo.com
@@ -174,11 +174,11 @@ Rules that go with it (each has a test in TESTING §6/§10 — they are the thin
      object-src 'none'; base-uri 'none'">
    ```
    Vite only substitutes `%VITE_*%` placeholders for variables that are **defined**, so commit a repo-root `.env` with `VITE_WIT_PROXY=` (empty) or the literal `%VITE_WIT_PROXY%` ships to users and the CSP breaks.
-5. `public/` files are **not** content-hashed by Vite. When a texture or geo file changes, change its filename (`bmng-2026-09-4k.webp` already encodes the month) — otherwise Workbox's CacheFirst entry keeps the old bytes for 30 days.
+5. `public/` files are **not** content-hashed by Vite. When a texture or geo file changes, change its filename (`bmng-2026-09-4k.webp` already encodes the month), otherwise Workbox's CacheFirst entry keeps the old bytes for 30 days.
 
 ---
 
-## 4. First deploy (Phase 0 — "day 1 = live", D9.1)
+## 4. First deploy (Phase 0: "day 1 = live", D9.1)
 
 ```bash
 cp ../_shared/templates/pages.yml .github/workflows/pages.yml
@@ -187,10 +187,10 @@ cp ../_shared/templates/pages.yml .github/workflows/pages.yml
 The template needs only three project edits:
 
 - Keep `npm test -- --run` (our `"test": "vitest"` script makes that a single run). Until the first test exists, delete that line rather than letting the deploy fail.
-- Leave `VITE_BASE_PATH: /${{ github.event.repository.name }}/` alone — the repo is named `barometer`, so it resolves to `/barometer/` with no hard-coding.
+- Leave `VITE_BASE_PATH: /${{ github.event.repository.name }}/` alone, the repo is named `barometer`, so it resolves to `/barometer/` with no hard-coding.
 - Delete the commented `VITE_API_BASE` line. Barometer has no proxy in the MVP; re-add it as `VITE_WIT_PROXY` only if §8 ever happens.
 
-Keep the heavy gates (Playwright, licences, bundle budget) out of `pages.yml` and in `ci.yml` (§5) — TESTING §1 is explicit that a flaky headless-WebGL test must never block a deploy.
+Keep the heavy gates (Playwright, licences, bundle budget) out of `pages.yml` and in `ci.yml` (§5), TESTING §1 is explicit that a flaky headless-WebGL test must never block a deploy.
 
 ```bash
 git add .github/workflows/pages.yml && git commit -m "CI: deploy to GitHub Pages" && git push
@@ -212,7 +212,7 @@ curl -sI  $BASE/sw.js                  # 200, text/javascript, no long immutable
 curl -sI  $BASE/geo/places.json        # 200, application/json (proves the sub-path asset prefix)
 curl -s -o /dev/null -w '%{http_code}\n' $BASE/v/nonsense   # 404 body = index.html; harmless with hash routing
 
-# CORS from the *real* origin, not from Node (D1-1) — the probe RESEARCH §3 never did:
+# CORS from the *real* origin, not from Node (D1-1): the probe RESEARCH §3 never did:
 curl -sI -H "Origin: https://<owner>.github.io" \
   "https://api.open-meteo.com/v1/forecast?latitude=19.07&longitude=72.88&current=temperature_2m" \
   | grep -i access-control-allow-origin
@@ -220,7 +220,7 @@ curl -sI -H "Origin: https://<owner>.github.io" \
 
 Also confirm in the run log that `actions/setup-node@v7` accepted `cache: npm` without a warning (D1-11); if it warns, drop `cache:` and keep `cache-dependency-path`.
 
-Notes specific to the Actions Pages source: the artifact is served as-is, so no `.nojekyll` file is needed and `_`-prefixed paths are safe (only branch-source Pages runs Jekyll). Site size is ~15–40 MB with the 4K/8K WebP textures — far under the 1 GB site cap, and the 100 GB/month bandwidth soft limit is unreachable for a personal toy (HOSTING pitfall 5).
+Notes specific to the Actions Pages source: the artifact is served as-is, so no `.nojekyll` file is needed and `_`-prefixed paths are safe (only branch-source Pages runs Jekyll). Site size is ~15–40 MB with the 4K/8K WebP textures, far under the 1 GB site cap, and the 100 GB/month bandwidth soft limit is unreachable for a personal toy (HOSTING pitfall 5).
 
 ---
 
@@ -228,7 +228,7 @@ Notes specific to the Actions Pages source: the artifact is served as-is, so no 
 
 `pages.yml` deploys. `ci.yml` proves. `live.yml` watches the one thing that is outside our control (Open-Meteo).
 
-`.github/workflows/ci.yml` — every PR and every push to `main`:
+`.github/workflows/ci.yml`, every PR and every push to `main`:
 
 ```yaml
 name: ci
@@ -274,7 +274,7 @@ jobs:
           retention-days: 7
 ```
 
-`.github/workflows/live.yml` — the weekly `@live` probe (TESTING §1, D1-1):
+`.github/workflows/live.yml`, the weekly `@live` probe (TESTING §1, D1-1):
 
 ```yaml
 name: live-probe
@@ -296,21 +296,21 @@ jobs:
           BASE_URL: https://${{ github.repository_owner }}.github.io/barometer/
 ```
 
-GitHub disables scheduled workflows after 60 days without repo activity; if the probe stops mailing you, that is why — re-enable it from the Actions tab.
+GitHub disables scheduled workflows after 60 days without repo activity; if the probe stops mailing you, that is why, re-enable it from the Actions tab.
 
 ---
 
 ## 6. Environment and configuration
 
-There are **no secrets in any build**. Everything below is public config, and any variable prefixed `VITE_` is inlined into the shipped bundle by design (HOSTING pitfall 4 — the reason no key exists in this project at all).
+There are **no secrets in any build**. Everything below is public config, and any variable prefixed `VITE_` is inlined into the shipped bundle by design (HOSTING pitfall 4, the reason no key exists in this project at all).
 
 | Variable | Pages build | APK build | Local `npm run dev` | Effect |
 |---|---|---|---|---|
 | `VITE_BASE_PATH` | `/barometer/` (from the repo name) | `/` | unset → `/` | Vite `base`, PWA `scope`/`start_url`, `import.meta.env.BASE_URL` |
-| `VITE_PLATFORM` | unset | `android` | unset | Selects 4K (not 8K) textures, DPR cap 1.5, hides the WebLLM rung (no WebGPU in the Android WebView — D1-15) |
+| `VITE_PLATFORM` | unset | `android` | unset | Selects 4K (not 8K) textures, DPR cap 1.5, hides the WebLLM rung (no WebGPU in the Android WebView: D1-15) |
 | `VITE_WIT_PROXY` | `` (empty) | `` (empty) | `` (empty) | Worker URL for wit rung 1; empty ⇒ the rung is hidden in the Back Office and absent from the CSP |
 | `__APP_VERSION__` | `define` from `package.json` + git sha | same | same | Rendered in Back Office → About and on the share card footer |
-| `TZ` | — | — | — | CI-only, `Asia/Kolkata`, tests only |
+| `TZ` |: |: |: | CI-only, `Asia/Kolkata`, tests only |
 
 `.env` (committed, non-secret defaults):
 
@@ -318,9 +318,9 @@ There are **no secrets in any build**. Everything below is public config, and an
 VITE_WIT_PROXY=
 ```
 
-Never create `.env.production` with anything sensitive; never add a `VITE_*` key for Gemini/Groq/OpenRouter — those are the **user's** keys, entered in the Back Office and stored WebCrypto-wrapped on-device (ARCHITECTURE §10, D4).
+Never create `.env.production` with anything sensitive; never add a `VITE_*` key for Gemini/Groq/OpenRouter, those are the **user's** keys, entered in the Back Office and stored WebCrypto-wrapped on-device (ARCHITECTURE §10, D4).
 
-Runtime configuration the user controls (persisted in `localStorage` on web, `@capacitor/preferences` on Android): shift pin, units, default menu, sound/haptics/motion levers, the Nominatim opt-in (off by default — ODbL attribution and the 1 req/s throttle come with it), and the AI rung. None of these are deploy-time.
+Runtime configuration the user controls (persisted in `localStorage` on web, `@capacitor/preferences` on Android): shift pin, units, default menu, sound/haptics/motion levers, the Nominatim opt-in (off by default, ODbL attribution and the 1 req/s throttle come with it), and the AI rung. None of these are deploy-time.
 
 ---
 
@@ -328,9 +328,9 @@ Runtime configuration the user controls (persisted in `localStorage` on web, `@c
 
 **Desktop Chrome/Edge**
 
-1. Open `https://<owner>.github.io/barometer/`, DevTools → Application → **Manifest**: name "The Globe Bar", `start_url` and `scope` both `/barometer/`, `theme_color`/`background_color` `#1A0F0A`, three icons resolve (192, 512, maskable 1024). A scope mismatch is the classic sub-path failure — Chrome silently refuses to offer install (HOSTING pitfall 3).
+1. Open `https://<owner>.github.io/barometer/`, DevTools → Application → **Manifest**: name "The Globe Bar", `start_url` and `scope` both `/barometer/`, `theme_color`/`background_color` `#1A0F0A`, three icons resolve (192, 512, maskable 1024). A scope mismatch is the classic sub-path failure, Chrome silently refuses to offer install (HOSTING pitfall 3).
 2. Application → **Service workers**: one registration scoped to `/barometer/`, status "activated and is running".
-3. Install from the omnibox; the installed window opens with no URL bar, the neon sign paints first (it is the LCP element by design, not the canvas — ARCHITECTURE §11).
+3. Install from the omnibox; the installed window opens with no URL bar, the neon sign paints first (it is the LCP element by design, not the canvas, ARCHITECTURE §11).
 4. DevTools → Network → **Offline**, reload the installed app: the bar shell, fonts, dial, bottles and The Tab all render; a new pour prints the offline error coaster; a place poured in the last 15 minutes re-pours from Dexie with the "re-poured from memory" brass tag.
 5. Lighthouse (mobile preset): installable, LCP ≤ 2.5 s with a DOM LCP element, no console errors. This is release-gate item 3 in TESTING §13.
 6. Ship a second build and confirm the update path: the brass "New bottles in stock. Restock?" tag appears (`registerType: 'prompt'`), and the new version is live only after accepting.
@@ -341,7 +341,7 @@ Runtime configuration the user controls (persisted in `localStorage` on web, `@c
 
 ---
 
-## 8. Cloudflare Worker (optional — not needed to ship)
+## 8. Cloudflare Worker (optional: not needed to ship)
 
 Barometer's MVP calls only no-key, CORS-open Open-Meteo endpoints, so **skip this entire section unless you build wit-ladder rung 1** (keyless Workers AI paraphrase, GOAL §7 "Someday"). D8 row 04 records "Proxy: none".
 
@@ -362,7 +362,7 @@ main = "index.ts"
 compatibility_date = "2026-09-01"
 
 [vars]
-ALLOWED_ORIGIN = "https://<owner>.github.io"   # ORIGIN ONLY — no "/barometer/" path; Origin headers carry no path
+ALLOWED_ORIGIN = "https://<owner>.github.io"   # ORIGIN ONLY, no "/barometer/" path; Origin headers carry no path
 UPSTREAM_BASE  = "https://api.cloudflare.com/client/v4/accounts/<account-id>/ai/run"
 
 [ai]
@@ -380,7 +380,7 @@ Two **mandatory edits** to the shared template for this project:
      || origin === 'https://localhost'            // Capacitor Android WebView
      || origin.startsWith('http://localhost');    // vite dev
    ```
-2. If you use the `[ai]` binding, delete the `Api-Key` header injection and call `env.AI.run(...)` instead; keep the `OPTIONS` handler and the CORS headers. Only if you proxy a *keyed* upstream do you need `npx wrangler secret put UPSTREAM_API_KEY` — and even then the key lives only in Cloudflare, never in the repo or the bundle.
+2. If you use the `[ai]` binding, delete the `Api-Key` header injection and call `env.AI.run(...)` instead; keep the `OPTIONS` handler and the CORS headers. Only if you proxy a *keyed* upstream do you need `npx wrangler secret put UPSTREAM_API_KEY`, and even then the key lives only in Cloudflare, never in the repo or the bundle.
 
 Deploy:
 
@@ -410,7 +410,7 @@ npx cap add android        # expect a Gradle-sync warning: there is no local SDK
 git add android capacitor.config.ts && git commit -m "Android: Capacitor 8 shell"
 ```
 
-`applicationId` **`com.rahul.barometer` can never change** after the first install — a different id is a different app and cannot update over the old one.
+`applicationId` **`com.rahul.barometer` can never change** after the first install, a different id is a different app and cannot update over the old one.
 
 `capacitor.config.ts`:
 
@@ -447,7 +447,7 @@ export default config;
 <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 ```
 
-`VIBRATE` powers the haptics map (pin drop `impact Medium`, lightning `Heavy`, detents `selectionChanged` — DESIGN §12). The two location permissions exist **only** for the "Where am I" button and are requested at tap time, never at launch (M-PERM-1); coarse is sufficient, and the coordinates are resolved by the offline Natural Earth lookup — no network geocoder is ever called (BigDataCloud is banned by D5.3).
+`VIBRATE` powers the haptics map (pin drop `impact Medium`, lightning `Heavy`, detents `selectionChanged`, DESIGN §12). The two location permissions exist **only** for the "Where am I" button and are requested at tap time, never at launch (M-PERM-1); coarse is sufficient, and the coordinates are resolved by the offline Natural Earth lookup, no network geocoder is ever called (BigDataCloud is banned by D5.3).
 
 **Deliberately absent, and a review should keep them absent:** `CAMERA`, any `READ_MEDIA_*`, `POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`/`USE_EXACT_ALARM`, `RECORD_AUDIO`, share-target intent filters. Barometer has no camera, gallery, notification or alarm feature, so the whole Android 13/14/15 media-permission minefield in ANDROID-PACKAGING simply does not apply.
 
@@ -457,7 +457,7 @@ Behaviour to verify on a real device rather than configure (Android 16 / API 36 
 - **Edge-to-edge** is mandatory on API 35+; the layout already pads with `env(safe-area-inset-*)` (DESIGN §14).
 - **Orientation locks are ignored ≥ 600 dp**; the tablet/foldable layout must simply work (M-ROT-3).
 
-Icons and splash come from `design/icon.svg`: `@vite-pwa/assets-generator` produces the web/PWA set into `public/icons/`, and `npx @capacitor/assets generate --android` produces the adaptive/monochrome Android set (brass pin on `#1A0F0A`, themed `#C9962B`). The `@capacitor/assets` step is **unverified** — if it needs anything beyond Node, hand-export the five `mipmap-*` densities from the SVG instead and commit them. Add this as a day-1 row in TESTING §11 when the APK work starts.
+Icons and splash come from `design/icon.svg`: `@vite-pwa/assets-generator` produces the web/PWA set into `public/icons/`, and `npx @capacitor/assets generate --android` produces the adaptive/monochrome Android set (brass pin on `#1A0F0A`, themed `#C9962B`). The `@capacitor/assets` step is **unverified**, if it needs anything beyond Node, hand-export the five `mipmap-*` densities from the SVG instead and commit them. Add this as a day-1 row in TESTING §11 when the APK work starts.
 
 ### 9.3 Gradle signing block
 
@@ -468,7 +468,7 @@ namespace "com.rahul.barometer"
 applicationId "com.rahul.barometer"
 ```
 
-Keep everything else the generated file already has (repositories, dependencies, `apply from: 'capacitor.build.gradle'`, the `google-services` try/catch). The snippet reads `versionCode`/`versionName` from Gradle properties and the keystore from environment variables, so an unsigned build produces `app-release-unsigned.apk` and the workflow's `cp` step fails loudly rather than shipping an unsigned APK (ANDROID-PACKAGING Step 2). Never use `npx cap build android` — it signs v1-only with `jarsigner` and the result will not install on Android 11+ (pitfall 1).
+Keep everything else the generated file already has (repositories, dependencies, `apply from: 'capacitor.build.gradle'`, the `google-services` try/catch). The snippet reads `versionCode`/`versionName` from Gradle properties and the keystore from environment variables, so an unsigned build produces `app-release-unsigned.apk` and the workflow's `cp` step fails loudly rather than shipping an unsigned APK (ANDROID-PACKAGING Step 2). Never use `npx cap build android`, it signs v1-only with `jarsigner` and the result will not install on Android 11+ (pitfall 1).
 
 ### 9.4 Keystore and the four secrets
 
@@ -477,7 +477,7 @@ Run in **Git Bash, outside the repo** (the `.p12` must never be near a public wo
 ```bash
 cd /c/Work
 bash /c/Work/Personal_Projects/_shared/scripts/make-keystore.sh barometer
-# → barometer-release.p12  (BACK THIS UP — §13)
+# → barometer-release.p12  (BACK THIS UP: §13)
 # → barometer-release.p12.b64
 ```
 
@@ -508,7 +508,7 @@ gh workflow run android-release.yml            # workflow_dispatch → signed AP
 gh run watch
 ```
 
-This is the run that answers D1-6 (Temurin 21 + AGP 8.13.0 + Gradle 8.14.3 + compileSdk 36 actually build on `ubuntu-24.04`). Expect 5–7 minutes cold, roughly half that once `setup-java`'s Gradle cache is warm. For the manual QA pass in TESTING §12, dispatch it with the WebView debugger on — add `CAP_WEBVIEW_DEBUG: '1'` to the build step's `env:` on a scratch branch, install that APK, and drive it from desktop `chrome://inspect#devices` (no `adb` needed). Never tag a release from that branch.
+This is the run that answers D1-6 (Temurin 21 + AGP 8.13.0 + Gradle 8.14.3 + compileSdk 36 actually build on `ubuntu-24.04`). Expect 5–7 minutes cold, roughly half that once `setup-java`'s Gradle cache is warm. For the manual QA pass in TESTING §12, dispatch it with the WebView debugger on, add `CAP_WEBVIEW_DEBUG: '1'` to the build step's `env:` on a scratch branch, install that APK, and drive it from desktop `chrome://inspect#devices` (no `adb` needed). Never tag a release from that branch.
 
 Then the real thing:
 
@@ -526,7 +526,7 @@ certutil -hashfile barometer-0.1.0.apk SHA256   # compare with SHA256SUMS.txt (M
 
 Updates are the same flow with a higher tag; the same key plus a strictly increasing `versionCode` (the run number) makes it install over the top with data intact.
 
-**Developer verification (D3):** sideloading keeps working, but Google's verifier rollout starts 2026-09-30 regionally and goes global in 2027. Register the **free limited-distribution account** (no ID, no fee, up to 20 devices) before it reaches your region — it costs nothing and removes the 24-hour "advanced flow" wait on new phones. This is not a Play Store listing and no policy applies to it.
+**Developer verification (D3):** sideloading keeps working, but Google's verifier rollout starts 2026-09-30 regionally and goes global in 2027. Register the **free limited-distribution account** (no ID, no fee, up to 20 devices) before it reaches your region, it costs nothing and removes the 24-hour "advanced flow" wait on new phones. This is not a Play Store listing and no policy applies to it.
 
 ---
 
@@ -547,7 +547,7 @@ TESTING §13 is the *quality* gate and is not repeated here. Run it first, then 
 
 **Cutting it**
 
-- [ ] `git tag vX.Y.Z && git push origin vX.Y.Z` — this triggers `android-release.yml` only; the web is already live from the `main` push.
+- [ ] `git tag vX.Y.Z && git push origin vX.Y.Z`, this triggers `android-release.yml` only; the web is already live from the `main` push.
 - [ ] Edit the generated release notes: what changed, the APK's `minSdk 24`/Android 7+ line, and "sideload only, not on Play".
 - [ ] Download the APK from the Release page (not from the artifact), verify SHA-256, install over the previous version on the phone.
 
@@ -565,12 +565,12 @@ TESTING §13 is the *quality* gate and is not repeated here. Run it first, then 
 | Web app | SemVer `0.y.z` until the full v1 feature set (GOAL §7) ships, then `1.y.z` | `package.json` `version`; displayed as `version+gitsha` via `__APP_VERSION__` |
 | Git tag | `vX.Y.Z`, annotated or lightweight, on `main` only | the tag *is* the release |
 | APK `versionName` | `${{ github.ref_name }}` with the `v` stripped → `0.1.0` | the tag |
-| APK `versionCode` | `${{ github.run_number }}` — strictly increasing, never reset, never reused | Actions run number (re-running a failed job simply burns a number; harmless) |
+| APK `versionCode` | `${{ github.run_number }}`: strictly increasing, never reset, never reused | Actions run number (re-running a failed job simply burns a number; harmless) |
 | Dexie schema | `this.version(N).stores(...)` in `src/state/db.ts` | bump N and add an `upgrade()` for any change to `verdicts`/`weatherCache`; The Tab must survive an update (M-STO-1) |
 | Workbox precache | rebuilt every deploy; `public/` assets are **not** hashed | rename the file (or bump `bar-heavy-v1` → `-v2`) when a texture or geo file's bytes change |
 | Worker (if any) | Cloudflare's own deployment ids | `npx wrangler deployments list` |
 
-Bump rules for a solo project: **patch** = copy, drink-affinity tweaks, bug fixes; **minor** = a new screen, a new tag family, a new texture pipeline, a Dexie schema version; **major** reserved for a `#/` route or export-format break. Grammar and menu edits change the printed text but not the schema — patch.
+Bump rules for a solo project: **patch** = copy, drink-affinity tweaks, bug fixes; **minor** = a new screen, a new tag family, a new texture pipeline, a Dexie schema version; **major** reserved for a `#/` route or export-format break. Grammar and menu edits change the printed text but not the schema, patch.
 
 ---
 
@@ -584,14 +584,14 @@ git revert <bad-sha> && git push        # pages.yml redeploys in ~2 min
 gh workflow run pages.yml --ref v0.1.0
 ```
 
-GitHub Pages keeps only the latest deployment — there is no "promote previous" button, so a revert commit *is* the rollback. Two client-side caveats:
+GitHub Pages keeps only the latest deployment, there is no "promote previous" button, so a revert commit *is* the rollback. Two client-side caveats:
 
 - **The service worker outlives the rollback.** With `registerType: 'prompt'`, users keep the bad build until they accept the update. That is the trade for not yanking the page under someone mid-verdict; the fix ships in the next prompt. If a build is genuinely dangerous (e.g. it registered a wrong-scope SW), deploy one build with `VitePWA({ selfDestroying: true })` to unregister every client, confirm, then deploy the normal build again.
-- **Bad weather data self-heals.** The Dexie `weatherCache` TTL is 15 minutes and entries are pruned to the newest 200, so nothing stale survives a rollback. `verdicts` (The Tab) is user data — never clear it as part of a rollback, and never ship a Dexie `upgrade()` that drops rows.
+- **Bad weather data self-heals.** The Dexie `weatherCache` TTL is 15 minutes and entries are pruned to the newest 200, so nothing stale survives a rollback. `verdicts` (The Tab) is user data, never clear it as part of a rollback, and never ship a Dexie `upgrade()` that drops rows.
 
 **Android:** you cannot downgrade over an install (`versionCode` only goes up). Fix forward with a new tag. For the bad release: mark it **pre-release** and delete the `.apk` asset so nobody else installs it, and note the reason in the release body. Only a user who uninstalls (losing The Tab, since IndexedDB goes with the app) can go back to an older APK.
 
-**Worker (if it exists):** `npx wrangler deployments list` then `npx wrangler rollback <id>` — verify this pair on first use. Because rung 1 is fail-open, deleting the Worker entirely is also a valid rollback: the bartender just stops paraphrasing.
+**Worker (if it exists):** `npx wrangler deployments list` then `npx wrangler rollback <id>`, verify this pair on first use. Because rung 1 is fail-open, deleting the Worker entirely is also a valid rollback: the bartender just stops paraphrasing.
 
 ---
 
@@ -599,18 +599,18 @@ GitHub Pages keeps only the latest deployment — there is no "promote previous"
 
 | What | Why | How | Cadence |
 |---|---|---|---|
-| **`barometer-release.p12` + its passphrase** | Losing it means no future APK can update an installed one — the only unrecoverable asset in the project | Password manager entry (passphrase) + the `.p12` in an encrypted vault/offline drive, outside any repo | Once, at creation; verify the copy opens yearly |
+| **`barometer-release.p12` + its passphrase** | Losing it means no future APK can update an installed one: the only unrecoverable asset in the project | Password manager entry (passphrase) + the `.p12` in an encrypted vault/offline drive, outside any repo | Once, at creation; verify the copy opens yearly |
 | GitHub secret inventory | Secrets cannot be read back from GitHub | Note in the same password-manager entry: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS=release`, `ANDROID_KEY_PASSWORD` (+ `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` if §8 exists) | On change |
 | **The Tab (user data)** | The only data the app creates; IndexedDB dies with the browser profile or an uninstall | In-app Back Office → Tab → **Export JSON** (shape = `Verdict[]`, ARCHITECTURE §4); re-importable via Import, which validates and ignores unknown fields | Whenever it matters to you; before an Android reinstall |
 | `raw/` source assets | Git-ignored, and the NASA Blue/Black Marble pages move over time | Copy `raw/` (NASA JPEGs, cloned `iba-cocktails` and `opendrinks`) to an external drive with a `raw/SOURCES.txt` listing each URL and download date | After the Phase-0 asset pull, then when a texture is refreshed |
 | The repo itself | GitHub is the only copy | `git bundle create /d/backups/barometer-$(date +%F).bundle --all` (or a second remote) | Monthly, and before any history rewrite |
-| Generated `public/geo`, `public/textures` | Committed, so covered by the repo backup | — | — |
+| Generated `public/geo`, `public/textures` | Committed, so covered by the repo backup |: |: |
 
 Never back anything up *into* the repo: it is public, and `.gitignore` already blocks `*.p12`, `*.jks`, `*.keystore`, `raw/` and `android/local.properties`.
 
 ---
 
-## 14. Runbook — deployment failures and what they mean
+## 14. Runbook: deployment failures and what they mean
 
 | Symptom | Cause | Fix |
 |---|---|---|
@@ -632,13 +632,13 @@ Never back anything up *into* the repo: it is public, and `.gitignore` already b
 
 ## 15. Escape hatch (documented, not planned)
 
-If Pages ever becomes the constraint — needing COOP/COEP headers for multithreaded WASM, real HTTP status codes on deep links, or `_headers` control — the migration is **Cloudflare Workers with static assets** (free, unlimited static requests, SPA fallback, `_headers` support; D2). It would mean a `wrangler.toml` with an `[assets]` block pointing at `dist/`, deploying via `cloudflare/wrangler-action` in place of the three Pages actions, and `VITE_BASE_PATH=/` because the site would live at the domain root — which also simplifies the PWA scope and makes the web build identical to the APK build. Nothing in Barometer needs this today: it has no cross-origin isolation requirement, no server rendering, and hash routing already makes deep links work.
+If Pages ever becomes the constraint, needing COOP/COEP headers for multithreaded WASM, real HTTP status codes on deep links, or `_headers` control, the migration is **Cloudflare Workers with static assets** (free, unlimited static requests, SPA fallback, `_headers` support; D2). It would mean a `wrangler.toml` with an `[assets]` block pointing at `dist/`, deploying via `cloudflare/wrangler-action` in place of the three Pages actions, and `VITE_BASE_PATH=/` because the site would live at the domain root, which also simplifies the PWA scope and makes the web build identical to the APK build. Nothing in Barometer needs this today: it has no cross-origin isolation requirement, no server rendering, and hash routing already makes deep links work.
 
 ---
 
 ## 16. Open questions for the first deploy
 
-1. **`@capacitor/assets` for the Android icon/splash set** — assumed to run on plain Node from `design/icon.svg`; unverified. If it wants Java or a native toolchain, hand-export the `mipmap-*` densities and commit them (§9.2).
-2. **`gh api -X POST repos/<owner>/barometer/pages -f build_type=workflow`** — the CLI shortcut for setting the Pages source is unverified; the UI toggle definitely works.
-3. **`npx wrangler rollback`** — only relevant if §8 is ever built; confirm the command pair before relying on it as the Worker rollback.
-4. **Resolved (2026-09-06):** `docs/PLAN.md` now exists and specifies the three Phase-0 asset scripts — `prep-geo.mjs` (P0-9), `prep-drinks.mjs` (P0-10) and `prep-textures.mjs` (P0-11), each with its own output budget and acceptance criteria. The commands in §2–§4 assume those three tasks are done before `public/geo` and `public/textures` are committed; PLAN.md's Phase 0 ordering guarantees that.
+1. **`@capacitor/assets` for the Android icon/splash set**, assumed to run on plain Node from `design/icon.svg`; unverified. If it wants Java or a native toolchain, hand-export the `mipmap-*` densities and commit them (§9.2).
+2. **`gh api -X POST repos/<owner>/barometer/pages -f build_type=workflow`**, the CLI shortcut for setting the Pages source is unverified; the UI toggle definitely works.
+3. **`npx wrangler rollback`**, only relevant if §8 is ever built; confirm the command pair before relying on it as the Worker rollback.
+4. **Resolved (2026-09-06):** `docs/PLAN.md` now exists and specifies the three Phase-0 asset scripts, `prep-geo.mjs` (P0-9), `prep-drinks.mjs` (P0-10) and `prep-textures.mjs` (P0-11), each with its own output budget and acceptance criteria. The commands in §2–§4 assume those three tasks are done before `public/geo` and `public/textures` are committed; PLAN.md's Phase 0 ordering guarantees that.

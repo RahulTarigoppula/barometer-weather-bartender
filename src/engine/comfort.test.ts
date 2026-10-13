@@ -8,7 +8,7 @@ const near = (a: number | null, b: number, tol = 0.1): void => {
 };
 
 describe('heatIndex', () => {
-  it('does not apply to Mumbai at 02:00 — the simple formula is under 80 °F', () => {
+  it('does not apply to Mumbai at 02:00, the simple formula is under 80 °F', () => {
     const r = heatIndex(25.4, 94);
     expect(r.applies).toBe(false);
     near(r.hiF, 79.6);

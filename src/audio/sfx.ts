@@ -1,4 +1,4 @@
-// Every sound is a bar sound, synthesised with Web Audio — zero audio assets, zero licences to track.
+// Every sound is a bar sound, synthesised with Web Audio, zero audio assets, zero licences to track.
 // Silent until the first gesture (autoplay policy); the Back Office lever mutes everything.
 
 export type Sfx = 'tink' | 'shhk' | 'clack' | 'clink' | 'clunk' | 'feed' | 'zzzt' | 'kettle' | 'thunder';

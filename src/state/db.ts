@@ -15,7 +15,7 @@ export class BarDB extends Dexie {
 
 export const db = new BarDB();
 
-/** On boot: keep only the newest 200 weather rows. Never touches `verdicts` — the Tab is user data. */
+/** On boot: keep only the newest 200 weather rows. Never touches `verdicts`, the Tab is user data. */
 export async function pruneWeatherCache(keep = 200, database: BarDB = db): Promise<number> {
   const count = await database.weatherCache.count();
   if (count <= keep) return 0;

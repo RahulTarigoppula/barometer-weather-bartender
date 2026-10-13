@@ -81,7 +81,7 @@ function countries(file, round) {
 const c110 = countries('ne_110m_admin_0_countries.geojson', r2);
 const c50 = countries('ne_50m_admin_0_countries.geojson', r2);
 
-// Smoke assertions — the most likely silent bug is an inside-out polygon.
+// Smoke assertions, the most likely silent bug is an inside-out polygon.
 const find = (fc, iso) => fc.features.find((f) => f.properties.ISO_A2 === iso);
 for (const fc of [c110, c50]) {
   if (!geoContains(find(fc, 'IN'), [72.88, 19.07])) throw new Error('IN must contain Mumbai');
@@ -106,7 +106,7 @@ const places = read('ne_10m_populated_places_simple.geojson')
   })
   .sort((a, b) => b.pop_max - a.pop_max || a.name.localeCompare(b.name));
 
-// Marine polygons — names like "Arabian Sea", "Caspian Sea", "North Pacific Ocean".
+// Marine polygons, names like "Arabian Sea", "Caspian Sea", "North Pacific Ocean".
 const marine = {
   type: 'FeatureCollection',
   features: read('ne_50m_geography_marine_polys.geojson')
@@ -124,7 +124,7 @@ const marine = {
     .sort((a, b) => geoArea(a) - geoArea(b) || a.properties.name.localeCompare(b.properties.name)),
 };
 
-// Land outline at 110m, rounded hard — used by the canvas fallback globe and the receipt's dotted globe.
+// Land outline at 110m, rounded hard, used by the canvas fallback globe and the receipt's dotted globe.
 const land = read('ne_110m_land.geojson').features.map((f) =>
   roundGeometry(f.geometry, (n) => Math.round(n * 10) / 10),
 );

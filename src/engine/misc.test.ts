@@ -89,7 +89,7 @@ describe('receipt', () => {
   });
 });
 
-describe('served() — barista flip and second opinion without re-scoring', () => {
+describe('served(), barista flip and second opinion without re-scoring', () => {
   const v = judgeFixture('mumbai');
   it('flips to the twin and back', () => {
     expect(served(v, DRINKS, 'barista', 0, false).drink.id).toBe('virgin-mojito');

@@ -1,5 +1,5 @@
 /**
- * Optional live road speeds from TomTom's Traffic Flow API — only when the user pastes their own
+ * Optional live road speeds from TomTom's Traffic Flow API, only when the user pastes their own
  * free key in Settings. The key stays on this device and is sent only to api.tomtom.com.
  */
 export interface LiveFlow {

@@ -62,7 +62,7 @@ export function extractTags(f: Features): TagScore[] {
   return out.sort((a, b) => b.weight - a.weight);
 }
 
-/** C6: the driving tag is the first match in this list — not the heaviest tag. */
+/** C6: the driving tag is the first match in this list, not the heaviest tag. */
 export const PRIORITY: readonly Tag[] = [
   'hail',
   'storm',

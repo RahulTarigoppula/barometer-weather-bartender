@@ -204,7 +204,7 @@ test('the story plays from the footer, names the app, and can be skipped', async
   await routeWeather(page);
   await page.goto('./#/v/19.07,72.88');
   await expect(drink(page)).toHaveText('Mojito');
-  await page.getByRole('button', { name: /Watch our story/ }).click();
+  await page.getByRole('button', { name: /Watch the story/ }).click();
   const story = page.getByRole('dialog', { name: 'Our story' });
   await expect(story).toBeVisible();
   await expect(story).toContainText('Every great story opens with a wide shot.');

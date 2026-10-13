@@ -20,7 +20,7 @@ export interface Tip {
   tone: 'info' | 'warn' | 'alert';
 }
 
-/** Practical, India-relevant advice from the numbers — the most urgent first, at most four. */
+/** Practical, India-relevant advice from the numbers, the most urgent first, at most four. */
 export function tipsFor(f: Features, hours: HourPoint[] = []): Tip[] {
   const out: Tip[] = [];
   const next6 = hours.slice(0, 6);
@@ -233,4 +233,61 @@ export function hourMood(h: HourPoint): { hour: HourMood; sky: SkyMood; rain: nu
 export function peekLabel(time: string, index: number): string {
   if (index === 0) return 'Now';
   return `${time.slice(11, 16)} · in ${index} h`;
+}
+
+// ───────────── the forecast in plain words ─────────────
+/** "Rain likely from 16:00. High of 34° at 14:00, low of 26° at 05:00." */
+export function dayStory(hours: HourPoint[], fmt: (c: number) => string): string {
+  const h = hours.slice(0, 24);
+  if (h.length < 2) return '';
+  const at = (x: HourPoint): string => x.time.slice(11, 16);
+  const hi = h.reduce((a, b) => (b.tempC > a.tempC ? b : a));
+  const lo = h.reduce((a, b) => (b.tempC < a.tempC ? b : a));
+  const wet = h.findIndex((x) => x.precipProb >= 50);
+  const peak = h.reduce((a, b) => (b.precipProb > a.precipProb ? b : a));
+  const rain =
+    wet === 0
+      ? `Rain is likely right now, wettest around ${at(peak)}.`
+      : wet > 0
+        ? `Rain likely from ${at(h[wet] as HourPoint)}, wettest around ${at(peak)}.`
+        : peak.precipProb >= 25
+          ? `Mostly dry, a small chance of rain around ${at(peak)}.`
+          : 'Dry for the next 24 hours.';
+  return `${rain} High of ${fmt(hi.tempC)} at ${at(hi)}, low of ${fmt(lo.tempC)} at ${at(lo)}.`;
+}
+
+const FULL_DAY = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const fullDay = (date: string): string => {
+  const [y, m, d] = date.split('-').map(Number);
+  if (!y || !m || !d) return '';
+  return FULL_DAY[new Date(Date.UTC(y, m - 1, d)).getUTCDay()] ?? '';
+};
+
+/** "Rain likely on Thursday and Friday. Warmest on Sunday (38°), coolest on Wednesday (27°)." */
+export function weekStory(days: DayPoint[], fmt: (c: number) => string): string {
+  if (days.length < 2) return '';
+  const rest = days.slice(1);
+  const wet = rest.filter((d) => d.precipProbMax >= 50).map((d) => fullDay(d.date));
+  const list = (xs: string[]): string =>
+    xs.length <= 1 ? (xs[0] ?? '') : `${xs.slice(0, -1).join(', ')} and ${xs.at(-1) as string}`;
+  const rain =
+    wet.length === 0
+      ? 'A dry week ahead.'
+      : wet.length >= rest.length - 1
+        ? 'A wet week: rain most days.'
+        : `Rain likely on ${list(wet)}.`;
+  const warm = days.reduce((a, b) => (b.tMaxC > a.tMaxC ? b : a));
+  const cool = days.reduce((a, b) => (b.tMinC < a.tMinC ? b : a));
+  return `${rain} Warmest on ${fullDay(warm.date)} (${fmt(warm.tMaxC)}), coolest night on ${fullDay(cool.date)} (${fmt(cool.tMinC)}).`;
+}
+
+/** The hour indices where daylight starts or ends in the strip, for sunrise and sunset markers. */
+export function sunTurns(hours: HourPoint[]): { index: number; kind: 'sunrise' | 'sunset' }[] {
+  const out: { index: number; kind: 'sunrise' | 'sunset' }[] = [];
+  for (let i = 1; i < hours.length; i++) {
+    const a = hours[i - 1] as HourPoint;
+    const b = hours[i] as HourPoint;
+    if (a.isDay !== b.isDay) out.push({ index: i, kind: b.isDay ? 'sunrise' : 'sunset' });
+  }
+  return out;
 }

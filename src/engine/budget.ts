@@ -10,7 +10,7 @@ export const TIER_LABEL: Record<Tier, string> = {
   high: 'High-end',
 };
 
-/** Where you drink it at each tier — India first. */
+/** Where you drink it at each tier, India first. */
 const WHERE: Record<Tier, { alcoholic: string; free: string }> = {
   cheap: { alcoholic: 'At home, with a bottle from the local shop', free: 'Street stall or your own kitchen' },
   budget: { alcoholic: 'Neighbourhood bar · house pour', free: 'Café or juice centre' },

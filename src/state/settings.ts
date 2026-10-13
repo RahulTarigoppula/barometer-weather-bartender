@@ -75,7 +75,7 @@ export const useSettings = create<SettingsStore>()(
   ),
 );
 
-/** Reduced motion is the OS setting OR the Back Office lever — both produce the identical DOM. */
+/** Reduced motion is the OS setting OR the Back Office lever, both produce the identical DOM. */
 export function reducedMotion(): boolean {
   const os = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   return os || useSettings.getState().motion === 'less';

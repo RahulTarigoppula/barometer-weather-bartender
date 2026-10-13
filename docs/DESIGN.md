@@ -1,4 +1,4 @@
-# Barometer — DESIGN.md (design system, v1)
+# Barometer: DESIGN.md (design system, v1)
 
 **Project:** 04 · The Contextual Weather Bartender (codename "Barometer") · **Date:** 2026-09-06
 **Binding docs:** `_shared/DECISIONS.md` (D1 stack, D4 wit ladder, D5 licensing, D7 token contract), `docs/RESEARCH.md` (Open-Meteo, globe.gl → R3F, offline geocoding, drink data), `_shared/research/DESIGN-TOOLKIT.md` (fonts/libs).
@@ -11,7 +11,7 @@
 
 **Name:** *The Globe Bar* (the product is still called Barometer; "The Globe Bar" is the name on the neon sign).
 
-**One-liner:** A brass-cradled planet on a mahogany counter under a buzzing neon sign. Spin it, drop a pin, and a judgmental bartender slides a paper coaster across the bar with your survival drink pressed into it — aggressively iced Mojito for the soup-air of Mumbai, warm dark rum, no arguments, for −48° Yakutsk.
+**One-liner:** A brass-cradled planet on a mahogany counter under a buzzing neon sign. Spin it, drop a pin, and a judgmental bartender slides a paper coaster across the bar with your survival drink pressed into it, aggressively iced Mojito for the soup-air of Mumbai, warm dark rum, no arguments, for −48° Yakutsk.
 
 **Three adjectives:** Tactile · Cheeky · Loud.
 
@@ -21,7 +21,7 @@
 - *"Another 3D earth on a navy/space gradient with a glass card."* There is no navy, no starfield, no glassmorphism, no blur. The dark is mahogany; the accent is brass; the card is paper; nothing floats.
 - *A weather dashboard.* No stat pills, no icon grid, no forecast strip, no charts. If a screenshot could be mistaken for a weather app, a bottle, a coaster ring, a brass pin or the neon sign must be visible in it.
 - *A Prohibition speakeasy / Art-Deco template.* No gold filigree, no script fonts, no sunburst borders. One brass line per band, one neon sign, that's the ornament budget.
-- *Refined.* This bar is a dive with good bones. The bartender shouts in neon caps and mutters in grotesk. If a prototype reads as elegant-and-quiet, the levers are copy (rude), scale (the intensifier stamp at 2×, rotated), light (the neon buzz, the lightning frame) and sound — never more colour.
+- *Refined.* This bar is a dive with good bones. The bartender shouts in neon caps and mutters in grotesk. If a prototype reads as elegant-and-quiet, the levers are copy (rude), scale (the intensifier stamp at 2×, rotated), light (the neon buzz, the lightning frame) and sound, never more colour.
 
 ---
 
@@ -51,17 +51,17 @@ Scores 1–10; total /50. Judged harshly on genericness *and* on illegible art-d
 | Concept | Distinct. | Vibe fit | Usability | Feasibility | Screenshot | **Total** | Verdict |
 |---|---|---|---|---|---|---|---|
 | 1 · Late Edition (editorial broadsheet) | 5 | 4 | 9 | 8 | 7 | 33 | Beautifully argued, superbly legible, and the wrong app. Cream paper + hairlines + giant numerals + time-of-day editions is Napkin's identity with a globe pasted in; "quiet, precise, typographic" is the opposite of *cheeky and chaotic*; it depends on Fraunces WONK, which this project may not use. Halftone-globe moiré on Android is real risk. |
-| 2 · The Sweating Glass (immersive orbit bar) | 8 | 8 | 5 | 4 | 10 | 35 | The best single frame in the portfolio (the lightning flash, the finger-wipe) and the most dangerous build: a custom postprocessing refraction pass, procedural droplets, frost, streaks, bloom and an attract mode — on Android WebView, alone. Text over a moving refracted scene is the classic illegible art project; the "dry zone" scrim is a patch, not a structure. "Dark globe with glow" is also the most-copied look since 2021. Collides with Sillage's glass. |
-| 3 · The Globe Bar (tactile object) | 8 | 8 | 8 | 8 | 9 | **41** | **Winner.** Every distinctive element is also the information design (bottle = decision, dial = temperature, coaster = verdict, receipt = stats), so nothing has to be removed for usability; text only ever sits on cream or brass; the build is DOM/SVG/CSS around a stock globe.gl canvas — a solo dev can reach a premium finish. Weak spots: the vintage-Italian styling is more "gentleman's club" than "chaotic", and it also leaned on Fraunces. Both fixed by the grafts and the font rule. |
+| 2 · The Sweating Glass (immersive orbit bar) | 8 | 8 | 5 | 4 | 10 | 35 | The best single frame in the portfolio (the lightning flash, the finger-wipe) and the most dangerous build: a custom postprocessing refraction pass, procedural droplets, frost, streaks, bloom and an attract mode: on Android WebView, alone. Text over a moving refracted scene is the classic illegible art project; the "dry zone" scrim is a patch, not a structure. "Dark globe with glow" is also the most-copied look since 2021. Collides with Sillage's glass. |
+| 3 · The Globe Bar (tactile object) | 8 | 8 | 8 | 8 | 9 | **41** | **Winner.** Every distinctive element is also the information design (bottle = decision, dial = temperature, coaster = verdict, receipt = stats), so nothing has to be removed for usability; text only ever sits on cream or brass; the build is DOM/SVG/CSS around a stock globe.gl canvas: a solo dev can reach a premium finish. Weak spots: the vintage-Italian styling is more "gentleman's club" than "chaotic", and it also leaned on Fraunces. Both fixed by the grafts and the font rule. |
 
-**Why The Globe Bar won.** The brief wants distinctive *and* legible. Concept 3 is the only one whose signature survives a 5-inch phone with the sound off: the coaster is a cream card with 14.9:1 ink, the receipt is mono on paper, and the drama (bottles, ice, frost, the pin) happens *around* the text, never under it. It is also the only concept that gives the app an object to be — the one thing a screenshot can never be confused with a weather dashboard.
+**Why The Globe Bar won.** The brief wants distinctive *and* legible. Concept 3 is the only one whose signature survives a 5-inch phone with the sound off: the coaster is a cream card with 14.9:1 ink, the receipt is mono on paper, and the drama (bottles, ice, frost, the pin) happens *around* the text, never under it. It is also the only concept that gives the app an object to be, the one thing a screenshot can never be confused with a weather dashboard.
 
 **What was grafted (and how conflicts were resolved)**
-1. **The neon sign** (from Sweating Glass's amber terminator and chalkboard signage, and the portfolio font rule). "THE GLOBE BAR" hangs in the window as a Righteous neon tube; it powers on with a flicker, buzzes faintly at night, and goes *off* (pale glass) on the day shift. The BAR ↔ BARISTA toggle is a second, smaller neon sign. *Conflict:* neon is a second light source next to brass — allowed only in the window band and only as one amber (+ one green when Barista is on). No neon on the counter, ever.
-2. **The lighting follows the clicked place** (from Late Edition's edition flip). The bar has no theme toggle: click somewhere in daylight and it is the **Day shift** (daylight through the window, oak, neon off); click into night and it is the **Night shift** (mahogany, sodium window, neon on). Before the first click, `prefers-color-scheme` decides; a pin in the Back Office fixes either shift. *Conflict with D7 (define a light palette):* satisfied — the Day shift *is* the light palette, fully specified in §4.2.
-3. **The wall dial** (from Late Edition's mercury needle). A brass aneroid barometer on the back-bar wall whose needle swings to the tag that chose the drink — the ring is engraved ARCTIC · FREEZING · CHILLY · FAIR · MUGGY · SOUP · SCORCHING — while a small mono window in the dial rolls to the apparent temperature. The needle is the "why" made physical. *Conflict:* no giant ornamental numeral (that is Napkin's dialect); the number lives only in the dial window and on the receipt.
-4. **The register display and the tab** (from Sweating Glass's terminator ticker and Late Edition's Back Issues). The brass register has a one-line amber VFD readout that ticks "LAST ORDERS IN LISBON · FIRST COFFEE IN AUCKLAND" as real cities cross the live terminator; past coasters stack under the counter as **The Tab** (Dexie), each row re-flying the globe. *Conflict:* no arcade attract mode that auto-visits cities — the globe drifts, the display ticks, the bartender waits. Idle motion stays cheap.
-5. **The glass sweats** (from Sweating Glass, reduced to CSS/SVG). The window behind the globe gets droplets at dew point ≥ 21°, frost at wind-chill ≤ −10°, rain streaks, fog and the 80 ms lightning frame — as CSS gradients and SVG `feTurbulence`, not a shader pass. *Conflict:* effects live on the window only, never on the whole viewport, so text is never behind them.
+1. **The neon sign** (from Sweating Glass's amber terminator and chalkboard signage, and the portfolio font rule). "THE GLOBE BAR" hangs in the window as a Righteous neon tube; it powers on with a flicker, buzzes faintly at night, and goes *off* (pale glass) on the day shift. The BAR ↔ BARISTA toggle is a second, smaller neon sign. *Conflict:* neon is a second light source next to brass, allowed only in the window band and only as one amber (+ one green when Barista is on). No neon on the counter, ever.
+2. **The lighting follows the clicked place** (from Late Edition's edition flip). The bar has no theme toggle: click somewhere in daylight and it is the **Day shift** (daylight through the window, oak, neon off); click into night and it is the **Night shift** (mahogany, sodium window, neon on). Before the first click, `prefers-color-scheme` decides; a pin in the Back Office fixes either shift. *Conflict with D7 (define a light palette):* satisfied, the Day shift *is* the light palette, fully specified in §4.2.
+3. **The wall dial** (from Late Edition's mercury needle). A brass aneroid barometer on the back-bar wall whose needle swings to the tag that chose the drink, the ring is engraved ARCTIC · FREEZING · CHILLY · FAIR · MUGGY · SOUP · SCORCHING, while a small mono window in the dial rolls to the apparent temperature. The needle is the "why" made physical. *Conflict:* no giant ornamental numeral (that is Napkin's dialect); the number lives only in the dial window and on the receipt.
+4. **The register display and the tab** (from Sweating Glass's terminator ticker and Late Edition's Back Issues). The brass register has a one-line amber VFD readout that ticks "LAST ORDERS IN LISBON · FIRST COFFEE IN AUCKLAND" as real cities cross the live terminator; past coasters stack under the counter as **The Tab** (Dexie), each row re-flying the globe. *Conflict:* no arcade attract mode that auto-visits cities, the globe drifts, the display ticks, the bartender waits. Idle motion stays cheap.
+5. **The glass sweats** (from Sweating Glass, reduced to CSS/SVG). The window behind the globe gets droplets at dew point ≥ 21°, frost at wind-chill ≤ −10°, rain streaks, fog and the 80 ms lightning frame, as CSS gradients and SVG `feTurbulence`, not a shader pass. *Conflict:* effects live on the window only, never on the whole viewport, so text is never behind them.
 
 **Rejected grafts:** the refraction/droplet shader (Sillage's territory, Android cost), the halftone globe (Napkin's territory), the full-bleed no-scroll scene (kills thumb reach for the coaster), Fraunces WONK wobble (forbidden font), the finger-wipe reveal (needs the whole-pane glass), attract mode auto-touring (surprising, expensive), the torn newspaper clipping (the receipt is the tear-off here), Caveat chalk script (no script faces for functional text; the neon does the job).
 
@@ -75,21 +75,21 @@ Two shifts (Night = default, Day = light), plus a **paper material scope** that 
 
 | Token | Hex | Usage | Contrast |
 |---|---|---|---|
-| `--bg` | `#1A0F0A` | The room behind the bar: deep mahogany shadow. The only "dark" in the app is wood, never navy/grey | — |
-| `--bg-elevated` | `#2E1A10` | Back-bar shelf wall, drawers, the Back Office sheet | — |
-| `--surface` | `#3A2114` | The counter top (mahogany, grain at `--grain-opacity`), register housing | — |
-| `--surface-2` | `#4A2C1A` | Hover/pressed wood, the drawer lip, toggle track | — |
+| `--bg` | `#1A0F0A` | The room behind the bar: deep mahogany shadow. The only "dark" in the app is wood, never navy/grey |: |
+| `--bg-elevated` | `#2E1A10` | Back-bar shelf wall, drawers, the Back Office sheet |: |
+| `--surface` | `#3A2114` | The counter top (mahogany, grain at `--grain-opacity`), register housing |: |
+| `--surface-2` | `#4A2C1A` | Hover/pressed wood, the drawer lip, toggle track |: |
 | `--ink` | `#F3E6C8` | Cream text on wood (brass-plate captions, sheet body) | 15.2:1 on `--bg` · 12.1:1 on `--surface` |
 | `--ink-muted` | `#C9B28C` | Secondary text on wood (settings descriptions, tab rows) | 9.2:1 on `--bg` · 7.3:1 on `--surface` |
-| `--ink-faint` | `#8C7355` | Decorative only: rail shadows, disabled labels, dividers. Never running text | 4.2:1 (fails AA — decorative) |
+| `--ink-faint` | `#8C7355` | Decorative only: rail shadows, disabled labels, dividers. Never running text | 4.2:1 (fails AA: decorative) |
 | `--accent` | `#C9962B` | **Brass**: cradle ring, pin, foot-rail, plate lettering, primary buttons | 7.1:1 on `--bg` · 5.6:1 on `--surface` |
 | `--accent-ink` | `#1A0F0A` | Text stamped into brass (buttons, plate) | 7.1:1 on `--accent` |
 | `--accent-2` | `#7FE8C8` | **Crushed-ice mint**: iced verdict glow, condensation, cold-weather grade, the click ripple | 12.8:1 on `--bg` |
 | `--success` | `#8CC46A` | Barista-mode text/neon ("OPEN", "legally a barista"); fill variant `--success-fill #5B8C3A` with `--paper-ink` text | 9.2:1 on `--bg` |
 | `--warning` | `#F08A3C` | **Amaro orange**: heat, sodium-lamp window, hot-drink grade, "hot" stamps | 7.5:1 on `--bg` · 6.0:1 on `--surface` |
 | `--danger` | `#F0564B` | **Campari red**: storm, extreme UV/AQI, the bartender's harshest tier. Text only on `--bg`/`--bg-elevated`; on `--surface` use the fill `--danger-fill #B8322E` with `--ink` text (4.8:1) | 5.5:1 on `--bg` · 4.4:1 on `--surface` (large text only) |
-| `--border` | `#4A3222` | Hairlines on wood (1px) | — |
-| `--border-strong` | `#C9962B` | The brass rail lines (one per band), plate edges | — |
+| `--border` | `#4A3222` | Hairlines on wood (1px) |: |
+| `--border-strong` | `#C9962B` | The brass rail lines (one per band), plate edges |: |
 | `--focus` | `#F5C860` | Polished-brass focus ring, 2px + 2px offset, on every control | 11.9:1 on `--bg` |
 
 **Extra tokens (this app only):** `--neon #FFB347` (sign tube, 10.6:1 on `--bg`), `--neon-glow rgba(255,179,71,.55)`, `--neon-off #6B4A3A` (unlit tube glass), `--wood-grain` (SVG feTurbulence data URI), `--brass-hi #F5C860`, `--brass-lo #8A6414`.
@@ -100,10 +100,10 @@ Auto when the clicked place has `is_day = 1` (or `prefers-color-scheme: light` b
 
 | Token | Hex | Usage | Contrast |
 |---|---|---|---|
-| `--bg` | `#EFE3CC` | Sunlit wall / room | — |
-| `--bg-elevated` | `#D9B98A` | Oak shelf and counter. **Only `--ink` text sits directly on oak** (9.9:1); muted and brass text on oak are forbidden | — |
-| `--surface` | `#FBF4E4` | Coaster paper in daylight (whiter than the room) | — |
-| `--surface-2` | `#E6D2A6` | Aged paper edge, receipt, toggle track | — |
+| `--bg` | `#EFE3CC` | Sunlit wall / room |: |
+| `--bg-elevated` | `#D9B98A` | Oak shelf and counter. **Only `--ink` text sits directly on oak** (9.9:1); muted and brass text on oak are forbidden |: |
+| `--surface` | `#FBF4E4` | Coaster paper in daylight (whiter than the room) |: |
+| `--surface-2` | `#E6D2A6` | Aged paper edge, receipt, toggle track |: |
 | `--ink` | `#1C120C` | Text | 14.5:1 on `--bg` · 16.8:1 on `--surface` |
 | `--ink-muted` | `#5E4632` | Secondary text | 6.9:1 on `--bg` · 8.0:1 on `--surface` |
 | `--ink-faint` | `#9C8468` | Decorative only | 2.8:1 (decorative) |
@@ -113,34 +113,34 @@ Auto when the clicked place has `is_day = 1` (or `prefers-color-scheme: light` b
 | `--success` | `#3E6B2A` | Barista green | 5.0:1 on `--bg` |
 | `--warning` | `#A6470E` | Amaro | 4.7:1 on `--bg` · 5.4:1 on `--surface` |
 | `--danger` | `#A0281F` | Campari | 5.9:1 on `--bg` |
-| `--border` | `#D8C7A6` | Hairlines | — |
-| `--border-strong` | `#7A5A12` | Brass rails | — |
+| `--border` | `#D8C7A6` | Hairlines |: |
+| `--border-strong` | `#7A5A12` | Brass rails |: |
 | `--focus` | `#7A5A12` | Ring, with a 2px `--surface` halo underneath so it reads on oak | 5.0:1 |
 
 `--neon` on the Day shift is `#E8B7A0` at 100% with no glow (a switched-off tube); `--neon-glow` is `transparent`. The brass gradient (§4.5) keeps its highlight; the raised brass surfaces still read as brass because the metal, not the text, carries the colour.
 
-### 4.3 Paper scope (coaster, receipt, recipe card) — same in both shifts
+### 4.3 Paper scope (coaster, receipt, recipe card): same in both shifts
 
 Applied with `.paper { … }`. Components inside read the *same* token names.
 
 | Inside `.paper` | Night & Day value | Usage | Contrast |
 |---|---|---|---|
-| `--bg` | `#F3E6C8` (Day: `#FBF4E4`) | Coaster stock | — |
-| `--surface-2` | `#E6D2A6` | Pressed ring, receipt perforation band | — |
+| `--bg` | `#F3E6C8` (Day: `#FBF4E4`) | Coaster stock |: |
+| `--surface-2` | `#E6D2A6` | Pressed ring, receipt perforation band |: |
 | `--ink` | `#1C120C` | Letterpress ink | 14.9:1 (Day 16.8:1) |
 | `--ink-muted` | `#5E4632` | Stats labels, footnotes, units | 7.1:1 · 5.9:1 on `--surface-2` |
-| `--ink-faint` | `#A38A6F` | Coaster rings, rules, disabled — decorative only | 2.6:1 (decorative) |
+| `--ink-faint` | `#A38A6F` | Coaster rings, rules, disabled: decorative only | 2.6:1 (decorative) |
 | `--accent` | `#7A5A12` | Brass ink (recipe headings, "make it virgin" link) | 5.1:1 |
 | `--accent-2` | `#1F6E7B` | Ice teal ink (iced/ocean lines). On `--surface-2` only at ≥ 18px/600 (3.95:1 large-text AA) | 4.8:1 |
 | `--success` | `#3E6B2A` | Barista stamp ink | 5.1:1 |
 | `--warning` | `#A6470E` | Hot stamp ink | 4.8:1 |
 | `--danger` | `#A0281F` | Storm/extreme ink, "do not go outside" | 6.0:1 |
-| `--border` | `#D8C7A6` | Hairline rules on paper | — |
-| `--focus` | `#7A5A12` | Ring on paper controls | — |
+| `--border` | `#D8C7A6` | Hairline rules on paper |: |
+| `--focus` | `#7A5A12` | Ring on paper controls |: |
 
 ### 4.4 Semantic & weather-grade tokens
 
-The bartender's engine emits one *driving tag* per verdict (RESEARCH §5.6). The tag drives four CSS variables that tint the window and the coaster's stamp — and nothing else, so contrast is never affected:
+The bartender's engine emits one *driving tag* per verdict (RESEARCH §5.6). The tag drives four CSS variables that tint the window and the coaster's stamp, and nothing else, so contrast is never affected:
 
 | Tag family | `--grade` (window light) | `--stamp` (intensifier stamp ink) | `--drink-glow` (coaster ring glow) | Notes |
 |---|---|---|---|---|
@@ -157,11 +157,11 @@ The bartender's engine emits one *driving tag* per verdict (RESEARCH §5.6). The
 
 ### 4.5 Gradients, materials, textures
 
-- **Mahogany / oak:** `linear-gradient(180deg, var(--surface) 0%, color-mix(in oklab, var(--surface), black 18%) 100%)` — `in oklab`, matching IMPL §3.6; do not swap it for `oklch`, which shifts the hue on the way down + an SVG `feTurbulence` grain (`baseFrequency .9 .04`, `numOctaves 2`, stretched 1×6 so it reads as grain not noise) at `--grain-opacity: .08` (`.05` on Day). Grain is the *only* texture; nothing else is noisy.
-- **Brass:** `linear-gradient(100deg, #8A6414 0%, #C9962B 35%, #F5C860 52%, #C9962B 68%, #8A6414 100%)` — one highlight, one shadow, applied to rings, rail and plates; text on brass uses the flat `--accent` fill, not the gradient.
+- **Mahogany / oak:** `linear-gradient(180deg, var(--surface) 0%, color-mix(in oklab, var(--surface), black 18%) 100%)`, `in oklab`, matching IMPL §3.6; do not swap it for `oklch`, which shifts the hue on the way down + an SVG `feTurbulence` grain (`baseFrequency .9 .04`, `numOctaves 2`, stretched 1×6 so it reads as grain not noise) at `--grain-opacity: .08` (`.05` on Day). Grain is the *only* texture; nothing else is noisy.
+- **Brass:** `linear-gradient(100deg, #8A6414 0%, #C9962B 35%, #F5C860 52%, #C9962B 68%, #8A6414 100%)`, one highlight, one shadow, applied to rings, rail and plates; text on brass uses the flat `--accent` fill, not the gradient.
 - **Coaster paper:** flat `--bg` (paper scope) + `inset 0 0 0 1px var(--border)` + pressed ring `box-shadow: inset 0 0 0 10px var(--surface-2), inset 0 0 0 11px var(--ink-faint)`. Optional 2% grain. Never white.
 - **Window glass:** a `--grade` tint over a 3-stop sky gradient (day: `#BFD9E8 → #E9EEF0`; night: `#0B0A12 → #2A1B10` sodium at the bottom), with weather layers above (§7).
-- **Neon:** `color: transparent` with `-webkit-text-stroke: 1.6px var(--neon)` (1.4px on the Day shift) + `filter: drop-shadow(0 0 4px var(--neon-glow)) drop-shadow(0 0 14px var(--neon-glow))`; the tube has a 1px inner `--ink` core line so it reads as glass, not a glow blob. The hue lives on the **stroke**, never on `color` — which is why the token test asserts `-webkit-text-stroke-color`, not `color` (IMPL §3.6, TESTING §7).
+- **Neon:** `color: transparent` with `-webkit-text-stroke: 1.6px var(--neon)` (1.4px on the Day shift) + `filter: drop-shadow(0 0 4px var(--neon-glow)) drop-shadow(0 0 14px var(--neon-glow))`; the tube has a 1px inner `--ink` core line so it reads as glass, not a glow blob. The hue lives on the **stroke**, never on `color`, which is why the token test asserts `-webkit-text-stroke-color`, not `color` (IMPL §3.6, TESTING §7).
 - **Forbidden:** blur, glassmorphism, drop shadows on text, gradients on text, navy, pure white, pure black.
 
 ---
@@ -172,15 +172,15 @@ Three voices = three characters. **The sign** (Righteous) shouts. **The print** 
 
 | Role | Family | Google Fonts | Fontsource | Weights / axes | Where |
 |---|---|---|---|---|---|
-| `--font-display` | **Righteous** (Astigmatic, OFL) — a Googie/tiki sign letter | https://fonts.google.com/specimen/Righteous | `@fontsource/righteous` (static 400, ~24 KB latin) | 400 only | Neon sign, drink name on the coaster, the intensifier stamp, BAR/BARISTA sign, "THE TAB" plate, empty-state lines. **Never below 20px** |
-| `--font-body` | **Space Grotesk** (Florian Karsten, OFL) — variable | https://fonts.google.com/specimen/Space+Grotesk | `@fontsource-variable/space-grotesk` (wght 300–700, ~60 KB latin) | 400 body · 500 bartender lines · 600 labels/buttons · 700 small caps | Coaster copy, recipe, settings, tooltips, tab rows |
+| `--font-display` | **Righteous** (Astigmatic, OFL): a Googie/tiki sign letter | https://fonts.google.com/specimen/Righteous | `@fontsource/righteous` (static 400, ~24 KB latin) | 400 only | Neon sign, drink name on the coaster, the intensifier stamp, BAR/BARISTA sign, "THE TAB" plate, empty-state lines. **Never below 20px** |
+| `--font-body` | **Space Grotesk** (Florian Karsten, OFL): variable | https://fonts.google.com/specimen/Space+Grotesk | `@fontsource-variable/space-grotesk` (wght 300–700, ~60 KB latin) | 400 body · 500 bartender lines · 600 labels/buttons · 700 small caps | Coaster copy, recipe, settings, tooltips, tab rows |
 | `--font-mono` | **JetBrains Mono** (JetBrains, OFL) | https://fonts.google.com/specimen/JetBrains+Mono | `@fontsource-variable/jetbrains-mono` (wght 100–800; ship 400/600) | 400 · 600 | Receipt, dial window, register display, coordinates, local time, attribution, share card |
 
 **Budget:** one static display file + two variable files, Latin subset, `font-display: swap`, self-hosted (D1). ≤ 2 variable families per DESIGN-TOOLKIT §3. No fourth face; Caveat/chalk is dropped.
 
-**The bartender's voice without an italic.** Space Grotesk has no italic and Righteous has one weight, so the voice is built from *scale and case*, which suits a bartender who talks normally and then shouts: the judgment lines are Space Grotesk 500 at `--text-lg`, and the one or two words the engine marks as the intensifier are set inline in Righteous at 1.6× size, uppercase, baseline-aligned (`vertical-align: -0.08em`) — "the air is soup. **AGGRESSIVELY ICED** Mojito. Served in a bucket." Chaos comes from the type-size jump, not from a wobble axis. **In the grammar the marker is the literal guillemets `«…»`, never markdown asterisks** (IMPL §3.7/§6.10, TESTING T-WT-2): the bold above is this document's emphasis, and the renderer swaps `«AGGRESSIVELY ICED»` for `<em class="intensifier">`. A grammar full of `**` ships the asterisks to the coaster.
+**The bartender's voice without an italic.** Space Grotesk has no italic and Righteous has one weight, so the voice is built from *scale and case*, which suits a bartender who talks normally and then shouts: the judgment lines are Space Grotesk 500 at `--text-lg`, and the one or two words the engine marks as the intensifier are set inline in Righteous at 1.6× size, uppercase, baseline-aligned (`vertical-align: -0.08em`), "the air is soup. **AGGRESSIVELY ICED** Mojito. Served in a bucket." Chaos comes from the type-size jump, not from a wobble axis. **In the grammar the marker is the literal guillemets `«…»`, never markdown asterisks** (IMPL §3.7/§6.10, TESTING T-WT-2): the bold above is this document's emphasis, and the renderer swaps `«AGGRESSIVELY ICED»` for `<em class="intensifier">`. A grammar full of `**` ships the asterisks to the coaster.
 
-**Type scale (rem, 16px root)** — mapped to D7 tokens:
+**Type scale (rem, 16px root)**, mapped to D7 tokens:
 
 | Token | Size | Line height | Use |
 |---|---|---|---|
@@ -198,7 +198,7 @@ Three voices = three characters. **The sign** (Righteous) shouts. **The print** 
 - Righteous: letter-spacing `0.02em` at display sizes, `0.06em` for the small neon (BARISTA), always uppercase for signs; Title Case for drink names ("Dark 'n' Stormy" keeps its apostrophes).
 - Space Grotesk small caps labels: uppercase, 13px/700, letter-spacing `0.08em`, `--ink-muted`.
 - Space Grotesk body: `letter-spacing: -0.005em`, max measure 34em on paper.
-- **Every figure is set in JetBrains Mono** with `font-variant-numeric: tabular-nums` — temperatures, dew point, wind, UV, AQI, coordinates, times — so nothing jitters when a number rolls. Degrees use the real `°`; negatives use `−` (U+2212).
+- **Every figure is set in JetBrains Mono** with `font-variant-numeric: tabular-nums`, temperatures, dew point, wind, UV, AQI, coordinates, times, so nothing jitters when a number rolls. Degrees use the real `°`; negatives use `−` (U+2212).
 - Devanagari / other scripts: place names come from Natural Earth's Latin `name` field, so no extra script coverage is needed. If Nominatim (optional) returns non-Latin names, they fall back to the system UI font via the stack (`'Space Grotesk Variable', system-ui, sans-serif`).
 - Text on wood is only `--ink`, `--ink-muted` or `--accent` (Night). Text on oak (Day) is only `--ink`. Text on paper follows §4.3. Text never sits on the globe, the window, or a gradient.
 
@@ -207,16 +207,16 @@ Three voices = three characters. **The sign** (Righteous) shouts. **The print** 
 ## 6. Spacing, radius, elevation, borders
 
 - **Spacing (8px base):** `--space-1 4px · -2 8 · -3 12 · -4 16 · -5 24 · -6 32 · -7 40 · -8 48 · -9 64 · -10 80 · -11 96 · -12 128`. Page inset 16px mobile / 32px desktop; band gutters 24px; coaster padding 24px; receipt padding 12px 16px.
-- **Radius:** `--radius-sm 3px` (buttons, plates), `--radius-md 6px` (drawer, cards), `--radius-lg 14px` (bottom sheet top corners, register), `--radius-xl 24px` (share card), `--radius-full 9999px` (round coaster, pin head, dial). Squares and hairlines elsewhere — the bar is built, not blobbed.
+- **Radius:** `--radius-sm 3px` (buttons, plates), `--radius-md 6px` (drawer, cards), `--radius-lg 14px` (bottom sheet top corners, register), `--radius-xl 24px` (share card), `--radius-full 9999px` (round coaster, pin head, dial). Squares and hairlines elsewhere, the bar is built, not blobbed.
 - **Elevation (contact shadows, warm-black; things sit on wood):** `--shadow-1: 0 1px 0 rgba(0,0,0,.35)` (plates, receipt), `--shadow-2: 0 6px 14px -6px rgba(0,0,0,.55)` (coaster, bottles), `--shadow-3: 0 18px 40px -12px rgba(0,0,0,.7)` (sheet, drawer, the globe base). Day shift multiplies alpha by 0.6. No glow shadows except neon (§4.5) and the drink-glow ring on the coaster.
-- **Borders:** hairlines 1px `--border`; structural brass rails 2px `--border-strong` — **max one brass line per band** (rail under the bottles, meridian ring on the globe, foot-rail on the counter). Coaster pressed ring per §4.5.
+- **Borders:** hairlines 1px `--border`; structural brass rails 2px `--border-strong`, **max one brass line per band** (rail under the bottles, meridian ring on the globe, foot-rail on the counter). Coaster pressed ring per §4.5.
 - **Grid:** 1200px max content width; desktop bands 16% / 52% / 32% of viewport height (min counter 260px); mobile bands 56px / 50vh / remainder as a sheet. One `--globe-size` variable (clamp(280px, 48vmin, 640px)) drives the canvas *and* the SVG cradle so they stay registered.
 
 ---
 
 ## 7. Motion language
 
-**Principles.** (1) *Mass and surface* — nothing fades in from nowhere; things slide, drop, tilt, settle and cast a shadow while doing it. (2) *Print, don't type* — text is already on the coaster when it arrives; only the receipt prints line by line, because a receipt does. (3) *Weather moves like weather* — slow, continuous, low-contrast, on the window only. (4) *One overshoot per gesture* — the coaster lands with 6px overshoot; nothing else bounces. (5) *Idle is cheap* — a drifting globe and a ticking display, no particle systems until a click.
+**Principles.** (1) *Mass and surface*, nothing fades in from nowhere; things slide, drop, tilt, settle and cast a shadow while doing it. (2) *Print, don't type*, text is already on the coaster when it arrives; only the receipt prints line by line, because a receipt does. (3) *Weather moves like weather*, slow, continuous, low-contrast, on the window only. (4) *One overshoot per gesture*, the coaster lands with 6px overshoot; nothing else bounces. (5) *Idle is cheap*, a drifting globe and a ticking display, no particle systems until a click.
 
 **Tokens.** `--dur-fast 120ms` (press states, glints, sign flip start) · `--dur-base 240ms` (tooltips, bottle dim, ring draw) · `--dur-slow 480ms` (shift change, window weather cross-fade, coaster flip). Scene durations: fly-to 1200ms; coaster slide ~620ms; frost creep 1600ms; condensation bloom 1200ms.
 `--ease-out: cubic-bezier(0.22, 1, 0.36, 1)` (out-quint, everything that appears) · `--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1)` (camera, shift change) · `--ease-spring: linear(0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077 20.4%, 1.121, 1.149 24.3%, 1.159, 1.163 27.8%, 1.154, 1.129 32.8%, 1.051 39.6%, 0.979 47.2%, 0.957 53.7%, 0.977 61.9%, 1.006 74.4%, 1.001 100%)` (approximates Motion `{ stiffness: 260, damping: 22, mass: 1 }`, ~6% overshoot). Motion presets in `src/motion/springs.ts`: `soft {220, 26}` (coaster), `snappy {420, 34}` (toggles, sign), `drop {500, 18}` (ice cubes).
@@ -253,14 +253,14 @@ Three voices = three characters. **The sign** (Righteous) shouts. **The print** 
 ### 8.2 The Slide (the verdict)
 1. The bartender pushes a cream coaster across the mahogany from his side (right on desktop, from below on mobile): 4° → 0° rotate, 6px overshoot, wooden "shhk".
 2. It is already printed: place line, one weather jab, the drink name in Righteous, the intensifier stamp rotated −4°, a mono receipt strip.
-3. Simultaneously the bottle nods (A4) and the dial swings (A5) — you can *see* the decision before you read it.
+3. Simultaneously the bottle nods (A4) and the dial swings (A5), you can *see* the decision before you read it.
 **Why it delights:** three physical tells agree with the joke. Haptic: `impact Light` on landing.
 
 ### 8.3 The Pour (ice / heat / weather on the glass)
 1. Iced verdicts: three ice cubes drop into the glass drawn on the coaster (A9) with pitched clinks; a condensation ring blooms on the paper over 1.2 s; the window sweats (droplet layer opacity → 1 over 2.4 s).
 2. Hot verdicts: three steam wisps loop over the mug; if apparent ≤ −10°, frost creeps from the window corners (A10) and the window fills with snow.
 3. Storm codes (WMO 95/96/99): the lightning frame (A11), a rumble 0.4–0.9 s later; `--stamp` goes Campari.
-**Why it delights:** the weather is *somewhere* — behind the bar, on a pane — not a chip that says "rain". Haptic: `impact Heavy` 40 ms on lightning; `notification Warning` when the insult tier is danger.
+**Why it delights:** the weather is *somewhere*, behind the bar, on a pane, not a chip that says "rain". Haptic: `impact Heavy` 40 ms on lightning; `notification Warning` when the insult tier is danger.
 
 ### 8.4 The Barista Flip
 1. The small neon sign in the window reads **BAR** (amber). Tap it (or the flip-sign lever on mobile): 240 ms clack, it swings on Y and now reads **BARISTA** in green neon.
@@ -280,7 +280,7 @@ Three voices = three characters. **The sign** (Righteous) shouts. **The print** 
 
 Routes (hash router): `#/` The Bar · `#/v/:lat,:lng` The Verdict (deep-linkable) · `#/tab` The Tab · `#/office` Back Office · `#/about` Attribution. The Recipe flip, Barista flip and Register are states of The Bar, not routes.
 
-### 9.1 The Bar (home / idle) — `#/`
+### 9.1 The Bar (home / idle): `#/`
 
 Desktop (≥ 1024px):
 ```
@@ -319,10 +319,10 @@ Phone (< 768px):
 └────────────────────────────┘
 ```
 - **Components:** BackBar (bottles, plate, dial, neon toggle, menu), Window (sky + weather layers + neon sign), GlobeCradle (canvas + SVG rings + base), Counter (coaster lane, search, where-am-I, register, tab button).
-- **States:** *empty* — coaster lane shows "Spin. Tap. Survive." on a small brass plate and a Space Grotesk line; window shows your own local weather if geolocation was granted, else a neutral dusk. *loading (first paint)* — the DOM bar renders first (LCP is the neon sign + plate); the globe canvas mounts lazily with a 245 KB `earth-day.jpg`, then swaps to Blue Marble 4K/8K; while WebGL boots, the cradle holds a flat SVG dotted globe (cobe-style). *offline* — search and where-am-I disabled with a tooltip; last verdict from Dexie still re-openable. *no WebGL* — the dotted SVG globe stays, still clickable (equirectangular hit-test), the bar is otherwise identical.
+- **States:** *empty*, coaster lane shows "Spin. Tap. Survive." on a small brass plate and a Space Grotesk line; window shows your own local weather if geolocation was granted, else a neutral dusk. *loading (first paint)*, the DOM bar renders first (LCP is the neon sign + plate); the globe canvas mounts lazily with a 245 KB `earth-day.jpg`, then swaps to Blue Marble 4K/8K; while WebGL boots, the cradle holds a flat SVG dotted globe (cobe-style). *offline*, search and where-am-I disabled with a tooltip; last verdict from Dexie still re-openable. *no WebGL*, the dotted SVG globe stays, still clickable (equirectangular hit-test), the bar is otherwise identical.
 - **Gestures:** drag/flick globe; tap globe; pull the counter sheet up (mobile); tap the dial to open the receipt; long-press the register display to pause the ticker.
 
-### 9.2 The Verdict (coaster) — `#/v/19.08,72.88`
+### 9.2 The Verdict (coaster): `#/v/19.08,72.88`
 
 Desktop:
 ```
@@ -365,7 +365,7 @@ Phone:
 │═══ foot-rail ═══════════  │
 ```
 - **Components:** Coaster (skeleton → printed), IntensifierStamp, GlassIllustration (SVG, tinted by drink), ReceiptStrip, DialNeedle, BottleNod, WindowWeather, BaristaTag (conditional).
-- **States:** *skeleton* (blank coaster, pressed ring, 3 shimmer-free grey bars — no shimmer, it is paper); *success*; *ocean* (marine data: SST, wave height; place line "You are in the Arabian Sea. There is no bar here." Dark 'n' Stormy family); *polar* (local-time joke hedged per RESEARCH §3); *error* (coaster prints "The models are not answering. Try again." with a brass RETRY plate; window stays); *rate-limited* (429: "Bar's busy. Give it a minute."). Copy hedges with "the models say" (Open-Meteo is model data).
+- **States:** *skeleton* (blank coaster, pressed ring, 3 shimmer-free grey bars, no shimmer, it is paper); *success*; *ocean* (marine data: SST, wave height; place line "You are in the Arabian Sea. There is no bar here." Dark 'n' Stormy family); *polar* (local-time joke hedged per RESEARCH §3); *error* (coaster prints "The models are not answering. Try again." with a brass RETRY plate; window stays); *rate-limited* (429: "Bar's busy. Give it a minute."). Copy hedges with "the models say" (Open-Meteo is model data).
 - **Gestures:** tap coaster → flip; swipe coaster left (mobile) → next-best drink ("the second opinion"); pull receipt → tear; tap dial → receipt sheet.
 
 ### 9.3 The Recipe (coaster flipped)
@@ -390,12 +390,12 @@ Phone:
 - **States:** *alcoholic*; *virgin twin* (swaps in place, a green BARISTA stamp appears); *no twin* ("No virgin twin for this one. Have a lime soda and think about it."). Data: `rasmusab/iba-cocktails` + `alfg/opendrinks` (MIT); method text written in-house (RESEARCH §8).
 - **Gestures:** tap anywhere on the card outside controls → flip back; the flip is 420 ms (A7).
 
-### 9.4 The Barista Flip (mocktail mode) — state of 9.1/9.2
+### 9.4 The Barista Flip (mocktail mode): state of 9.1/9.2
 `window: [BAR] → clack → [BARISTA] (green neon) · shelf: spirits dim to 60%, tea/cocoa/ginger/syrup light up · coaster re-prints: "Virgin Mojito. Same insult, no rum."`
-- **States:** *off* (amber BAR); *on* (green BARISTA, `--success` neon); *suggested* (a brass tag on the coaster: "It's 9 a.m. there. I am legally a barista now." — tap to flip); persisted.
+- **States:** *off* (amber BAR); *on* (green BARISTA, `--success` neon); *suggested* (a brass tag on the coaster: "It's 9 a.m. there. I am legally a barista now.", tap to flip); persisted.
 - 44×44 target; `role="switch" aria-checked`; label "Alcohol-free menu".
 
-### 9.5 The Register (share receipt) — state of 9.2
+### 9.5 The Register (share receipt): state of 9.2
 ```
 ┌ REGISTER ─────────────────────────┐
 │ ▐ LAST ORDERS IN LISBON · 23:58 ▌ │ ← amber VFD mono ticker
@@ -417,13 +417,13 @@ Phone:
 - Prints (A6) when a verdict lands; tear → 1080×1350 PNG share card with the same content on a paper field, mahogany border, the neon wordmark in Righteous. On desktop the register sits on the counter; on mobile it is a sheet opened from the dial or the coaster's "Tear off".
 - **States:** *printing*, *ready*, *torn* (a stub remains: "receipt torn 02:15"), *share failed* (falls back to download + "Saved to your device").
 
-### 9.6 The Tab (history) — `#/tab`
+### 9.6 The Tab (history): `#/tab`
 Desktop: a drawer under the counter (right third); phone: full sheet.
 ```
 ┌ THE TAB (brass plate) ────────────────────────┐
 │ #0007  Mumbai, IN     02:14  Mojito      31.5° │ ← row = hairline entry
 │ #0006  Reykjavík, IS  23:40  Hot Toddy    2.1° │
-│ #0005  Arabian Sea    —      Dark 'n' Stormy   │
+│ #0005  Arabian Sea  ,      Dark 'n' Stormy   │
 │ ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ │
 │ [Export JSON] [Import] [Clear tab]  "No tab yet. │
 │                                      Go somewhere."│
@@ -432,7 +432,7 @@ Desktop: a drawer under the counter (right third); phone: full sheet.
 - Row tap re-flies the globe and re-prints the coaster from the stored verdict (no refetch unless > 15 min old, then a small "re-poured" tag). Long-press/right-click → tear-off PNG. Stored in Dexie (`verdicts` table: id, lat, lng, place, localTime, drinkId, tags, stats, shift, createdAt). Rows are 56px, whole-row target.
 - **States:** *empty* ("No tab yet. Go somewhere."), *list*, *importing*, *confirm clear* (inline brass CONFIRM plate, no modal).
 
-### 9.7 The Back Office (settings) — `#/office`
+### 9.7 The Back Office (settings): `#/office`
 Desktop: right drawer 380px in `--bg-elevated`; phone: bottom sheet 88vh.
 ```
 ┌ BACK OFFICE ──────────────────────────┐
@@ -470,9 +470,9 @@ Desktop: right drawer 380px in `--bg-elevated`; phone: bottom sheet 88vh.
 | `NeonSign` | wordmark (5xl), BAR/BARISTA (4xl), small caption | off (Day), on, flicker-on, barista (green) |
 | `BrassPlate` | caption, button, tag (on coaster) | default, hover (highlight shifts 6%), pressed (120ms inset), focus, disabled (`--ink-faint` engraving) |
 | `GlobeCradle` | globe.gl canvas, SVG fallback | idle drift, dragging, flying, pinned, context-lost |
-| `BrassPin` | — | dropped, hover (tooltip coords), dragging (re-pour on release) |
+| `BrassPin` |: | dropped, hover (tooltip coords), dragging (re-pour on release) |
 | `Bottle` | rum, gin, whisky, tequila, vodka, vermouth, bitters, syrup, tea tin, cocoa tin, ginger beer, mint | default, picked (lit, −7°), dimmed, tooltip |
-| `WallDial` | full (desktop), roundel (mobile) | swinging, settled (+ annotation), unknown (needle at FAIR, window "—") |
+| `WallDial` | full (desktop), roundel (mobile) | swinging, settled (+ annotation), unknown (needle at FAIR, window ", ") |
 | `Window` | sky day/night, weather layers (droplets, frost, rain, snow, fog, glare, lightning), neon slot | per grade tag; static under reduced motion |
 | `Coaster` | round (desktop), square (mobile sheet), skeleton, back (recipe) | sliding, printed, flipped, error, ocean, polar, suggested-barista |
 | `IntensifierStamp` | hot, iced, storm, barista | stamped (−4°), pressed shadow only |
@@ -482,7 +482,7 @@ Desktop: right drawer 380px in `--bg-elevated`; phone: bottom sheet 88vh.
 | `Lever` (switch) | bar-tap, small | on/off, focus, disabled |
 | `BrassKnob` (slider) | volume | dragging, focus (keyboard) |
 | `Search` (classified-ad box) | counter, sheet | empty, typing (Open-Meteo geocoding results as brass rows), no results ("Never heard of it.") |
-| `TabRow` | — | default, hover, active (row re-fly), stale |
+| `TabRow` |: | default, hover, active (row re-fly), stale |
 | `Sheet` / `Drawer` | counter sheet, register sheet, Back Office, Tab | peek, open, dragging, closed |
 | `Tooltip` / `Toast` | brass tag (hover/focus, long-press) / brass tag on the counter edge | info, error; toasts 4 s, one at a time |
 
@@ -492,8 +492,8 @@ All primitives are shadcn/ui (Base UI) components restyled through tokens; none 
 
 ## 11. Iconography, illustration, imagery
 
-- **Icons:** Lucide (ISC) at 1.75px stroke, 20px, colour `currentColor`, used only in the Back Office, search and sheet chrome. On the bar itself there are no icons — a bottle, a dial, a sign and a plate *are* the icons.
-- **Illustration (own, MIT with the repo):** brand-free bottle silhouettes (12 SVG shapes, 2px `--brass-lo` stroke, filled with a flat dark tint), glassware line-art (9 SVG), ice cubes, steam wisps, the aneroid dial (bezel + engraved ring text on a `textPath`), the neon tube (SVG text), the register (bakelite + brass), the pin. Rough.js is *not* used — strokes are clean.
+- **Icons:** Lucide (ISC) at 1.75px stroke, 20px, colour `currentColor`, used only in the Back Office, search and sheet chrome. On the bar itself there are no icons, a bottle, a dial, a sign and a plate *are* the icons.
+- **Illustration (own, MIT with the repo):** brand-free bottle silhouettes (12 SVG shapes, 2px `--brass-lo` stroke, filled with a flat dark tint), glassware line-art (9 SVG), ice cubes, steam wisps, the aneroid dial (bezel + engraved ring text on a `textPath`), the neon tube (SVG text), the register (bakelite + brass), the pin. Rough.js is *not* used, strokes are clean.
 - **Globe textures:** NASA Blue Marble Next Generation monthly composites (public domain, credit "NASA Earth Observatory") at 8192×4096 desktop / 4096×2048 Android, WebP; NASA Black Marble 2016 night lights; three-globe `earth-topology.png` / `earth-water.png` bump/specular (MIT repo, NASA-derived); ≤ 10 MB total, lazy-loaded after first paint, PWA-precached. **Not** PlanetPixelEmporium (proprietary). Optional clouds: Solar System Scope 8K (CC BY 4.0, credit required) or in-shader FBM.
 - **Reverse geocoding data:** Natural Earth (public domain) countries 110m/50m, populated places (stripped), marine polygons.
 - **Drink data:** `rasmusab/iba-cocktails` (MIT), `alfg/opendrinks` (MIT) + own `bar-menu.json` with weather affinities; no hotlinked images (TheCocktailDB test key is not for published apps).
@@ -515,9 +515,9 @@ Every sound is a bar sound; there are no UI beeps. Off until the first pointer g
 | Neon | 50 Hz buzz at −30 dB, night only, LFO off under reduced motion | Web Audio (procedural, zero assets) |
 | Rain / wind bed | pink noise → BiquadFilter lowpass, cutoff 200 Hz calm → 2.4 kHz gale; rain bursts follow precipitation | Web Audio (procedural) |
 | Thunder | filtered noise burst + 60 Hz sine decay, "distance" via lowpass and 0.4–0.9 s delay | Web Audio (procedural) |
-| Bar-room hum | −28 dB loop, night side only, ducks 6 dB on Day | **Freesound CC0 filter or Kenney.nl (CC0) only** — Pixabay is not permitted here (see the note below) |
+| Bar-room hum | −28 dB loop, night side only, ducks 6 dB on Day | **Freesound CC0 filter or Kenney.nl (CC0) only**: Pixabay is not permitted here (see the note below) |
 
-**Every bundled sound file in this app is CC0**, sourced from Freesound's CC0 filter or Kenney.nl, and each one is listed with its source id in `public/sounds/ATTRIBUTION.md`, `src/data/attribution.json`, the About screen and the README — a three-way match that SEC-6 asserts. The **Pixabay Content Licence is not an option**, even "bundled only": DECISIONS D5.2 permits public domain / CC0 / CC BY / ODbL only, the `check:licenses` allow-list has no Pixabay entry, and a non-CC0 file would break that three-way attribution test. If a suitable CC0 bar-room hum cannot be found, synthesise it with the same Web Audio graph that already produces the neon buzz and the rain bed — filtered pink noise plus two detuned low sines is the zero-asset, zero-licence answer, and it is the preferred one.
+**Every bundled sound file in this app is CC0**, sourced from Freesound's CC0 filter or Kenney.nl, and each one is listed with its source id in `public/sounds/ATTRIBUTION.md`, `src/data/attribution.json`, the About screen and the README, a three-way match that SEC-6 asserts. The **Pixabay Content Licence is not an option**, even "bundled only": DECISIONS D5.2 permits public domain / CC0 / CC BY / ODbL only, the `check:licenses` allow-list has no Pixabay entry, and a non-CC0 file would break that three-way attribution test. If a suitable CC0 bar-room hum cannot be found, synthesise it with the same Web Audio graph that already produces the neon buzz and the rain bed, filtered pink noise plus two detuned low sines is the zero-asset, zero-licence answer, and it is the preferred one.
 
 Implementation: Howler.js 2.2 sprite for one-shots (raw Web Audio fallback), Web Audio graph for beds. Haptics (Capacitor build; web falls back to `navigator.vibrate(12)` on pin drop only): `impact Light` (globe pointer-down, coaster landing), `impact Medium` (pin drop, receipt tear), `impact Heavy` 40 ms (lightning), `selectionChanged` (30° detents while dragging, sign flip, levers), `notification Warning` (danger-tier insult). All haptics respect the Back Office lever and the system setting.
 
@@ -527,9 +527,9 @@ Implementation: Howler.js 2.2 sprite for one-shots (raw Web Audio fallback), Web
 
 - **Contrast:** all running text ≥ 4.5:1 against its actual background per §4 tables; `--ink-faint` and `--danger`-on-wood are decorative or large-text (≥ 18px/600, 3:1) only. `--grade`, `--drink-glow` and neon never sit behind text. Playwright + axe run on every screen in both shifts.
 - **Focus:** 2px `--focus` ring, 2px offset, on every interactive element including the globe canvas wrapper (`tabindex=0`, arrow keys rotate 5°, Enter pours at the centre crosshair, `+`/`−` zoom). Focus is never removed; `:focus-visible` only.
-- **Touch targets:** ≥ 44×44 px — bottles (hit area padded), the pin, sign, dial, levers, tab rows (56px), coaster buttons. The coaster's tap-to-flip is a whole-card target with explicit "Flip for recipe" button as well.
+- **Touch targets:** ≥ 44×44 px, bottles (hit area padded), the pin, sign, dial, levers, tab rows (56px), coaster buttons. The coaster's tap-to-flip is a whole-card target with explicit "Flip for recipe" button as well.
 - **Motion:** `prefers-reduced-motion` per §7 plus the Back Office switch; no auto-motion except the 0.18°/frame drift, which is off under reduced motion; no flashing above 3 Hz (the lightning is one 80 ms frame, never repeated within 1 s).
-- **Screen reader:** the globe is `role="application"` with `aria-label="World globe. Arrow keys rotate, Enter chooses the centre."`; the coaster is `role="article"` with `aria-live="polite"` announcing "Verdict for ~38 km from Mumbai: aggressively iced Mojito"; the dial has `aria-valuetext="Feels like 31.5 degrees, tag: soup"`; bottles are buttons named "Rum — the bartender's pick"; neon signs are `role="switch"` with visible text; the receipt is a `<table>` with headers; decorative SVGs are `aria-hidden`.
+- **Screen reader:** the globe is `role="application"` with `aria-label="World globe. Arrow keys rotate, Enter chooses the centre."`; the coaster is `role="article"` with `aria-live="polite"` announcing "Verdict for ~38 km from Mumbai: aggressively iced Mojito"; the dial has `aria-valuetext="Feels like 31.5 degrees, tag: soup"`; bottles are buttons named "Rum, the bartender's pick"; neon signs are `role="switch"` with visible text; the receipt is a `<table>` with headers; decorative SVGs are `aria-hidden`.
 - **Language & copy:** insults never target protected characteristics; the bartender judges *weather and choices*, not people. A "gentler bartender" lever tones down the danger tier.
 - **Colour independence:** hot/iced/storm are also carried by the stamp text, the glassware and the receipt, never by colour alone.
 - **Text scaling:** rem-based; the coaster reflows to a single column at 200% zoom; the bar bands become a scroll on short viewports (< 600px tall).
@@ -547,12 +547,12 @@ Implementation: Howler.js 2.2 sprite for one-shots (raw Web Audio fallback), Web
 
 ---
 
-## 15. CSS design tokens (ready to paste — `src/styles/tokens.css`)
+## 15. CSS design tokens (ready to paste: `src/styles/tokens.css`)
 
-> **This block is byte-identical to IMPLEMENTATION-PROMPT §3.3 and is the one that must be pasted into `src/styles/tokens.css` (PLAN P0-4).** The earlier version of §15 was a strict subset of it — it was missing `--grain`, `--neon-off` in the Day block, the `:root[data-motion="less"]` rule and half the `@property` registrations, so a file copied from it failed A11Y-6 and stepped rather than crossfaded on the shift change. Do not re-trim it.
+> **This block is byte-identical to IMPLEMENTATION-PROMPT §3.3 and is the one that must be pasted into `src/styles/tokens.css` (PLAN P0-4).** The earlier version of §15 was a strict subset of it, it was missing `--grain`, `--neon-off` in the Day block, the `:root[data-motion="less"]` rule and half the `@property` registrations, so a file copied from it failed A11Y-6 and stepped rather than crossfaded on the shift change. Do not re-trim it.
 
 ```css
-/* Barometer — The Globe Bar — design tokens. Night shift is :root. */
+/* Barometer, The Globe Bar, design tokens. Night shift is :root. */
 /* Register the colour tokens so the shift change (A8) can transition them. */
 @property --bg            { syntax:'<color>'; inherits:true; initial-value:#1A0F0A; }
 @property --bg-elevated   { syntax:'<color>'; inherits:true; initial-value:#2E1A10; }
@@ -569,7 +569,7 @@ Implementation: Howler.js 2.2 sprite for one-shots (raw Web Audio fallback), Web
 :root {
   color-scheme: dark;
 
-  /* colour — Night shift (default) */
+  /* colour, Night shift (default) */
   --bg: #1A0F0A; --bg-elevated: #2E1A10; --surface: #3A2114; --surface-2: #4A2C1A;
   --ink: #F3E6C8; --ink-muted: #C9B28C; --ink-faint: #8C7355;  /* faint = decorative only */
   --accent: #C9962B; --accent-ink: #1A0F0A;                    /* brass */
@@ -588,7 +588,7 @@ Implementation: Howler.js 2.2 sprite for one-shots (raw Web Audio fallback), Web
   --paper-accent: #7A5A12; --paper-accent-2: #1F6E7B;
   --paper-success: #3E6B2A; --paper-warning: #A6470E; --paper-danger: #A0281F;
 
-  /* set per verdict by JS — these three tint art, never text */
+  /* set per verdict by JS, these three tint art, never text */
   --grade: rgba(255,179,71,.12);      /* window pane tint */
   --stamp: var(--paper-ink);          /* intensifier stamp ink */
   --drink-glow: rgba(127,232,200,0);  /* coaster ring glow */
@@ -615,7 +615,7 @@ Implementation: Howler.js 2.2 sprite for one-shots (raw Web Audio fallback), Web
   /* radius */
   --radius-sm: 3px; --radius-md: 6px; --radius-lg: 14px; --radius-xl: 24px; --radius-full: 9999px;
 
-  /* elevation — warm-black contact shadows; things sit ON wood, they do not float */
+  /* elevation, warm-black contact shadows; things sit ON wood, they do not float */
   --shadow-1: 0 1px 0 rgba(0,0,0, calc(.35 * var(--shadow-alpha)));
   --shadow-2: 0 6px 14px -6px rgba(0,0,0, calc(.55 * var(--shadow-alpha)));
   --shadow-3: 0 18px 40px -12px rgba(0,0,0, calc(.7 * var(--shadow-alpha)));
@@ -637,7 +637,7 @@ Implementation: Howler.js 2.2 sprite for one-shots (raw Web Audio fallback), Web
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9 0.04' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 
-/* Day shift — set by JS from the clicked place's is_day (pinnable in the Back Office) */
+/* Day shift, set by JS from the clicked place's is_day (pinnable in the Back Office) */
 :root[data-shift="day"] {
   color-scheme: light;
   --bg: #EFE3CC; --bg-elevated: #D9B98A; --surface: #FBF4E4; --surface-2: #E6D2A6;
@@ -664,7 +664,7 @@ Implementation: Howler.js 2.2 sprite for one-shots (raw Web Audio fallback), Web
   }
 }
 
-/* Paper material scope — coaster, receipt, recipe card, share card.
+/* Paper material scope, coaster, receipt, recipe card, share card.
    Components inside read the SAME token names, so they never special-case paper. */
 .paper {
   --bg: var(--paper); --bg-elevated: var(--paper); --surface: var(--paper); --surface-2: var(--paper-2);
@@ -690,7 +690,7 @@ Implementation: Howler.js 2.2 sprite for one-shots (raw Web Audio fallback), Web
 @media (min-width: 1024px) { :root { --page-inset: 32px; } }
 ```
 
-Tailwind bridge (`src/index.css`): `@theme inline { --color-bg: var(--bg); --color-ink: var(--ink); --color-accent: var(--accent); --font-display: var(--font-display); --font-sans: var(--font-body); --font-mono: var(--font-mono); --radius-lg: var(--radius-lg); }` — utilities follow the shift and the paper scope at runtime.
+Tailwind bridge (`src/index.css`): `@theme inline { --color-bg: var(--bg); --color-ink: var(--ink); --color-accent: var(--accent); --font-display: var(--font-display); --font-sans: var(--font-body); --font-mono: var(--font-mono); --radius-lg: var(--radius-lg); }`, utilities follow the shift and the paper scope at runtime.
 
 ---
 
@@ -708,18 +708,18 @@ Tailwind bridge (`src/index.css`): `@theme inline { --color-bg: var(--bg); --col
 - [ ] `design/icon.svg` → adaptive icon layers (432×432), maskable 1024, favicon 32/180, splash 2732
 
 **Imagery / data (with licence lines in `src/data/attribution.json` and README)**
-- [ ] NASA Blue Marble NG monthly (public domain, credit "NASA Earth Observatory") — 8192×4096 WebP + 4096×2048 WebP, current month + fallback
-- [ ] NASA Black Marble 2016 night (public domain) — 8192×4096 / 4096×2048 WebP
+- [ ] NASA Blue Marble NG monthly (public domain, credit "NASA Earth Observatory"), 8192×4096 WebP + 4096×2048 WebP, current month + fallback
+- [ ] NASA Black Marble 2016 night (public domain), 8192×4096 / 4096×2048 WebP
 - [ ] three-globe `earth-day.jpg` (245 KB first paint), `earth-topology.png`, `earth-water.png` (MIT repo, NASA-derived)
 - [ ] Natural Earth: `ne_110m_admin_0_countries`, `ne_50m_admin_0_countries` (lazy), stripped `ne_10m_populated_places_simple` (~400 KB), `ne_50m_geography_marine_polys`, `ne_110m_land` (public domain)
 - [ ] `rasmusab/iba-cocktails` (MIT), `alfg/opendrinks` (MIT) → `src/data/drinks.json`; own `bar-menu.json` with affinities and in-house method text
 - [ ] Tracery `voice.json` (≥ 8 variants per slot per tag) + `intensifiers.json` + city one-liners for the register ticker
 
 **Sound (CC0 unless noted; list in attribution.json)**
-- [ ] tink, shhk, clink ×3, clunk, ting, kettle tick, pour, thermal feed, zzzt, clack, bearing whirr loop (Freesound CC0 / Kenney); bar-room hum loop (Freesound CC0 or Kenney — **never Pixabay**, or synthesised in Web Audio); procedural neon buzz, rain/wind bed, thunder (code, zero assets)
+- [ ] tink, shhk, clink ×3, clunk, ting, kettle tick, pour, thermal feed, zzzt, clack, bearing whirr loop (Freesound CC0 / Kenney); bar-room hum loop (Freesound CC0 or Kenney, **never Pixabay**, or synthesised in Web Audio); procedural neon buzz, rain/wind bed, thunder (code, zero assets)
 
 **Verification before release (D9.3)**
-- [ ] `design/preview.html` shows: The Bar (Night), The Verdict (Mumbai, Night), The Verdict (Reykjavík, Day), Recipe flip, Barista on, Register receipt, The Tab, Back Office — phone and desktop
+- [ ] `design/preview.html` shows: The Bar (Night), The Verdict (Mumbai, Night), The Verdict (Reykjavík, Day), Recipe flip, Barista on, Register receipt, The Tab, Back Office, phone and desktop
 - [ ] …plus the three non-verdict coasters the app must also ship, reachable from the preview's **Other states** strip: the 429 "Bar's busy. Give it a minute." coaster with its live 60 s RETRY countdown, the "The models are not answering." network coaster, and a normal coaster carrying the stale **re-poured from memory** brass tag (IMPL §10.7, TESTING §7)
 - [ ] Playwright screenshots of every state above; axe contrast pass in both shifts and inside `.paper`; Lighthouse LCP is a DOM element (neon + plate), not the canvas
 - [ ] Every screenshot passes the §1 test: a bottle, a coaster ring, a brass pin or the neon sign is visible

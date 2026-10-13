@@ -6,11 +6,11 @@
 
 ## The story, and why
 
-In India nobody steps out without asking *"mausam kaisa hai?"* — how's the weather? The answer decides the day: whether the monsoon will flood the underpass, whether Delhi's air needs a mask, whether the evening commute will crawl, and whether the night ends with cutting chai and pakoras or something stronger on a rooftop.
+In India nobody steps out without asking *"mausam kaisa hai?"*, how's the weather? The answer decides the day: whether the monsoon will flood the underpass, whether Delhi's air needs a mask, whether the evening commute will crawl, and whether the night ends with cutting chai and pakoras or something stronger on a rooftop.
 
-**Mausam** is the weather. **Mahaul** is the mood it creates — the feeling in the air, on the roads and at the table. Weather apps give you numbers; this one reads the *mahaul*: the sky and the air first, then the roads, then the drink and the snack that weather calls for, at the budget you actually have.
+**Mausam** is the weather. **Mahaul** is the mood it creates, the feeling in the air, on the roads and at the table. Weather apps give you numbers; this one reads the *mahaul*: the sky and the air first, then the roads, then the drink and the snack that weather calls for, at the budget you actually have.
 
-It began as **Barometer**, a joke about a judgmental bartender who reads the weather. It grew into the thing you open before leaving home — so it got an Indian name. (The repository keeps its original name so links never break.)
+It began as **Barometer**, a joke about a judgmental bartender who reads the weather. It grew into the thing you open before leaving home, so it got an Indian name. (The repository keeps its original name so links never break.)
 
 ### The maker, and the opening film
 
@@ -20,35 +20,35 @@ Every visit opens with a ~41-second film, drawn live in canvas 2D (no video, no 
 
 ## What it does
 
-A big 3D planet in deep space opens on **India**. Spin it, tap any place — or pick an Indian city — and you get, in this order:
+A big 3D planet in deep space opens on **India**. Spin it, tap any place, or pick an Indian city, and you get, in this order:
 
-1. **The weather, right now** — temperature and feels-like, comfort scale, humidity, wind, air quality (EU + US AQI), UV, rain chance, pressure, sunrise and sunset — plus **today's tips** (heat, hydrate, mask, umbrella, sunscreen, layers, fog).
-2. **The outlook** — a 24-hour temperature and rain chart, the next 7 days as range bars, and a daylight arc.
-3. **The bartender** — the one drink that weather calls for, a snack on the side (rain means pakoras), and **four budgets**: Extreme Cheap, Budget, Mid-range, High-end, with the pour, the place and a ₹ range per glass. Flip to **Barista** for the alcohol-free twin.
-4. **The roads** — how busy the city is likely to be right now, minutes for a 10 km trip, and when it eases over the next 12 hours.
-5. **India right now** — twelve cities at a glance (temperature, sky, US AQI; hottest, coolest, worst air), also shown live on the globe labels.
+1. **The weather, right now**, temperature and feels-like, comfort scale, humidity, wind, air quality (EU + US AQI), UV, rain chance, pressure, sunrise and sunset, plus **today's tips** (heat, hydrate, mask, umbrella, sunscreen, layers, fog).
+2. **The outlook**, a 24-hour temperature and rain chart, the next 7 days as range bars, and a daylight arc.
+3. **The bartender**, the one drink that weather calls for, a snack on the side (rain means pakoras), and **four budgets**: Extreme Cheap, Budget, Mid-range, High-end, with the pour, the place and a ₹ range per glass. Flip to **Barista** for the alcohol-free twin.
+4. **The roads**, how busy the city is likely to be right now, minutes for a 10 km trip, and when it eases over the next 12 hours.
+5. **India right now**, twelve cities at a glance (temperature, sky, US AQI; hottest, coolest, worst air), also shown live on the globe labels.
 
 Star a place to keep it one tap away under the globe. Scrub the next 24 hours and watch the page change with the light; tap "Surprise me" for a place with weather worth a story; touch the weather card; tap the glass to say cheers.
 
-### About traffic — honestly
+### About traffic: honestly
 
 There is no free, key-less, open live-traffic API that a static web app can call. So the Roads card is two layers:
 
-- **Estimate (default, no key, no network):** a transparent model of Indian rush hours (weekday morning and evening peaks, lighter weekends), relative city severity for 12 metros, and the weather that really slows Indian roads — rain, downpours, storms, fog. It is always labelled *Estimate*.
+- **Estimate (default, no key, no network):** a transparent model of Indian rush hours (weekday morning and evening peaks, lighter weekends), relative city severity for 12 metros, and the weather that really slows Indian roads, rain, downpours, storms, fog. It is always labelled *Estimate*.
 - **Live (optional):** paste your own free [TomTom](https://developer.tomtom.com/) key in Settings and the card shows live speed vs free-flow on the nearest road. The key stays on your device and is sent only to `api.tomtom.com`.
 
 ### Principles
 
 - **India first.** The camera's home is India; India's outline (Natural Earth, India point of view) is drawn in saffron with its major cities lit and tappable; Indian search results come first; the app opens on New Delhi (or the last place you looked at); prices are in rupees with Indian-market labels.
 - **Free, private, offline-capable.** No accounts, no analytics, no cookies, no server. Weather and air come from [Open-Meteo](https://open-meteo.com/). Reverse geocoding is fully offline (Natural Earth). History and saved places live on your device.
-- **Deterministic.** The same place, local hour and menu always give the same drink and the same line — a seeded engine with 9 golden fixtures and ~290 unit tests behind it.
+- **Deterministic.** The same place, local hour and menu always give the same drink and the same line, a seeded engine with 9 golden fixtures and ~290 unit tests behind it.
 
 ## What's inside
 
 | Feature | Where |
 |---|---|
 | A planet in space: WebGL Earth with a real day/night terminator (NASA Blue Marble by day, Black Marble city lights by night), atmosphere, starfield, India's outline and city lights with live temperatures, tap to pick, fly-to, zoom, "back to India" | `src/features/globe/globeThree.ts` |
-| Canvas globe — first paint, no-WebGL and context-lost path | `src/features/globe/fallbackGlobe.ts` |
+| Canvas globe: first paint, no-WebGL and context-lost path | `src/features/globe/fallbackGlobe.ts` |
 | Weather card, today's tips, save-star; the outlook (24 h chart, 7 days, daylight) | `src/features/weather/`, `src/engine/outlook.ts` |
 | Bartender card: the pick, the line, glassware, snack pairing, second opinion, alcohol-free twin, recipe, share card | `src/features/drink/` |
 | Budget tiers with Indian-market pours, places and ₹ ranges (≈ $ abroad) | `src/engine/budget.ts` |
@@ -88,7 +88,7 @@ npm run test:e2e       # Playwright against `vite preview` (Open-Meteo always mo
 ## Deployment
 
 - **Web:** every push to `main` runs `.github/workflows/pages.yml` (unit tests → build with `VITE_BASE_PATH=/<repo>/` → GitHub Pages). Heavy gates (lint, types, coverage, licences, bundle budget, Playwright) run separately in `ci.yml` so a flaky browser can never block a deploy.
-- **Android (optional):** pushing a tag `v*` runs `android-release.yml`, which builds the same `dist/` into the Capacitor shell and signs an APK. It needs four repository secrets — `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Without them the job fails loudly rather than ship an unsigned APK.
+- **Android (optional):** pushing a tag `v*` runs `android-release.yml`, which builds the same `dist/` into the Capacitor shell and signs an APK. It needs four repository secrets, `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Without them the job fails loudly rather than ship an unsigned APK.
 - **Weekly live probe:** `live.yml` checks that Open-Meteo still answers with CORS from the deployed origin.
 
 ## Documents
@@ -102,7 +102,7 @@ npm run test:e2e       # Playwright against `vite preview` (Open-Meteo always mo
 
 ## Privacy
 
-No analytics, telemetry, crash reporting, accounts or cookies, in any build. On open, the app fetches the weather for New Delhi (or the last place you looked at) and one batched reading for twelve Indian cities. The coordinates you tap are sent only to Open-Meteo (required to get weather), rounded to 0.01°; search terms go to Open-Meteo's geocoder. "Where am I" asks for your location only when tapped, and resolves it offline. If you add a TomTom key, the coordinates of the place you are viewing go to TomTom for the live road speed — nothing else does. A Content-Security-Policy restricts the page to its own origin, the four Open-Meteo hosts and api.tomtom.com. Weather is cached for 15 minutes per 0.25° cell, so repeat taps make no request at all.
+No analytics, telemetry, crash reporting, accounts or cookies, in any build. On open, the app fetches the weather for New Delhi (or the last place you looked at) and one batched reading for twelve Indian cities. The coordinates you tap are sent only to Open-Meteo (required to get weather), rounded to 0.01°; search terms go to Open-Meteo's geocoder. "Where am I" asks for your location only when tapped, and resolves it offline. If you add a TomTom key, the coordinates of the place you are viewing go to TomTom for the live road speed, nothing else does. A Content-Security-Policy restricts the page to its own origin, the four Open-Meteo hosts and api.tomtom.com. Weather is cached for 15 minutes per 0.25° cell, so repeat taps make no request at all.
 
 Open-Meteo's free tier is for non-commercial use; this project has no ads, sponsorships or store listing, and never will.
 

@@ -1,4 +1,4 @@
-// npx tsx scripts/sample-voice.ts mumbai 1000 — how many distinct jabs does the bartender have for a fixture?
+// npx tsx scripts/sample-voice.ts mumbai 1000, how many distinct jabs does the bartender have for a fixture?
 import { judge } from '../src/engine/index';
 import { DRINKS, FIXTURES, type FixtureName, GRAMMAR, geoIndex, loadFixture } from '../src/test/helpers';
 

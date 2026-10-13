@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { geoIndex } from '../test/helpers';
 import { createGeoIndex, type GeoData, inBBox } from './geocode';
 
-describe('locate() — the §6.8 table', () => {
+describe('locate(), the §6.8 table', () => {
   const g = geoIndex();
   it.each([
     [19.07, 72.88, 'land', 'IN', /Mumbai/],

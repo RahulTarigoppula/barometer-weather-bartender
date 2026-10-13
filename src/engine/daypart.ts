@@ -10,7 +10,7 @@ export interface LocalClock {
   label: string;
   /** "2026-09-06" in the place's own calendar. */
   date: string;
-  /** Local wall-clock time as if it were UTC — only for differences between local timestamps. */
+  /** Local wall-clock time as if it were UTC, only for differences between local timestamps. */
   wallMs: number;
 }
 
@@ -76,7 +76,7 @@ export function dayPartFor(i: DayPartInput): DayPartResult {
   const minutesToSunrise = rise === null ? Number.POSITIVE_INFINITY : (rise - i.clock.wallMs) / 60000;
   const minutesToSunset = set === null ? Number.POSITIVE_INFINITY : (set - i.clock.wallMs) / 60000;
 
-  // 1. Polar day/night: no sunrise/sunset row (or a 24-hour "day") — clock only, and the copy hedges.
+  // 1. Polar day/night: no sunrise/sunset row (or a 24-hour "day"), clock only, and the copy hedges.
   const allDayOrNight =
     rise !== null && set !== null && Math.abs(i.lat) >= 66.5 && (set - rise >= 1430 * 60000 || set - rise <= 0);
   if (rise === null || set === null || allDayOrNight) {

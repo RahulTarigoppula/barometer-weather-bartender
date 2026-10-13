@@ -1,4 +1,4 @@
-/* ═══ Mausam ka Mahaul — the outlook, the roads, India right now ═══ */
+/* ═══ Mausam ka Mahaul, the outlook, the roads, India right now ═══ */
 
 /* place title + save star */
 .weather__title {
@@ -1058,4 +1058,149 @@ button.drink__glass:focus-visible {
 }
 .story--me .btn {
   margin-top: var(--space-2);
+}
+
+/* ═══ explore: one row, three shelves ═══ */
+.explore__tabs {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 16, 32, 0.6);
+  backdrop-filter: blur(10px);
+}
+.explore__tab {
+  min-height: 30px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--ink-muted);
+  font: 600 var(--text-xs) / 1 var(--font-body);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.explore__tab:hover {
+  color: var(--ink);
+}
+.explore__tab.is-on {
+  background: var(--ink);
+  color: var(--void-1);
+}
+.explore__tab:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.chip__t {
+  margin-left: 6px;
+  padding-left: 6px;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffc58a;
+  font-weight: 600;
+}
+.chips-row {
+  animation: rise 320ms var(--ease-out) both;
+}
+
+/* ═══ forecast, round two: a line in plain words above every chart ═══ */
+.fc__head {
+  margin-bottom: var(--space-3);
+}
+.fc__story {
+  margin: 4px 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+.hours__chart {
+  height: 96px;
+}
+.hours__peak {
+  position: absolute;
+  translate: -50% 0;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.hours__peak--hi {
+  margin-top: -24px;
+  background: rgba(255, 153, 51, 0.18);
+  color: #ffc58a;
+}
+.hours__peak--lo {
+  margin-top: 8px;
+  background: rgba(124, 196, 255, 0.16);
+  color: #a9d7ff;
+}
+.hours__sun {
+  position: absolute;
+  top: -2px;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(10, 16, 32, 0.85);
+  border: 1px solid rgba(255, 200, 120, 0.45);
+  color: #ffc861;
+  pointer-events: none;
+}
+.hours__sun::after {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  width: 0;
+  height: 62px;
+  border-left: 1px dashed rgba(255, 200, 120, 0.35);
+}
+.hours__col {
+  gap: 4px;
+}
+.hours__h {
+  order: -1;
+}
+.day--today {
+  margin: 0 -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+}
+.day--today .day__name {
+  color: #ffc58a;
+}
+.day[data-wet] .day__bar span {
+  background: linear-gradient(90deg, #7cc4ff, #a9b8ff);
+}
+.sun__time {
+  fill: var(--ink-muted);
+  font: 600 10px var(--font-mono);
+}
+.sun__moon {
+  filter: drop-shadow(0 0 8px rgba(190, 210, 255, 0.6));
+}
+
+.mahaul__pair {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: #ffd2a1;
+}
+.footer__signoff {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-sm);
+  color: #ffd2a1;
 }

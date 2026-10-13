@@ -92,7 +92,7 @@ function useRoomAttributes(): void {
   }, [verdict, reduced]);
 }
 
-/** Weather first: on open, show the last place you looked at — or New Delhi. */
+/** Weather first: on open, show the last place you looked at, or New Delhi. */
 let opened = false;
 async function openingPour(): Promise<void> {
   if (opened) return; // StrictMode runs effects twice; pour once
@@ -101,7 +101,7 @@ async function openingPour(): Promise<void> {
     const last = await db.verdicts.orderBy('createdAt').last();
     if (last) return repour(last);
   } catch {
-    // no IndexedDB (private mode) — fall through
+    // no IndexedDB (private mode), fall through
   }
   return pour(DEFAULT_PLACE.lat, DEFAULT_PLACE.lng, DEFAULT_PLACE.name);
 }

@@ -73,7 +73,7 @@ describe('surprise me', () => {
   it('picks a storied place, never the one you are looking at', async () => {
     const { pickSurprise, SURPRISES } = await import('../data/places');
     expect(SURPRISES.length).toBeGreaterThanOrEqual(15);
-    for (const s of SURPRISES) expect(s.fact).not.toMatch(/—/);
+    for (const s of SURPRISES) expect(s.fact).not.toMatch(/\u2014/);
     const here = { lat: 25.3, lng: 91.58 };
     for (let i = 0; i < 20; i++) expect(pickSurprise(i / 20, here).name).not.toBe('Mawsynram');
     expect(pickSurprise(0).name).toBe(SURPRISES[0]?.name);

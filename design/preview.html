@@ -5,50 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#1A0F0A">
-<title>Barometer — The Globe Bar — visual preview</title>
+<title>Barometer: The Globe Bar: visual preview</title>
 
 <!--
   ============================================================================
-  BAROMETER · "The Globe Bar" — design/preview.html  (the visual contract, D9.3)
+  BAROMETER · "The Globe Bar", design/preview.html  (the visual contract, D9.3)
   Project 04 · The Contextual Weather Bartender · 2026-09-08
   Tokens, type, motion + copy follow docs/DESIGN.md §4–§9 exactly.
 
   SCREENS (preview rail, top-left)
-    1. THE BAR      — §9.1 idle/empty: back-bar shelf, neon window, brass-cradled
+    1. THE BAR    , §9.1 idle/empty: back-bar shelf, neon window, brass-cradled
                       globe, counter with classified-ad search + register ticker.
-    2. THE VERDICT  — §9.2 printed coaster (Mumbai · SOUP · Mojito), lit bottle,
+    2. THE VERDICT, §9.2 printed coaster (Mumbai · SOUP · Mojito), lit bottle,
                       swung wall dial, receipt strip, register receipt + TEAR.
                       Includes §9.3 Recipe (coaster back) and §9.4 Barista flip.
-    3. THE TAB      — §9.6 history drawer, 5 rows, row-tap re-flies the globe.
-    4. BACK OFFICE  — §9.7 settings drawer (levers, brass radios, brass knob).
+    3. THE TAB    , §9.6 history drawer, 5 rows, row-tap re-flies the globe.
+    4. BACK OFFICE, §9.7 settings drawer (levers, brass radios, brass knob).
   Plus a DESKTOP / PHONE device-frame switcher (container queries, real 390px).
 
   SIGNATURE INTERACTIONS IMPLEMENTED FOR REAL
-    §8.1 The Flick + the Pin — globe.gl 2.46.2 (three.js), damped inertia, idle
+    §8.1 The Flick + the Pin, globe.gl 2.46.2 (three.js), damped inertia, idle
          drift 0.18°/frame, real click → lat/lng → brass pin drop (A2) + ripple
          ring + 1200ms fly-to (A3). Procedural canvas globe fallback if WebGL or
          the NASA Blue Marble texture fails (still clickable, equirect hit-test).
-    §8.2 The Slide — blank coaster slides in first (A1, spring, 6px overshoot,
+    §8.2 The Slide, blank coaster slides in first (A1, spring, 6px overshoot,
          4°→0°), printed coaster replaces it in place; simultaneously the picked
          bottle nods and lights (A4) and the aneroid dial needle swings with a
          rolling mono numeral (A5).
-    §8.3 The Pour — 3 ice cubes drop into the glassware (A9), condensation ring
+    §8.3 The Pour, 3 ice cubes drop into the glassware (A9), condensation ring
          blooms on the paper, window sweats / frosts / rains / snows / flashes
-         lightning (A10, A11) — CSS + SVG feTurbulence only, never behind text.
-    §8.4 The Barista Flip — BAR→BARISTA neon clack, spirits dim to 60%, tea /
+         lightning (A10, A11), CSS + SVG feTurbulence only, never behind text.
+    §8.4 The Barista Flip, BAR→BARISTA neon clack, spirits dim to 60%, tea /
          cocoa / ginger / mint light up, coaster re-prints the virgin twin.
-    §8.5 The Tear-off — thermal receipt prints line by line (A6) then tears on a
+    §8.5 The Tear-off, thermal receipt prints line by line (A6) then tears on a
          feTurbulence-displaced perforation.
     §9.3 Coaster flip (A7, rotateY 180°, backface-visibility) for the recipe.
-    A8   Shift change — Night ⇄ Day palette crossfade driven by the clicked
+    A8   Shift change, Night ⇄ Day palette crossfade driven by the clicked
          place's is_day, with the one-shot neon power-on flicker.
     All of the above honour prefers-reduced-motion (§7) and the Back Office
     Motion switch.
 
   LIBRARIES (pinned, CDN only, no build step)
-    globe.gl 2.46.2 (MIT, bundles three.js)  — jsDelivr
+    globe.gl 2.46.2 (MIT, bundles three.js), jsDelivr
     NASA Blue Marble + earth-topology bump (public domain, credit NASA Earth
-    Observatory) via three-globe@2.45.2 example assets — jsDelivr. If either
+    Observatory) via three-globe@2.45.2 example assets, jsDelivr. If either
     fails, a procedurally drawn brass-engraved world is used instead.
     Google Fonts: Righteous · Space Grotesk · JetBrains Mono (OFL)
     Motion is hand-rolled: CSS linear() spring from DESIGN §7 + rAF. No GSAP.
@@ -76,7 +76,7 @@
 @property --neon          { syntax:'<color>'; inherits:true; initial-value:#FFB347; }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   2 · TOKENS — DESIGN.md §15, Night shift is :root
+   2 · TOKENS, DESIGN.md §15, Night shift is :root
    ═════════════════════════════════════════════════════════════════════════ */
 :root{
   color-scheme: dark;
@@ -138,7 +138,7 @@
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9 0.04' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 
-/* Day shift — set by JS from the clicked place's is_day (pinnable in Back Office) */
+/* Day shift, set by JS from the clicked place's is_day (pinnable in Back Office) */
 :root[data-shift="day"]{
   color-scheme:light;
   --bg:#EFE3CC; --bg-elevated:#D9B98A; --surface:#FBF4E4; --surface-2:#E6D2A6;
@@ -171,7 +171,7 @@
   --border var(--shift-transition), --border-strong var(--shift-transition),
   --neon var(--shift-transition); }
 
-/* Paper material scope — coaster, receipt, recipe card */
+/* Paper material scope, coaster, receipt, recipe card */
 .paper{
   --bg:var(--paper); --bg-elevated:var(--paper); --surface:var(--paper); --surface-2:var(--paper-2);
   --ink:var(--paper-ink); --ink-muted:var(--paper-ink-muted); --ink-faint:var(--paper-ink-faint);
@@ -214,7 +214,7 @@ button{ background:none; border:0; cursor:pointer; }
 }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   4 · PAGE CHROME — preview rail + device frame
+   4 · PAGE CHROME, preview rail + device frame
    ═════════════════════════════════════════════════════════════════════════ */
 .page{ max-width:1280px; margin:0 auto; padding:var(--space-5) var(--page-inset) var(--space-9); }
 @media (min-width:1024px){ :root{ --page-inset:32px; } }
@@ -231,7 +231,7 @@ button{ background:none; border:0; cursor:pointer; }
 .rail__spacer{ flex:1 1 auto; min-width:var(--space-2); }
 .rail__note{ font-family:var(--font-mono); font-size:var(--text-xs); color:var(--ink-muted); }
 
-/* brass plate — the one button in the whole bar */
+/* brass plate, the one button in the whole bar */
 .plate{
   position:relative; display:inline-flex; align-items:center; justify-content:center; gap:var(--space-2);
   min-height:36px; padding:var(--space-2) var(--space-4);
@@ -292,7 +292,7 @@ button{ background:none; border:0; cursor:pointer; }
 .statusbar__bat::after{ content:''; position:absolute; right:-3px; top:3px; width:2px; height:4px; background:currentColor; border-radius:0 1px 1px 0; }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   5 · THE BAR — bands
+   5 · THE BAR, bands
    ═════════════════════════════════════════════════════════════════════════ */
 .scene{ position:relative; flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
 
@@ -416,7 +416,7 @@ button{ background:none; border:0; cursor:pointer; }
 .neon-flicker{ animation:neonOn 700ms steps(1,end) 1 both; }
 @keyframes neonOn{ 0%{opacity:0} 14%{opacity:1} 28%{opacity:.3} 42%{opacity:1} 60%{opacity:.6} 100%{opacity:1} }
 
-/* weather layers — CSS/SVG only, never behind text */
+/* weather layers, CSS/SVG only, never behind text */
 .wx{ position:absolute; inset:0; z-index:1; pointer-events:none; opacity:0; transition:opacity var(--dur-slow) var(--ease-in-out); }
 .wx.is-on{ opacity:1; }
 .wx--drops{ background-image:
@@ -487,7 +487,7 @@ button{ background:none; border:0; cursor:pointer; }
   box-shadow:inset 0 0 0 8px color-mix(in oklab,var(--ink-faint) 22%, transparent); }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   6 · THE COASTER (paper) — §9.2 / §9.3
+   6 · THE COASTER (paper), §9.2 / §9.3
    ═════════════════════════════════════════════════════════════════════════ */
 .coaster-wrap{ perspective:1200px; width:100%; max-width:440px; }
 .coaster{
@@ -573,7 +573,7 @@ button{ background:none; border:0; cursor:pointer; }
 .recipe__credit{ font-family:var(--font-mono); font-size:var(--text-xs); color:var(--ink-muted); margin-top:var(--space-3); }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   7 · THE COUNTER + REGISTER — §9.1 / §9.5
+   7 · THE COUNTER + REGISTER, §9.1 / §9.5
    ═════════════════════════════════════════════════════════════════════════ */
 .counter{
   position:relative; flex:0 0 auto; margin-top:var(--space-4);
@@ -648,7 +648,7 @@ button{ background:none; border:0; cursor:pointer; }
 .receipt__stub{ font-family:var(--font-mono); font-size:var(--text-xs); color:var(--ink-muted); padding:var(--space-3); }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   8 · DRAWERS — The Tab §9.6 · Back Office §9.7
+   8 · DRAWERS, The Tab §9.6 · Back Office §9.7
    ═════════════════════════════════════════════════════════════════════════ */
 .drawer{
   position:absolute; inset:auto 0 0 0; z-index:20; max-height:88%;
@@ -706,7 +706,7 @@ button{ background:none; border:0; cursor:pointer; }
 :root[data-shift="day"] .scrim{ background:rgba(217,185,138,.55); }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   9 · PHONE LAYOUT (container query — works inside the device frame too)
+   9 · PHONE LAYOUT (container query, works inside the device frame too)
    ═════════════════════════════════════════════════════════════════════════ */
 @container bar (max-width: 899px){
   .backbar{ padding:var(--space-1) var(--space-3) 0; }
@@ -811,7 +811,7 @@ button{ background:none; border:0; cursor:pointer; }
                 </text>
                 <rect x="34" y="58" width="32" height="14" rx="2" fill="#0D0704" stroke="#8A6414" stroke-width=".6"/>
                 <text id="dialNum" class="dial__num" x="50" y="68.4" text-anchor="middle" font-size="9"
-                      fill="#F5C860" font-family="'JetBrains Mono',monospace">—</text>
+                      fill="#F5C860" font-family="'JetBrains Mono',monospace">, </text>
                 <g class="dial__needle" id="dialNeedle" transform="rotate(0 50 50)">
                   <path d="M50 50 L47.6 52 L50 16 L52.4 52 Z" fill="#F0564B"/>
                   <circle cx="50" cy="50" r="4" fill="url(#brassV)" stroke="#5A3F0C" stroke-width=".6"/>
@@ -957,7 +957,7 @@ button{ background:none; border:0; cursor:pointer; }
         <button class="lever" role="switch" aria-checked="false" aria-label="Sound"></button>
         <span class="field__label" style="margin-left:auto">Volume</span>
         <div class="knob" role="slider" tabindex="0" aria-label="Master volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="60" id="volKnob"></div>
-        <p class="field__desc">Bar sounds only — a brass tink, a wooden shhk, a thermal feed. Never a UI beep.</p>
+        <p class="field__desc">Bar sounds only, a brass tink, a wooden shhk, a thermal feed. Never a UI beep.</p>
       </div>
 
       <div class="field">
@@ -973,7 +973,7 @@ button{ background:none; border:0; cursor:pointer; }
       <div class="field">
         <span class="field__label">Precise names</span>
         <button class="lever" role="switch" aria-checked="false" aria-label="Precise names via Nominatim"></button>
-        <p class="field__desc">Off. Place names come from Natural Earth, offline. Turn on and it asks OpenStreetMap — “Data © OpenStreetMap contributors”.</p>
+        <p class="field__desc">Off. Place names come from Natural Earth, offline. Turn on and it asks OpenStreetMap, “Data © OpenStreetMap contributors”.</p>
       </div>
 
       <div class="field" style="align-items:flex-start">
@@ -1001,12 +1001,12 @@ button{ background:none; border:0; cursor:pointer; }
   <p class="footnote">
     <b>Preview only.</b> Weather, times and air quality are hand-authored mock data in the shape Open-Meteo returns;
     the judgment engine, the tag ladder, the drink scoring and every animation below are the real ones.
-    Click anywhere on the globe — ocean included — and the bartender will have an opinion.
+    Click anywhere on the globe, ocean included, and the bartender will have an opinion.
   </p>
 </div>
 
 <style>
-/* 10 · glassware motion (A9 ice drop, steam) — kept with the SVG it drives */
+/* 10 · glassware motion (A9 ice drop, steam), kept with the SVG it drives */
 .icecube{ transform-box:fill-box; transform-origin:center; animation:iceDrop 540ms var(--ease-spring) both; }
 .icecube:nth-of-type(2){ animation-delay:90ms }
 .icecube:nth-of-type(3){ animation-delay:180ms }
@@ -1039,7 +1039,7 @@ button{ background:none; border:0; cursor:pointer; }
   }
   function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
 
-  /* ══════ 1 · BAR STOCK — the 12 canonical BottleIds (own SVG, §11) ═════
+  /* ══════ 1 · BAR STOCK, the 12 canonical BottleIds (own SVG, §11) ═════
      ids are the `BottleId` union verbatim: rum, gin, whisky, tequila, vodka,
      vermouth, bitters, syrup, tea, cocoa, ginger-beer, mint. ═════════════ */
   var BOTTLES = [
@@ -1081,13 +1081,13 @@ button{ background:none; border:0; cursor:pointer; }
         + ' aria-label="' + b.name + '"><span class="bottle__tip">' + b.name + '</span>' + bottleSVG(b) + '</button>';
     }).join('');
   }
-  /* ══════ 2 · THE MENU — canonical drinks, ids and affinities ═══════════
-     These rows are copied from IMPLEMENTATION-PROMPT §6.11 — kebab-case ids,
+  /* ══════ 2 · THE MENU, canonical drinks, ids and affinities ═══════════
+     These rows are copied from IMPLEMENTATION-PROMPT §6.11, kebab-case ids,
      canonical names, `ice` from the cubes|crushed|none union, `bottle` from the
      BottleId union, affinities over the Tag union. This is a faithful 30-drink
      subset of the 40-drink canonical menu (15 cocktails + their 15 twins),
      chosen so that all nine Glass shapes and all twelve bottles are exercised.
-     If you are building src/data/bar-menu.json, copy §6.11, not this file —
+     If you are building src/data/bar-menu.json, copy §6.11, not this file:
      but nothing here contradicts it. ══════════════════════════════════════ */
   var D = function (o) { return o; };
   var DRINKS = {
@@ -1111,7 +1111,7 @@ button{ background:none; border:0; cursor:pointer; }
     'margarita': D({ name: 'Margarita', bottle: 'tequila', alcoholic: true, serve: 'iced', glass: 'coupe', ice: 'none', color: '#D7E8A8', twin: 'virgin-margarita',
       affinity: { scorching: 4, hot: 3, 'uv-extreme': 3, 'bone-dry': 3, dust: 3 },
       ing: [['50 ml', 'blanco tequila'], ['25 ml', 'lime juice'], ['20 ml', 'triple sec'], ['rim', 'flaked salt']],
-      method: ['Salt half the rim. Half — you still have to talk to people.', 'Shake hard with ice; double-strain.', 'No ice in the glass. The cold is already in it.'] }),
+      method: ['Salt half the rim. Half, you still have to talk to people.', 'Shake hard with ice; double-strain.', 'No ice in the glass. The cold is already in it.'] }),
     'espresso-martini': D({ name: 'Espresso Martini', bottle: 'vodka', alcoholic: true, serve: 'chilled', glass: 'coupe', ice: 'none', color: '#3A2214', twin: 'espresso-tonic',
       affinity: { late: 4, evening: 2, hot: 1, fog: 1 },
       ing: [['40 ml', 'vodka'], ['30 ml', 'fresh espresso'], ['15 ml', 'coffee liqueur'], ['5 ml', 'sugar syrup']],
@@ -1147,7 +1147,7 @@ button{ background:none; border:0; cursor:pointer; }
     'mimosa': D({ name: 'Mimosa', bottle: 'vermouth', alcoholic: true, serve: 'chilled', glass: 'flute', ice: 'none', color: '#F0C24A', twin: 'sunrise-fizz',
       affinity: { brunch: 4, morning: 3, mild: 3, dawn: 3, golden: 2 },
       ing: [['90 ml', 'dry sparkling wine'], ['60 ml', 'cold orange juice'], ['1', 'orange twist']],
-      method: ['Juice first, wine second — the other way round foams over.', 'Do not stir. The bubbles do it.', 'Twist over the top. Say nothing about the hour.'] }),
+      method: ['Juice first, wine second, the other way round foams over.', 'Do not stir. The bubbles do it.', 'Twist over the top. Say nothing about the hour.'] }),
     'michelada': D({ name: 'Michelada', bottle: 'ginger-beer', alcoholic: true, serve: 'chilled', glass: 'pint', ice: 'none', color: '#C4652A', twin: 'virgin-michelada',
       affinity: { smog: 3, dust: 3, brunch: 3, afternoon: 3, hot: 2, muggy: 2 },
       ing: [['330 ml', 'cold lager'], ['25 ml', 'lime juice'], ['2 dash', 'hot sauce'], ['1 tsp', 'soy'], ['rim', 'chilli salt']],
@@ -1216,7 +1216,7 @@ button{ background:none; border:0; cursor:pointer; }
   };
 
   /* ══════ 3 · GLASSWARE (own SVG line-art, §11) ═══════════════════════ */
-  /* All nine `Glass` shapes of the type union — rocks, highball, coupe, mug,
+  /* All nine `Glass` shapes of the type union, rocks, highball, coupe, mug,
      copper-mug, tiki, flute, pint, teacup. Nothing on the menu can fall back. */
   var GLASS = {
     highball:     { d: 'M18 6 L19.5 78 Q19.5 82 23.5 82 L36.5 82 Q40.5 82 40.5 78 L42 6', top: 24, bot: 79, x: 20, w: 20 },
@@ -1238,7 +1238,7 @@ button{ background:none; border:0; cursor:pointer; }
     s += '<g clip-path="url(#cl-' + drink.glass + ')"><rect x="' + g.x + '" y="' + liqTop + '" width="' + g.w
        + '" height="' + (g.bot - liqTop) + '" fill="' + drink.color + '" opacity=".85"/></g>';
     if (!hot && drink.ice !== 'none') {
-      var cubes = drink.ice === 'crushed' ? 4 : 3;      /* ice is cubes | crushed | none — no other value exists */
+      var cubes = drink.ice === 'crushed' ? 4 : 3;      /* ice is cubes | crushed | none, no other value exists */
       for (var i = 0; i < cubes; i++) {
         var cw = drink.ice === 'crushed' ? 7 : 10;
         var cx = g.x + 2 + (i * (g.w - cw - 4) / Math.max(1, cubes - 1 || 1));
@@ -1256,16 +1256,16 @@ button{ background:none; border:0; cursor:pointer; }
     return s + '</svg>';
   }
 
-  /* ══════ 4 · PLACES — gazetteer points + the NINE golden fixtures ══════
+  /* ══════ 4 · PLACES, gazetteer points + the NINE golden fixtures ══════
      The anchors below are the C5 roster and no other: mumbai, yakutsk,
      reykjavik, dubai-noon, arabian-sea, south-pole, denver-hail,
      lisbon-golden, oslo-brunch. Their numbers are IMPL §10.2's fixture rows,
      their tag sets are §6.3's expectation table (one tag per family), their
      `grade` values are the eight legal grade families, their `dial` labels
      come from the thermal tag, and every `intensifier` is an exact string
-     from intensifiers.json (§6.6). The five anchors that used to sit here —
+     from intensifiers.json (§6.6). The five anchors that used to sit here:
      Singapore, Cairo, Tokyo, a Death-Valley point and an Antarctic-station
-     point — are NOT fixtures under C5. Do not add them back. ════════════ */
+     point, are NOT fixtures under C5. Do not add them back. ════════════ */
   var CITIES = [
     ['Mumbai', 'IN', 19.076, 72.878], ['Reykjavík', 'IS', 64.147, -21.943], ['Yakutsk', 'RU', 62.034, 129.733],
     ['Denver', 'US', 39.739, -104.990], ['Oslo', 'NO', 59.913, 10.752], ['Lisbon', 'PT', 38.722, -9.139],
@@ -1331,7 +1331,7 @@ button{ background:none; border:0; cursor:pointer; }
       uv: 3, aqi: 25, code: 'Mainly clear', tags: ['warm', 'golden'], grade: 'none', dial: 'FAIR', wx: ['glare'],
       drink: 'gin-tonic', intensifier: 'ICED',
       jab: 'Twenty-four degrees and twenty-three minutes of sunset left. There is nothing wrong with this weather, which is its own kind of problem for me.',
-      closer: 'Gin, tonic, one grapefruit peel, no umbrella. Drink faster — the light goes at 19:58.' },
+      closer: 'Gin, tonic, one grapefruit peel, no umbrella. Drink faster, the light goes at 19:58.' },
     'oslo-brunch': { key: 'oslo-brunch', lat: 59.91, lng: 10.75, place: 'in Oslo, Norway', cc: 'OSLO, NO',
       localTime: '10:40', date: '06 SEP 2026', isDay: true, temp: 12.0, apparent: 10.9, dew: 6.7, rh: 70, wind: 9, gust: 14,
       uv: 2, aqi: 15, code: 'Partly cloudy', tags: ['mild', 'brunch'], grade: 'none', dial: 'FAIR', wx: [],
@@ -1340,7 +1340,7 @@ button{ background:none; border:0; cursor:pointer; }
       closer: 'Juice first, wine second, and I will not be commenting on the hour. The coffee menu is also open, if you would rather be sensible.' }
   };
 
-  /* ══════ 5 · THE ENGINE — features → tags → drink (§5.5, §5.6) ═══════ */
+  /* ══════ 5 · THE ENGINE, features → tags → drink (§5.5, §5.6) ═══════ */
   var WEIGHT = { arctic: 4, blizzard: 4, scorching: 4, oppressive: 3.4, storm: 3.4, 'uv-extreme': 3, freezing: 3,
     polar: 3, ocean: 3, dust: 2.6, muggy: 2.4, snow: 2.4, gale: 2.2, cold: 2, hot: 2, downpour: 2, rain: 1.8,
     smog: 1.8, drizzle: 1.4, fog: 1.4, chilly: 1.4, 'bone-dry': 1.4, warm: 1, mild: 1, breezy: .8,
@@ -1403,7 +1403,7 @@ button{ background:none; border:0; cursor:pointer; }
   var CLOSERS = ['Drink it before it warms up. It will warm up.', 'Do not thank me. Tip the register.',
     'I have been wrong twice this decade. This is not one of them.', 'Take the coaster. It is the only receipt that matters.',
     'Sit down. You look like the weather.', 'One is a decision. Two is a forecast.'];
-  /* intensifiers.json (§6.6) — the SINGLE source for every stamp string (C12).
+  /* intensifiers.json (§6.6), the SINGLE source for every stamp string (C12).
      Nothing in this file may invent one; stampFor() below is the only producer. */
   var INTENSIFIERS = {
     iced:  { frozen:  ['FROZEN', 'FROZEN SOLID', 'A SLUSHIE. YOU EARNED IT.'],
@@ -1416,7 +1416,7 @@ button{ background:none; border:0; cursor:pointer; }
   };
   var COLD_INTEN = ['chilly', 'cold', 'freezing', 'arctic'];
   /* Intensity is not modelled in this preview, so the stamp tier is taken from
-     how deep the tag set sits in its band — the same three-step ladder, one
+     how deep the tag set sits in its band, the same three-step ladder, one
      rung coarser. The real engine uses stampFor(tags, drink, menu, gentler). */
   function stampFor(tags, drink, apparent, dew) {
     var hasT = function (t) { return tags.indexOf(t) > -1; };
@@ -1435,7 +1435,7 @@ button{ background:none; border:0; cursor:pointer; }
     return ladder[tier];
   }
   /* The eight legal grade families come from the DRIVING tag, which is the first
-     match in the §6.3 priority list — not the highest-weight tag. */
+     match in the §6.3 priority list, not the highest-weight tag. */
   var PRIORITY = ['hail', 'storm', 'arctic', 'scorching', 'blizzard', 'oppressive', 'downpour', 'freezing',
     'dust', 'smog', 'uv-extreme', 'gale', 'snow', 'hot', 'muggy', 'rain', 'cold', 'fog', 'drizzle', 'chilly',
     'bone-dry', 'breezy', 'warm', 'mild', 'still', 'ocean', 'polar',
@@ -1546,7 +1546,7 @@ button{ background:none; border:0; cursor:pointer; }
     clearTimeout(t._h); t._h = setTimeout(function () { t.classList.remove('is-on'); }, 4000);
   }
 
-  /* ══════ 7 · THE GLOBE — globe.gl, with a procedural fallback ═════════ */
+  /* ══════ 7 · THE GLOBE, globe.gl, with a procedural fallback ═════════ */
   var TEX = 'https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-blue-marble.jpg';
   var BUMP = 'https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-topology.png';
   var LAND = [
@@ -1616,7 +1616,7 @@ button{ background:none; border:0; cursor:pointer; }
     var probe = new Image();
     probe.crossOrigin = 'anonymous';
     probe.onload = function () { g.globeImageUrl(TEX).bumpImageUrl(BUMP); };
-    probe.onerror = function () { toast('Planet texture unavailable — serving the engraved globe instead.'); };
+    probe.onerror = function () { toast('Planet texture unavailable, serving the engraved globe instead.'); };
     probe.src = TEX;
 
     var ctrl = g.controls();
@@ -1654,7 +1654,7 @@ button{ background:none; border:0; cursor:pointer; }
     };
   }
 
-  /* procedural 2D globe — no WebGL required, still clickable (§9.8) */
+  /* procedural 2D globe, no WebGL required, still clickable (§9.8) */
   function canvasGlobe(holder) {
     var cv = document.createElement('canvas'); cv.className = 'globe-fallback';
     holder.appendChild(cv);
@@ -1728,11 +1728,11 @@ button{ background:none; border:0; cursor:pointer; }
       nudge: function (dLat, dLng) { lat0 = clamp(lat0 + dLat, -75, 75); lon0 += dLng; },
       center: function () { return { lat: lat0, lng: -lon0 }; }
     };
-    toast('No WebGL here — the bar keeps its engraved globe. Still clickable.');
+    toast('No WebGL here, the bar keeps its engraved globe. Still clickable.');
   }
 
-  /* ══════ 8 · WINDOW, DIAL, BOTTLES — the three physical tells ═════════ */
-  /* The eight legal grade families plus `none` — §3.5. These are family names,
+  /* ══════ 8 · WINDOW, DIAL, BOTTLES, the three physical tells ═════════ */
+  /* The eight legal grade families plus `none`, §3.5. These are family names,
      never tag names: there is no `scorching`, `freezing` or `late` grade. */
   var GRADES = {
     heat:   ['rgba(240,138,60,.18)', 'var(--paper-warning)', 'rgba(240,138,60,.25)'],
@@ -1800,7 +1800,7 @@ button{ background:none; border:0; cursor:pointer; }
     if (pick) { pick.classList.add('is-picked'); pick.querySelector('.bottle__tip').textContent = 'The pick'; }
   }
 
-  /* ══════ 9 · THE COASTER — slide, print, flip (§8.2, §9.2, §9.3) ══════ */
+  /* ══════ 9 · THE COASTER, slide, print, flip (§8.2, §9.2, §9.3) ══════ */
   function laneEmpty() {
     $('#lane').innerHTML =
       '<div class="lane__empty">'
@@ -1811,7 +1811,7 @@ button{ background:none; border:0; cursor:pointer; }
       + 'Keyboard: focus the globe, arrow keys to rotate, Enter to pour at the centre.</p>'
       + '</div>';
   }
-  /* The three non-verdict coasters. Same paper, same stamp, same brass plates —
+  /* The three non-verdict coasters. Same paper, same stamp, same brass plates:
      an error is a coaster with different words on it, never a dialog. */
   function errorCoaster(kind) {
     root.style.setProperty('--stamp', kind === 'busy' ? 'var(--paper-warning)' : 'var(--paper-ink-muted)');
@@ -1821,7 +1821,7 @@ button{ background:none; border:0; cursor:pointer; }
           foot: 'RETRY in <span class="coaster__countdown" id="retryCount">60</span> s',
           act: '<button class="plate" data-act="retry" id="retryBtn" disabled>Retry</button>' }
       : { stamp: 'NO SIGNAL', head: 'The models are not answering.',
-          jab: 'I asked four times. The forecast has gone quiet and I am not going to invent weather for you — that is what the other apps do.',
+          jab: 'I asked four times. The forecast has gone quiet and I am not going to invent weather for you, that is what the other apps do.',
           foot: 'Last pour is still on the tab.',
           act: '<button class="plate" data-act="retry">Try again</button>'
             + '<button class="plate plate--ghost" data-act="screen-tab">Open the tab</button>' };
@@ -1901,7 +1901,7 @@ button{ background:none; border:0; cursor:pointer; }
     var iced = d.serve === 'iced' || d.serve === 'frozen';
     var baristaTag = v.barista && menu !== 'barista'
       ? '<button class="tag-brass" id="baristaTag"><b>Brass tag</b> It is ' + v.localTime
-        + ' there. I am legally a barista now — flip the sign.</button>' : '';
+        + ' there. I am legally a barista now, flip the sign.</button>' : '';
     var stampText = state.altIndex > 0 ? 'Second Opinion' : v.intensifier;
 
     var front =
@@ -1923,7 +1923,7 @@ button{ background:none; border:0; cursor:pointer; }
       + '<span>DEW <b class="num">' + fmtT(v.dew) + '</b></span>'
       + '<span>WIND <b class="num">' + v.wind + '</b> KM/H</span>'
       + '<span>UV <b class="num">' + v.uv + '</b></span>'
-      + '<span>AQI <b class="num">' + (v.aqi === null || v.aqi === undefined ? '—' : v.aqi) + '</b></span>'
+      + '<span>AQI <b class="num">' + (v.aqi === null || v.aqi === undefined ? ', ' : v.aqi) + '</b></span>'
       + '<span>LOCAL <b class="num">' + v.localTime + '</b></span>'
       + '</div>'
       + '<div class="coaster__actions">'
@@ -1968,7 +1968,7 @@ button{ background:none; border:0; cursor:pointer; }
       ['globe', ''],
       ['rule', ''],
       ['', 'APPARENT ' + fmtT(v.apparent) + ' · DEW ' + fmtT(v.dew)],
-      ['', 'WIND ' + v.wind + ' KM/H · UV ' + v.uv + ' · AQI ' + (v.aqi === null || v.aqi === undefined ? '—' : v.aqi)],
+      ['', 'WIND ' + v.wind + ' KM/H · UV ' + v.uv + ' · AQI ' + (v.aqi === null || v.aqi === undefined ? ', ' : v.aqi)],
       ['', 'CODE ' + v.code.toUpperCase()],
       ['rule', ''],
       ['hd', (state.altIndex > 0 ? 'SECOND OPINION' : v.intensifier).toUpperCase() + ' ' + d.name.toUpperCase()],
@@ -2016,7 +2016,7 @@ button{ background:none; border:0; cursor:pointer; }
     toast('Receipt torn. On a phone this opens the share sheet; on desktop it downloads.');
   }
 
-  /* ══════ 11 · POUR — the whole scene agrees (§8.1 → §8.3) ════════════ */
+  /* ══════ 11 · POUR, the whole scene agrees (§8.1 → §8.3) ════════════ */
   function verdictFor(lat, lng) {
     var best = null, bd = Infinity;
     Object.keys(ANCHORS).forEach(function (k) {
@@ -2154,7 +2154,7 @@ button{ background:none; border:0; cursor:pointer; }
           toast('Sixteen minutes old. Re-poured from memory, no request made.');
         } else {
           errorCoaster(kind);
-          toast(kind === 'busy' ? "429. The bar is busy — sixty seconds." : 'No signal. The models are not answering.');
+          toast(kind === 'busy' ? "429. The bar is busy, sixty seconds." : 'No signal. The models are not answering.');
         }
         return;
       }

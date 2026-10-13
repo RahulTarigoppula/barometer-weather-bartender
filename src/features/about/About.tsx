@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import attribution from '../../data/attribution.json';
 
-/** #/about — the attribution table (it matches the README three ways, enforced by a test). */
+/** #/about, the attribution table (it matches the README three ways, enforced by a test). */
 export function About(): ReactElement {
   return (
     <div className="about">

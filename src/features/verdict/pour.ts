@@ -18,7 +18,7 @@ let warnedTabFull = false;
 const wrapLng = (lng: number): number => ((((lng + 180) % 360) + 360) % 360) - 180;
 const r4 = (n: number): number => Math.round(n * 1e4) / 1e4;
 
-/** "#/v/19.07,72.88" — 2 dp (~1 km) and nothing else. */
+/** "#/v/19.07,72.88", 2 dp (~1 km) and nothing else. */
 export const verdictHash = (lat: number, lng: number): string => `#/v/${lat.toFixed(2)},${lng.toFixed(2)}`;
 
 function setHash(lat: number, lng: number): void {

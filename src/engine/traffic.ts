@@ -1,7 +1,7 @@
 import type { Tag, TagScore } from './types';
 
 /**
- * Road outlook — a transparent ESTIMATE, not live data. No free, key-less live-traffic feed exists,
+ * Road outlook, a transparent ESTIMATE, not live data. No free, key-less live-traffic feed exists,
  * so this models the typical daily rush of Indian metros (morning and evening peaks, lighter
  * weekends; relative city severity after published congestion rankings) and adds the weather
  * that actually slows Indian roads: rain, downpours, storms and fog.
@@ -137,7 +137,7 @@ export function roadOutlook(input: {
     const ix = indexAt(hour, wd, severity, drag.factor);
     return { hour, index: ix, level: level(ix) };
   });
-  // The first hour that is clearly better (a level lighter, or 25 points down) — not the 3 a.m. minimum.
+  // The first hour that is clearly better (a level lighter, or 25 points down), not the 3 a.m. minimum.
   const eases = next.find((h) => h.index <= Math.max(29, index - 25));
   const hh = (n: number): string => `${String(n).padStart(2, '0')}:00`;
   const advice =

@@ -23,7 +23,7 @@ export const prefsStorage: StateStorage = {
     try {
       localStorage.setItem(key, value);
     } catch {
-      // private mode / quota — settings simply do not persist
+      // private mode / quota, settings simply do not persist
     }
   },
   async removeItem(key) {

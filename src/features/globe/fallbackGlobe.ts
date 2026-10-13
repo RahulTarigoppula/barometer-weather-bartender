@@ -1,5 +1,5 @@
 // The canvas globe: the pre-WebGL placeholder, the no-WebGL path and the context-lost path.
-// Still a real instrument — drag to spin, tap to pour, keyboard to steer. Opens on India.
+// Still a real instrument, drag to spin, tap to pour, keyboard to steer. Opens on India.
 import { type GeoPermissibleObjects, geoArea, geoDistance, geoGraticule10, geoOrthographic, geoPath } from 'd3-geo';
 import { loadIndiaOutline, loadLand } from '../../api/geo';
 import { type GlobeCallbacks, type GlobeController, HOME_VIEW } from './controller';

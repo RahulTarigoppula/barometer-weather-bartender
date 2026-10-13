@@ -1,7 +1,7 @@
 const RAD = Math.PI / 180;
 
 /**
- * The subsolar point [lng, lat] — where the sun is overhead right now. Drives the globe's
+ * The subsolar point [lng, lat], where the sun is overhead right now. Drives the globe's
  * day/night terminator. Low-precision solar coordinates (±0.3°), plenty for a lit planet.
  */
 export function subsolar(now: Date): [number, number] {
