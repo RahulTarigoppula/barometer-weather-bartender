@@ -3,7 +3,7 @@
 **Codename:** Barometer · **Design:** The Globe Bar
 **Tagline:** *Spin. Tap. Survive.*
 
-Status: **Live** — v1.0.0 (2026-10-13): the space/India redesign with weather first and four budget tiers, at https://rahultarigoppula.github.io/barometer-weather-bartender/ (decisions: `docs/IMPLEMENTATION-PROMPT.md` §0, C13–C33).
+Status: **Live** — v1.1.0 (2026-10-13): renamed **Mausam ka Mahaul**; adds the outlook, roads (estimate + optional live), India right now, tips, snacks and saved places; the ticker is gone. At https://rahultarigoppula.github.io/barometer-weather-bartender/ (decisions: `docs/IMPLEMENTATION-PROMPT.md` §0, C13–C39).
 
 ---
 

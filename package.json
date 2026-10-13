@@ -1,8 +1,8 @@
 {
   "name": "barometer",
   "private": true,
-  "version": "1.0.0",
-  "description": "Barometer: a 3D planet that opens on India. Weather first, then the drink it calls for, at your budget.",
+  "version": "1.1.0",
+  "description": "Mausam ka Mahaul: a 3D planet that opens on India. The weather, the air, the roads, then the drink it calls for, at your budget.",
   "license": "MIT",
   "type": "module",
   "engines": {

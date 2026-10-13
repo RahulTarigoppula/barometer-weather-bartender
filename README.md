@@ -1,35 +1,60 @@
-# Barometer
+# Mausam ka Mahaul
 
-*Weather first. Then a drink.*
+*The vibe of the weather — read the sky, beat the jam, pour the right drink.*
 
 **Live:** https://rahultarigoppula.github.io/barometer-weather-bartender/
 
-A big 3D planet in deep space that opens on **India**. Spin it, tap any place — or pick an Indian city — and Barometer shows the weather there *right now*: temperature and feels-like, humidity and dew point, wind and gusts, air quality, UV, rain chance, pressure, sunrise and sunset. Then a judgmental bartender recommends the one drink that weather calls for, **at your budget**: Extreme Cheap, Budget, Mid-range or High-end, with the pour, the place and a ₹ range per glass.
+## The story — and why
 
-Aggressively iced Mojito for Mumbai's soup air. Hot Buttered Rum, no arguments, for a Yakutsk January. A Dark 'n' Stormy if you tapped the sea. Flip to **Barista** for the alcohol-free twin — Nimbu Soda, Jaljeera Cooler, Aam Panna Slush, Masala Chai, Filter Coffee Tonic.
+In India nobody steps out without asking *"mausam kaisa hai?"* — how's the weather? The answer decides the day: whether the monsoon will flood the underpass, whether Delhi's air needs a mask, whether the evening commute will crawl, and whether the night ends with cutting chai and pakoras or something stronger on a rooftop.
+
+**Mausam** is the weather. **Mahaul** is the mood it creates — the feeling in the air, on the roads and at the table. Weather apps give you numbers; this one reads the *mahaul*: the sky and the air first, then the roads, then the drink and the snack that weather calls for, at the budget you actually have.
+
+It began as **Barometer**, a joke about a judgmental bartender who reads the weather. It grew into the thing you open before leaving home — so it got an Indian name. (The repository keeps its original name so links never break.)
+
+## What it does
+
+A big 3D planet in deep space opens on **India**. Spin it, tap any place — or pick an Indian city — and you get, in this order:
+
+1. **The weather, right now** — temperature and feels-like, comfort scale, humidity, wind, air quality (EU + US AQI), UV, rain chance, pressure, sunrise and sunset — plus **today's tips** (heat, hydrate, mask, umbrella, sunscreen, layers, fog).
+2. **The outlook** — a 24-hour temperature and rain chart, the next 7 days as range bars, and a daylight arc.
+3. **The bartender** — the one drink that weather calls for, a snack on the side (rain means pakoras), and **four budgets**: Extreme Cheap, Budget, Mid-range, High-end, with the pour, the place and a ₹ range per glass. Flip to **Barista** for the alcohol-free twin.
+4. **The roads** — how busy the city is likely to be right now, minutes for a 10 km trip, and when it eases over the next 12 hours.
+5. **India right now** — twelve cities at a glance (temperature, sky, US AQI; hottest, coolest, worst air), also shown live on the globe labels.
+
+Star a place to keep it one tap away under the globe.
+
+### About traffic — honestly
+
+There is no free, key-less, open live-traffic API that a static web app can call. So the Roads card is two layers:
+
+- **Estimate (default, no key, no network):** a transparent model of Indian rush hours (weekday morning and evening peaks, lighter weekends), relative city severity for 12 metros, and the weather that really slows Indian roads — rain, downpours, storms, fog. It is always labelled *Estimate*.
+- **Live (optional):** paste your own free [TomTom](https://developer.tomtom.com/) key in Settings and the card shows live speed vs free-flow on the nearest road. The key stays on your device and is sent only to `api.tomtom.com`.
+
+### Principles
 
 - **India first.** The camera's home is India; India's outline (Natural Earth, India point of view) is drawn in saffron with its major cities lit and tappable; Indian search results come first; the app opens on New Delhi (or the last place you looked at); prices are in rupees with Indian-market labels.
-- **Weather first.** The weather card leads; the bartender follows.
-- **Free, private, offline-capable.** No accounts, no analytics, no cookies, no server, no API key. The only network calls go to [Open-Meteo](https://open-meteo.com/). Reverse geocoding is fully offline (Natural Earth). History lives in IndexedDB on your device.
-- **Deterministic.** The same place, local hour and menu always give the same drink and the same line — a seeded engine with 9 golden fixtures and ~270 unit tests behind it.
+- **Free, private, offline-capable.** No accounts, no analytics, no cookies, no server. Weather and air come from [Open-Meteo](https://open-meteo.com/). Reverse geocoding is fully offline (Natural Earth). History and saved places live on your device.
+- **Deterministic.** The same place, local hour and menu always give the same drink and the same line — a seeded engine with 9 golden fixtures and ~290 unit tests behind it.
 
 ## What's inside
 
 | Feature | Where |
 |---|---|
-| A planet in space: WebGL Earth with a real day/night terminator (NASA Blue Marble by day, Black Marble city lights by night), a soft blue atmosphere, a starfield, India's outline and city lights, tap to pick, fly-to, zoom, "back to India" | `src/features/globe/globeThree.ts` |
-| Canvas globe — first paint, no-WebGL and context-lost path; still drag/tap/keyboard, also opens on India | `src/features/globe/fallbackGlobe.ts` |
-| Weather card: place, local time, big temperature, condition, comfort scale, eight metric tiles, ambient rain/snow/fog/frost/lightning | `src/features/weather/` |
-| Bartender card: the pick, the line, glassware, second opinion, alcohol-free twin, recipe, share card | `src/features/drink/` |
-| Budget tiers: Extreme Cheap · Budget · Mid-range · High-end — pour (Indian-market labels), where to drink it, ₹ range per glass (≈ $ for international places), a tip | `src/engine/budget.ts` |
-| The engine: comfort formulas, 34 weather/time/place tags, driving-tag priority, weighted drink scoring, seeded pick, intensity stamps, day-parts across time zones | `src/engine/` (pure, no I/O) |
-| Offline "where is this": spherical point-in-polygon over Natural Earth countries + marine polygons, k-d tree nearest town | `src/engine/geocode.ts` |
-| The bartender's voice: a seeded Tracery grammar, ≥ 8 variants per tag, 349 distinct Mumbai jabs per 1,000 pours | `src/wit/` |
+| A planet in space: WebGL Earth with a real day/night terminator (NASA Blue Marble by day, Black Marble city lights by night), atmosphere, starfield, India's outline and city lights with live temperatures, tap to pick, fly-to, zoom, "back to India" | `src/features/globe/globeThree.ts` |
+| Canvas globe — first paint, no-WebGL and context-lost path | `src/features/globe/fallbackGlobe.ts` |
+| Weather card, today's tips, save-star; the outlook (24 h chart, 7 days, daylight) | `src/features/weather/`, `src/engine/outlook.ts` |
+| Bartender card: the pick, the line, glassware, snack pairing, second opinion, alcohol-free twin, recipe, share card | `src/features/drink/` |
+| Budget tiers with Indian-market pours, places and ₹ ranges (≈ $ abroad) | `src/engine/budget.ts` |
+| Roads: rush-hour + weather estimate, optional TomTom live flow | `src/engine/traffic.ts`, `src/api/tomtom.ts`, `src/features/roads/` |
+| India right now: 12 cities in two batched requests, cached 15 min | `src/api/india.ts`, `src/features/india/` |
+| The engine: comfort formulas, 34 weather/time/place tags, weighted drink scoring, seeded pick, intensity stamps, day-parts across time zones | `src/engine/` (pure, no I/O) |
+| Offline "where is this": spherical point-in-polygon over Natural Earth + k-d tree nearest town | `src/engine/geocode.ts` |
+| The bartender's voice: a seeded Tracery grammar, ≥ 8 variants per tag | `src/wit/` |
 | 40 drinks (20 cocktails + 20 alcohol-free twins, several Indian), nine glassware shapes | `src/data/bar-menu.json` |
-| India-first search (Open-Meteo geocoding, Indian matches first), "Near me" resolved offline | `src/features/search/`, `src/api/openMeteo.ts` |
-| History (IndexedDB, re-show without a request, JSON export/import), Settings (budget, units, menu, sound, haptics, motion, gentler bartender) | `src/features/tab/`, `src/features/office/` |
-| World-clock ticker ("LAST ORDERS IN LISBON · 23:58"), 1080×1350 share card | `src/features/shell/`, `src/features/register/` |
-| Sound synthesised live with Web Audio; PWA (installable, offline shell + geo data precached); Capacitor Android shell | `src/audio/`, `vite.config.ts`, `capacitor.config.ts` |
+| India-first search, "Near me" resolved offline | `src/features/search/`, `src/api/openMeteo.ts` |
+| History (IndexedDB, JSON export/import), Settings (budget, units, menu, live-roads key, saved places, sound, haptics, motion) | `src/features/tab/`, `src/features/office/` |
+| 1080×1350 share card; sound synthesised with Web Audio; PWA; Capacitor Android shell | `src/features/register/`, `src/audio/`, `vite.config.ts` |
 
 Reduced motion is honoured (OS setting or the Settings lever); every control is keyboard reachable with a visible focus ring; the globe takes arrows, Enter, +/− and H (home to India).
 
@@ -39,7 +64,7 @@ Node ≥ 22.12.
 
 ```bash
 npm ci
-npm run dev            # http://localhost:5173
+npm run dev            # Vite dev server
 npm test               # Vitest (engine, wit, API, cache, Tab)
 npm run build          # type-check + production build into dist/
 npm run test:e2e       # Playwright against `vite preview` (Open-Meteo always mocked)
@@ -71,7 +96,7 @@ npm run test:e2e       # Playwright against `vite preview` (Open-Meteo always mo
 
 ## Privacy
 
-No analytics, telemetry, crash reporting, accounts or cookies, in any build. On open, the app fetches the weather for New Delhi (or the last place you looked at). The coordinates you tap are sent only to Open-Meteo (required to get weather), rounded to 0.01°; search terms go to Open-Meteo's geocoder. "Where am I" asks for your location only when tapped, and resolves it offline. A Content-Security-Policy restricts the page to its own origin plus the four Open-Meteo hosts. Weather is cached for 15 minutes per 0.25° cell, so repeat taps make no request at all.
+No analytics, telemetry, crash reporting, accounts or cookies, in any build. On open, the app fetches the weather for New Delhi (or the last place you looked at) and one batched reading for twelve Indian cities. The coordinates you tap are sent only to Open-Meteo (required to get weather), rounded to 0.01°; search terms go to Open-Meteo's geocoder. "Where am I" asks for your location only when tapped, and resolves it offline. If you add a TomTom key, the coordinates of the place you are viewing go to TomTom for the live road speed — nothing else does. A Content-Security-Policy restricts the page to its own origin, the four Open-Meteo hosts and api.tomtom.com. Weather is cached for 15 minutes per 0.25° cell, so repeat taps make no request at all.
 
 Open-Meteo's free tier is for non-commercial use; this project has no ads, sponsorships or store listing, and never will.
 

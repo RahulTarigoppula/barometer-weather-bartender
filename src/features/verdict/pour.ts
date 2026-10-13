@@ -101,6 +101,8 @@ export async function pour(latIn: number, lngIn: number): Promise<void> {
       lastDrinkId: useBar.getState().lastDrinkId,
     });
     if (weather.stale) v.stale = true;
+    const { hours, days } = weather.snapshot;
+    if (hours?.length || days?.length) v.forecast = { hours: hours ?? [], days: days ?? [] };
     present(v, weather.stale ? 'stale' : null, false);
     upgradeCoastlines();
     try {

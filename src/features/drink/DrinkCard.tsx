@@ -6,6 +6,7 @@ import { DRINKS, GRAMMAR } from '../../data/menu';
 import { budgetPlan, fmtDollars, fmtRupees, TIER_LABEL, TIERS, type Tier } from '../../engine/budget';
 import { served } from '../../engine/index';
 import { twinOf } from '../../engine/menu';
+import { snackFor } from '../../engine/outlook';
 import type { Drink, Verdict } from '../../engine/types';
 import { haptic } from '../../platform/haptics';
 import { useSettings } from '../../state/settings';
@@ -117,6 +118,7 @@ function Pick({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }): R
   );
   const twin = twinOf(DRINKS, s.drink, s.drink.alcoholic ? 'barista' : 'bar');
   const india = v.place.country?.iso2 === 'IN';
+  const snack = snackFor(v.tags, s.drink);
 
   const second = (): void => {
     patch({ opinion: (opinion + 1) % (v.runnersUp.length + 1) });
@@ -156,6 +158,10 @@ function Pick({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }): R
       </div>
       <p className="drink__line">
         <Loud text={lines.drink} /> {lines.serve} <span className="drink__closer">{lines.closer}</span>
+      </p>
+      <p className="snack">
+        <span className="snack__label">On the side</span> <b>{snack.name}</b>{' '}
+        <span className="snack__note">{snack.note}</span>
       </p>
       <Budget drink={s.drink} india={india} />
       <div className="row drink__actions">

@@ -1,8 +1,9 @@
 import { Home, Minus, Plus } from 'lucide-react';
 import { type KeyboardEvent, type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { unlockAudio } from '../../audio/sfx';
+import { fmtTempShort } from '../../engine/units';
 import { haptic } from '../../platform/haptics';
-import { reducedMotion } from '../../state/settings';
+import { reducedMotion, useSettings } from '../../state/settings';
 import { useBar } from '../../state/store';
 import { pour } from '../verdict/pour';
 import type { GlobeCallbacks, GlobeController } from './controller';
@@ -32,6 +33,8 @@ export function GlobeStage(): ReactElement {
   const status = useBar((s) => s.globe);
   const pin = useBar((s) => s.pin);
   const patch = useBar((s) => s.patch);
+  const cityTemps = useBar((s) => s.cityTemps);
+  const tempUnit = useSettings((s) => s.units.temp);
   const [seat, setSeat] = useState(0);
 
   const callbacks = useCallback(
@@ -108,6 +111,14 @@ export function GlobeStage(): ReactElement {
       if (pin) g?.flyTo(pin.lat, pin.lng);
     }
   }, [pin]);
+
+  // Live temperatures beside the city labels (re-applied when the WebGL planet takes over).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `status` flips when a new globe mounts
+  useEffect(() => {
+    const out: Record<string, string> = {};
+    for (const [name, c] of Object.entries(cityTemps)) out[name] = fmtTempShort(c, tempUnit);
+    for (const g of [fallback.current, webgl.current]) g?.setCityTemps?.(out);
+  }, [cityTemps, tempUnit, status]);
 
   // Pause the render loop when the tab is hidden.
   useEffect(() => {

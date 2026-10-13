@@ -93,10 +93,10 @@ export async function renderShareCard({ v, drink, stamp, jab, plan, dots, units,
   ctx.textAlign = 'left';
   ctx.fillStyle = C.saffron;
   ctx.font = `700 30px ${FONT}`;
-  ctx.fillText('barometer', x, 100);
+  ctx.fillText('mausam ka mahaul', x, 100);
   ctx.fillStyle = C.muted;
   ctx.font = `400 22px ${MONO}`;
-  ctx.fillText('weather first · then a drink', x + 190, 100);
+  ctx.fillText('the vibe of the weather', x + 300, 100);
 
   let y = 190;
   ctx.fillStyle = C.ink;
@@ -202,7 +202,7 @@ export async function renderShareCard({ v, drink, stamp, jab, plan, dots, units,
 }
 
 export const cardFilename = (v: Verdict): string =>
-  `barometer-${plain(v.place.short)
+  `mausam-${plain(v.place.short)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')}-${v.features.localDate}.png`;

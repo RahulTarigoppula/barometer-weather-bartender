@@ -4,7 +4,7 @@ import { type BarDB, db } from '../../state/db';
 
 export class WrongTabError extends Error {
   constructor(reason: string) {
-    super(`That is not a Globe Bar tab: ${reason}`);
+    super(`That is not a Mausam ka Mahaul history file: ${reason}`);
     this.name = 'WrongTabError';
   }
 }

@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.rahul.barometer', // NEVER changes after the first install
-  appName: 'The Globe Bar',
+  appName: 'Mausam ka Mahaul',
   webDir: 'dist',
   android: {
     webContentsDebuggingEnabled: process.env.CAP_WEBVIEW_DEBUG === '1', // release builds ship false

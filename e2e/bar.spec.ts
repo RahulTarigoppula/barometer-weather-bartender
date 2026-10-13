@@ -167,6 +167,39 @@ test('search puts Indian places first', async ({ page }) => {
   await expect(weather(page).locator('.weather__place')).toHaveText('Mumbai');
 });
 
+test('the outlook, the roads and India right now', async ({ page }) => {
+  const seen = await routeWeather(page);
+  await page.goto('./#/v/19.07,72.88');
+  await expect(drink(page)).toHaveText('Mojito');
+  const forecast = page.getByRole('region', { name: 'Forecast' });
+  await expect(forecast.getByRole('region', { name: 'Next 24 hours' })).toContainText('Now');
+  await expect(forecast.getByRole('region', { name: 'Next 7 days' }).locator('.day')).toHaveCount(7);
+  await expect(page.locator('.snack')).toContainText('On the side');
+  const roads = page.getByRole('region', { name: 'Roads' });
+  await expect(roads).toContainText('Mumbai roads');
+  await expect(roads).toContainText('Estimate');
+  await expect(roads.getByRole('listitem')).toHaveCount(12);
+  const india = page.getByRole('region', { name: 'India right now' });
+  await expect(india.locator('.city')).toHaveCount(12);
+  expect(seen.india).toHaveLength(2); // one forecast + one air-quality call for twelve cities
+  await india.locator('.city', { hasText: 'Bengaluru' }).click();
+  await expect(weather(page).locator('.weather__place')).toHaveText('Bengaluru');
+  expect(seen.foreign).toHaveLength(0);
+});
+
+test('a starred place shows up first under the globe', async ({ page }) => {
+  await routeWeather(page);
+  await page.goto('./#/v/19.07,72.88');
+  await page.getByRole('button', { name: 'Save Mumbai' }).click();
+  const yours = page.getByRole('group', { name: 'Your places' });
+  await expect(yours.getByRole('button', { name: 'Mumbai' })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Remove Mumbai from saved places' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+});
+
 test('the CSP blocks any other host', async ({ page }) => {
   await routeWeather(page);
   await page.goto('./#/v/19.07,72.88');

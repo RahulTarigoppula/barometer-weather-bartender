@@ -34,8 +34,9 @@ describe('URL builders', () => {
       'https://api.open-meteo.com/v1/forecast?latitude=19.07&longitude=72.88' +
         '&current=temperature_2m,relative_humidity_2m,apparent_temperature,dew_point_2m,precipitation,rain,showers,' +
         'snowfall,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_gusts_10m,wind_direction_10m,is_day' +
-        '&hourly=uv_index,temperature_2m,precipitation_probability' +
-        '&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1',
+        '&hourly=uv_index,temperature_2m,precipitation_probability,weather_code,is_day' +
+        '&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max' +
+        '&timezone=auto&forecast_days=7',
     );
     expect(airUrl(15, 65)).toBe(
       'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=15&longitude=65&current=european_aqi,us_aqi,pm2_5,pm10,ozone,uv_index,dust&timezone=auto',

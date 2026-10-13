@@ -23,19 +23,28 @@ const CURRENT = [
   'wind_direction_10m',
   'is_day',
 ];
-const HOURLY = ['uv_index', 'temperature_2m', 'precipitation_probability'];
-const DAILY = ['sunrise', 'sunset', 'uv_index_max', 'temperature_2m_max', 'temperature_2m_min'];
+const HOURLY = ['uv_index', 'temperature_2m', 'precipitation_probability', 'weather_code', 'is_day'];
+const DAILY = [
+  'sunrise',
+  'sunset',
+  'uv_index_max',
+  'temperature_2m_max',
+  'temperature_2m_min',
+  'weather_code',
+  'precipitation_probability_max',
+];
+export const FORECAST_DAYS = 7;
 
 const c4 = (n: number): string => String(Math.round(n * 100) / 100);
 
-/** Requests with more than ~10 variables count as fractional extra calls; keep the forecast at ≈ 2. */
+/** One request: now, the next hours and a week ahead. Kept under 30 variables (Open-Meteo weights big requests). */
 export function forecastUrl(lat: number, lng: number): string {
   const vars = CURRENT.length + HOURLY.length + DAILY.length;
-  if (vars > 23) throw new Error(`forecast request has ${vars} variables (limit 23)`);
+  if (vars > 30) throw new Error(`forecast request has ${vars} variables (limit 30)`);
   return (
     `${FORECAST_HOST}/v1/forecast?latitude=${c4(lat)}&longitude=${c4(lng)}` +
     `&current=${CURRENT.join(',')}&hourly=${HOURLY.join(',')}&daily=${DAILY.join(',')}` +
-    '&timezone=auto&forecast_days=1'
+    `&timezone=auto&forecast_days=${FORECAST_DAYS}`
   );
 }
 export const airUrl = (lat: number, lng: number): string =>
@@ -131,6 +140,30 @@ export function normalise(
       tMinC: numOr(first('temperature_2m_min'), temp),
     },
   };
+  // The forecast: every hour from now (the strip takes 24) and up to a week of days.
+  const hours = hTimes
+    .map((t, i) => ({
+      time: t,
+      tempC: num(arr(hourly.temperature_2m)[i]),
+      precipProb: num(arr(hourly.precipitation_probability)[i]) ?? 0,
+      wmo: num(arr(hourly.weather_code)[i]) ?? -1,
+      isDay: arr(hourly.is_day)[i] === 1 || arr(hourly.is_day)[i] === true,
+    }))
+    .filter((h, i): h is typeof h & { tempC: number } => h.tempC !== null && (hourIdx < 0 || i >= hourIdx));
+  if (hours.length > 1) snap.hours = hours.slice(0, 25);
+  const days = arr(daily.time)
+    .map((d, i) => ({
+      date: str(d),
+      wmo: num(arr(daily.weather_code)[i]) ?? -1,
+      tMaxC: num(arr(daily.temperature_2m_max)[i]),
+      tMinC: num(arr(daily.temperature_2m_min)[i]),
+      precipProbMax: num(arr(daily.precipitation_probability_max)[i]) ?? 0,
+      uvMax: num(arr(daily.uv_index_max)[i]) ?? 0,
+    }))
+    .filter(
+      (d): d is typeof d & { tMaxC: number; tMinC: number } => d.tMaxC !== null && d.tMinC !== null && d.date !== '',
+    );
+  if (days.length > 1) snap.days = days;
   if (isRec(air) && isRec(air.current)) {
     const a = air.current;
     snap.air = {

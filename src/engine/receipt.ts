@@ -50,7 +50,7 @@ export function receiptLines(v: Verdict, drink: Drink, units: Units, stampText: 
   const f = v.features;
   const t = (c: number): string => fmtTemp(c, units.temp);
   const lines: ReceiptLine[] = [
-    { kind: 'head', text: 'THE GLOBE BAR' },
+    { kind: 'head', text: 'MAUSAM KA MAHAUL' },
     ...wrap(v.place.short).map((text): ReceiptLine => ({ kind: 'text', text })),
     { kind: 'text', text: fmtCoords(v.lat, v.lng) },
     { kind: 'text', text: `${fmtDate(f.localDate)} · ${v.localTime} LOCAL` },

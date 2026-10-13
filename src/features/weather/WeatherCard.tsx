@@ -1,18 +1,8 @@
 import {
-  Cloud,
-  CloudDrizzle,
-  CloudFog,
-  CloudHail,
-  CloudLightning,
-  CloudMoon,
-  CloudRain,
-  CloudRainWind,
-  CloudSnow,
-  CloudSun,
   Droplets,
   Gauge,
   type LucideIcon,
-  Moon,
+  Star,
   Sun,
   Sunrise,
   Sunset,
@@ -24,47 +14,17 @@ import { type ReactElement, useEffect, useState } from 'react';
 import { useReduced } from '../../app/useReduced';
 import { euAqiBand, uvBand } from '../../engine/comfort';
 import { fmtDuration } from '../../engine/daypart';
+import { tipsFor } from '../../engine/outlook';
 import { fmtDate } from '../../engine/receipt';
 import { RING } from '../../engine/tags';
 import type { Verdict } from '../../engine/types';
 import { fmtTemp, fmtTempShort, windLabel, windValue } from '../../engine/units';
 import { LAYERS, windowWeather } from '../../engine/window';
-import { wmoKind, wmoLabel } from '../../engine/wmo';
-import { useSettings } from '../../state/settings';
+import { wmoLabel } from '../../engine/wmo';
+import { samePlace, useSettings } from '../../state/settings';
 import { type ErrorKind, useBar } from '../../state/store';
 import { backToBar, pour } from '../verdict/pour';
-
-function iconFor(wmo: number, isDay: boolean): LucideIcon {
-  switch (wmoKind(wmo)) {
-    case 'clear':
-      return isDay ? Sun : Moon;
-    case 'cloudy':
-      return wmo === 3 ? Cloud : isDay ? CloudSun : CloudMoon;
-    case 'fog':
-      return CloudFog;
-    case 'drizzle':
-    case 'freezing-drizzle':
-      return CloudDrizzle;
-    case 'rain':
-    case 'showers':
-    case 'freezing-rain':
-      return CloudRain;
-    case 'downpour':
-      return CloudRainWind;
-    case 'snow':
-    case 'heavy-snow':
-    case 'snow-grains':
-    case 'snow-showers':
-    case 'heavy-snow-showers':
-      return CloudSnow;
-    case 'storm':
-      return CloudLightning;
-    case 'hail':
-      return CloudHail;
-    default:
-      return Cloud;
-  }
-}
+import { iconFor } from './icons';
 
 /** "06:22" from the local clock plus a minute offset. */
 function clockPlus(localTime: string, minutes: number): string {
@@ -155,6 +115,23 @@ function Ambient({ v }: { v: Verdict }): ReactElement {
   );
 }
 
+function SaveStar({ name, lat, lng }: { name: string; lat: number; lng: number }): ReactElement {
+  const saved = useSettings((s) => s.saved.some((p) => samePlace(p, { lat, lng })));
+  const toggle = useSettings((s) => s.toggleSaved);
+  return (
+    <button
+      type="button"
+      className="icon-btn star"
+      aria-pressed={saved}
+      aria-label={saved ? `Remove ${name} from saved places` : `Save ${name}`}
+      title={saved ? 'Saved' : 'Save this place'}
+      onClick={() => toggle({ name, lat, lng })}
+    >
+      <Star size={20} strokeWidth={1.75} aria-hidden="true" fill={saved ? 'currentColor' : 'none'} />
+    </button>
+  );
+}
+
 function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }): ReactElement {
   const units = useSettings((s) => s.units);
   const f = v.features;
@@ -173,6 +150,11 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
           ? 'Polar day or night'
           : '';
   const country = v.place.country?.name ?? v.place.water?.name ?? '';
+  const name =
+    v.place.nearestCity?.distanceKm !== undefined && v.place.nearestCity.distanceKm < 25
+      ? v.place.nearestCity.name
+      : v.place.label;
+  const tips = tipsFor(f, v.forecast?.hours);
   return (
     <>
       <Ambient v={v} />
@@ -181,11 +163,10 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
           {v.place.country?.iso2 === 'IN' ? 'India · ' : ''}
           {f.isDay ? 'Daytime' : 'Night'} · {v.localTime} local · {fmtDate(f.localDate)}
         </p>
-        <h1 className="weather__place">
-          {v.place.nearestCity?.distanceKm !== undefined && v.place.nearestCity.distanceKm < 25
-            ? v.place.nearestCity.name
-            : v.place.label}
-        </h1>
+        <div className="weather__title">
+          <h1 className="weather__place">{name}</h1>
+          <SaveStar name={name} lat={v.lat} lng={v.lng} />
+        </div>
         {country && <p className="weather__country">{v.place.label === country ? '' : country}</p>}
         {note === 'stale' && <p className="chip chip--warn">Offline — showing the last reading for this spot</p>}
       </header>
@@ -200,6 +181,15 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
         </div>
       </div>
       <Comfort v={v} />
+      {tips.length > 0 && (
+        <ul className="tips" aria-label="Today's tips">
+          {tips.map((tip) => (
+            <li key={tip.id} className="tip" data-tone={tip.tone}>
+              <b>{tip.label}</b> <span>{tip.detail}</span>
+            </li>
+          ))}
+        </ul>
+      )}
       <div className="tiles">
         <Tile icon={Droplets} label="Humidity" value={`${Math.round(f.rh)}%`} note={`Dew point ${t(f.dewPointC)}`} />
         <Tile

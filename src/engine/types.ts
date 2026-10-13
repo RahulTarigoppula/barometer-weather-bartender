@@ -51,6 +51,27 @@ export interface WeatherSnapshot {
     uv: number | null;
   };
   marine?: { waveHeightM: number | null; sstC: number | null; windWaveM: number | null };
+  /** Hours from now (local ISO times), for the 24-hour strip. */
+  hours?: HourPoint[];
+  /** Up to seven days, today first. */
+  days?: DayPoint[];
+}
+
+export interface HourPoint {
+  time: string;
+  tempC: number;
+  precipProb: number;
+  wmo: number;
+  isDay: boolean;
+}
+
+export interface DayPoint {
+  date: string;
+  wmo: number;
+  tMaxC: number;
+  tMinC: number;
+  precipProbMax: number;
+  uvMax: number;
 }
 
 // ───────────────────────── engine ─────────────────────────
@@ -241,6 +262,8 @@ export interface Verdict {
   seed: string;
   /** Which weather sources fed this verdict, for the credit line. */
   sources: { air: boolean; marine: boolean };
+  /** The next hours and days, kept with the verdict so History re-prints the outlook too. */
+  forecast?: { hours: HourPoint[]; days: DayPoint[] };
 }
 
 export interface Grammar {
@@ -251,11 +274,4 @@ export interface WeatherCacheEntry {
   key: string;
   fetchedAt: number;
   snapshot: WeatherSnapshot;
-}
-
-export interface TickerCity {
-  name: string;
-  tz: string;
-  lat: number;
-  lng: number;
 }

@@ -23,7 +23,10 @@ export const HOUSE_TIME = new Date('2026-09-05T19:15:00Z');
 export type Mode = 'fixtures' | '429' | 'network';
 
 export interface Routed {
+  /** Single-place weather calls (the ones a tap costs). */
   meteo: string[];
+  /** The batched "India right now" calls. */
+  india: string[];
   foreign: string[];
 }
 
@@ -44,7 +47,7 @@ function fixtureFor(url: URL): string {
 
 /** Route the four Open-Meteo hosts to fixture JSON; abort (and record) anything else that leaves the page. */
 export async function routeWeather(page: Page, mode: Mode = 'fixtures', webgl = false): Promise<Routed> {
-  const seen: Routed = { meteo: [], foreign: [] };
+  const seen: Routed = { meteo: [], india: [], foreign: [] };
   if (!webgl) {
     // Headless CI renders WebGL in software, which starves the main thread; the engraved canvas globe
     // (the real no-WebGL path) is what these flows exercise.
@@ -86,6 +89,16 @@ export async function routeWeather(page: Page, mode: Mode = 'fixtures', webgl = 
           results: [{ name: 'Mumbai', country: 'India', admin1: 'Maharashtra', latitude: 19.07, longitude: 72.88 }],
         }),
       });
+    }
+    const lats = url.searchParams.get('latitude') ?? '';
+    if (lats.includes(',')) {
+      // "India right now": one batched call per host; answer every city with the Mumbai reading.
+      seen.meteo.pop();
+      seen.india.push(url.href);
+      const fx = read('mumbai');
+      const one = url.hostname.startsWith('air-quality') ? fx.airQuality : fx.forecast;
+      const body = lats.split(',').map(() => one);
+      return route.fulfill({ status: 200, contentType: 'application/json', headers, body: JSON.stringify(body) });
     }
     const fx = read(fixtureFor(url));
     const body = url.hostname.startsWith('air-quality')

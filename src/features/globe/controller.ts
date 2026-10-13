@@ -14,6 +14,8 @@ export interface GlobeController {
   /** Back to the India view. */
   home(): void;
   center(): { lat: number; lng: number };
+  /** Live temperatures beside the Indian city labels ("31°"), by city name. Optional. */
+  setCityTemps?(temps: Record<string, string>): void;
   pause(paused: boolean): void;
   dispose(): void;
 }

@@ -250,14 +250,14 @@ export function createThreeGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeCont
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = `globe-city${c.capital ? ' globe-city--capital' : ''}${i < 6 ? ' globe-city--label' : ''}${c.left ? ' globe-city--left' : ''}`;
-    btn.innerHTML = `<span class="globe-city__dot"></span><span class="globe-city__name">${c.name}</span>`;
+    btn.innerHTML = `<span class="globe-city__dot"></span><span class="globe-city__name">${c.name}<span class="globe-city__temp num"></span></span>`;
     btn.setAttribute('aria-label', `Weather in ${c.name}`);
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       cb.onPick(c.lat, c.lng);
     });
     cityLayer.appendChild(btn);
-    return { el: btn, pos: toVec(c.lat, c.lng, R * 1.004) };
+    return { el: btn, name: c.name, pos: toVec(c.lat, c.lng, R * 1.004) };
   });
 
   // Textures: the small first-paint JPEG, then Blue Marble + Black Marble when the device can take them.
@@ -486,6 +486,14 @@ export function createThreeGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeCont
       flyTo(HOME_VIEW.lat, HOME_VIEW.lng, cb.reduced() ? 0 : 1200, home);
     },
     center: () => toLatLng(camera.position),
+    setCityTemps(temps) {
+      for (const c of cities) {
+        const t = c.el.querySelector('.globe-city__temp');
+        const v = temps[c.name];
+        if (t) t.textContent = v ? ` ${v}` : '';
+        c.el.setAttribute('aria-label', v ? `Weather in ${c.name}, ${v} now` : `Weather in ${c.name}`);
+      }
+    },
     pause(p) {
       paused = p;
     },

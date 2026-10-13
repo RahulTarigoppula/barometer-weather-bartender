@@ -1,0 +1,434 @@
+/* ═══ Mausam ka Mahaul — the outlook, the roads, India right now ═══ */
+
+/* place title + save star */
+.weather__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.star {
+  flex: 0 0 auto;
+  color: var(--ink-muted);
+}
+.star[aria-pressed="true"] {
+  color: #ffc94d;
+  border-color: rgba(255, 201, 77, 0.5);
+}
+
+/* today's tips */
+.tips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+.tip {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--sky);
+  font-size: var(--text-sm);
+  flex: 1 1 180px;
+}
+.tip b {
+  font-weight: 700;
+}
+.tip span {
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+}
+.tip[data-tone="warn"] {
+  border-left-color: var(--amber);
+}
+.tip[data-tone="alert"] {
+  border-left-color: var(--red);
+  background: rgba(255, 107, 107, 0.07);
+}
+
+/* forecast card */
+.forecast .h3,
+.roads .h3 {
+  margin: 0 0 var(--space-2);
+}
+.fc + .fc,
+.forecast__row {
+  margin-top: var(--space-4);
+}
+.forecast__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+.forecast {
+  container-type: inline-size;
+}
+@container (min-width: 620px) {
+  .forecast__row {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  }
+  .forecast__row .fc + .fc {
+    margin-top: 0;
+  }
+}
+.hours {
+  position: relative;
+}
+.hours__chart {
+  display: block;
+  width: 100%;
+  height: 72px;
+}
+.hours__cols {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 2px;
+  margin-top: 4px;
+}
+.hours__col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--ink-muted);
+}
+.hours__t {
+  color: var(--ink);
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+.hours__rain,
+.day__rain {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+.hours__rain[data-wet],
+.day__rain[data-wet] {
+  color: var(--sky);
+}
+.hours__h {
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+.days {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.day {
+  display: grid;
+  grid-template-columns: 3.6em 20px 3em 2.8em 1fr 2.8em;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+  font-size: var(--text-sm);
+}
+.day:first-child {
+  border-top: 0;
+}
+.day__name {
+  font-weight: 600;
+}
+.day__lo {
+  color: var(--ink-muted);
+  text-align: right;
+}
+.day__hi {
+  font-weight: 700;
+}
+.day__bar {
+  position: relative;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--panel-3);
+}
+.day__bar span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--sky), var(--amber), var(--saffron));
+  min-width: 6px;
+}
+.sun {
+  display: block;
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto;
+}
+.sun__dot {
+  filter: drop-shadow(0 0 8px rgba(255, 201, 77, 0.8));
+}
+.sun__text {
+  margin: var(--space-2) 0 0;
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+/* snack pairing */
+.snack {
+  margin: var(--space-3) 0 0;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(61, 220, 151, 0.06);
+  border: 1px solid rgba(61, 220, 151, 0.2);
+  font-size: var(--text-sm);
+}
+.snack__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+.snack__note {
+  color: var(--ink-muted);
+}
+
+/* roads */
+.roads__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.roads__head .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+.badge--live {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(61, 220, 151, 0.16);
+  color: var(--green);
+}
+.roads__now {
+  margin-top: var(--space-3);
+}
+.roads__level {
+  margin: 0;
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+[data-level="light"] {
+  --lvl: var(--green);
+}
+[data-level="moderate"] {
+  --lvl: var(--amber);
+}
+[data-level="heavy"] {
+  --lvl: var(--saffron);
+}
+[data-level="severe"] {
+  --lvl: var(--red);
+}
+.roads__level {
+  color: var(--lvl);
+}
+.roads__meter {
+  height: 8px;
+  margin: var(--space-2) 0;
+  border-radius: var(--radius-full);
+  background: var(--panel-3);
+  overflow: hidden;
+}
+.roads__meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--lvl);
+  transition: width var(--dur-slow) var(--ease-out);
+}
+.roads__trip {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+.muted {
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+.roads__now .chip {
+  margin-top: var(--space-2);
+}
+.roads__advice {
+  margin: var(--space-2) 0 0;
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+.roads__strip {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 4px;
+  height: 84px;
+  margin-top: var(--space-4);
+}
+.roads__hour {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.roads__bar {
+  width: 100%;
+  max-width: 22px;
+  border-radius: 5px 5px 2px 2px;
+  background: var(--lvl);
+  opacity: 0.85;
+}
+.roads__h {
+  font-size: 10px;
+  color: var(--ink-faint);
+}
+
+/* India right now */
+.india__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.city {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "name name"
+    "t icon"
+    "aqi aqi";
+  align-items: center;
+  gap: 2px 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--panel-2);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+.city:hover {
+  border-color: var(--line-strong);
+  background: var(--panel-3);
+}
+.city:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.city__name {
+  grid-area: name;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.city svg {
+  grid-area: icon;
+  color: var(--ink-muted);
+}
+.city__t {
+  grid-area: t;
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+.city__aqi {
+  grid-area: aqi;
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+.city__aqi[data-tone="good"] {
+  color: var(--aqi-good);
+}
+.city__aqi[data-tone="moderate"] {
+  color: var(--aqi-moderate);
+}
+.city__aqi[data-tone="poor"] {
+  color: var(--aqi-poor);
+}
+.city__aqi[data-tone="very-poor"] {
+  color: var(--aqi-very-poor);
+}
+.city__aqi[data-tone="extremely-poor"] {
+  color: var(--aqi-severe);
+}
+.city__badge {
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  background: var(--saffron);
+  color: var(--saffron-ink);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* globe labels: live temperatures */
+.globe-city__temp {
+  color: #ffc58a;
+  font-weight: 700;
+}
+
+/* saved places + settings key input */
+.chips--saved .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-color: rgba(255, 201, 77, 0.4);
+}
+.chips--saved .chip svg {
+  color: #ffc94d;
+}
+.input {
+  flex: 1 1 200px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-strong);
+  background: var(--panel-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-sm);
+}
+.input:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.brand__name {
+  white-space: nowrap;
+}
+.story {
+  margin-bottom: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(255, 153, 51, 0.06);
+  border: 1px solid rgba(255, 153, 51, 0.2);
+}
+.story p {
+  color: var(--ink-muted);
+}

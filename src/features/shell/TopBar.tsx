@@ -39,10 +39,12 @@ export function TopBar(): ReactElement {
   const online = useBar((s) => s.online);
   return (
     <header className="topbar">
-      <a className="brand" href="#/" aria-label="Barometer home">
+      <a className="brand" href="#/" aria-label="Mausam ka Mahaul home">
         <span className="brand__mark" aria-hidden="true" />
-        <span className="brand__name">barometer</span>
-        <span className="brand__tag hide-sm">weather first · then a drink</span>
+        <span className="brand__name">
+          mausam<span className="hide-sm"> ka mahaul</span>
+        </span>
+        <span className="brand__tag hide-sm">the vibe of the weather</span>
       </a>
       <div className="topbar__search">
         <Search />

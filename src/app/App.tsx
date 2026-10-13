@@ -21,6 +21,9 @@ import { useReduced } from './useReduced';
 
 const TabList = lazy(() => import('../features/tab/TabDrawer').then((m) => ({ default: m.TabList })));
 const BackOffice = lazy(() => import('../features/office/BackOffice').then((m) => ({ default: m.BackOffice })));
+const Forecast = lazy(() => import('../features/weather/Forecast').then((m) => ({ default: m.Forecast })));
+const RoadsCard = lazy(() => import('../features/roads/RoadsCard').then((m) => ({ default: m.RoadsCard })));
+const IndiaNow = lazy(() => import('../features/india/IndiaNow').then((m) => ({ default: m.IndiaNow })));
 const About = lazy(() => import('../features/about/About').then((m) => ({ default: m.About })));
 
 const root = document.documentElement;
@@ -156,7 +159,14 @@ export function App(): ReactElement {
               </button>
             )}
             <WeatherCard />
+            <Suspense fallback={null}>
+              <Forecast />
+            </Suspense>
             <DrinkCard />
+            <Suspense fallback={null}>
+              <RoadsCard />
+              <IndiaNow />
+            </Suspense>
             <RecentRounds />
           </main>
         </div>
@@ -169,7 +179,7 @@ export function App(): ReactElement {
         <Drawer open={route.name === 'office'} title="Settings" onClose={close}>
           <BackOffice />
         </Drawer>
-        <Drawer open={route.name === 'about'} title="Credits" onClose={close} wide>
+        <Drawer open={route.name === 'about'} title="Our story & credits" onClose={close} wide>
           <About />
         </Drawer>
       </Suspense>

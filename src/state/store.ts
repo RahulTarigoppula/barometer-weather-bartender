@@ -39,6 +39,8 @@ interface BarState {
   lastDrinkId: string | undefined;
   /** The globe's camera target, so the keyboard can pour at the centre. */
   center: { lat: number; lng: number };
+  /** India right now: Celsius by city name, for the globe labels. */
+  cityTemps: Record<string, number>;
 }
 
 interface BarActions {
@@ -63,6 +65,7 @@ export const useBar = create<BarState & BarActions>()((set) => ({
   restock: null,
   lastDrinkId: undefined,
   center: HOME,
+  cityTemps: {},
   patch: (p) => set(p),
   showToast: (text) => set({ toast: { id: ++toastSeq, text } }),
 }));

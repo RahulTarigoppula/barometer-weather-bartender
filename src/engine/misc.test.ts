@@ -1,12 +1,10 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import cities from '../data/cities-ticker.json';
 import { DRINKS, FIXTURES, judgeFixture } from '../test/helpers';
 import { bucket, cellKey, isFresh, isUsableStale } from './cache';
 import { served } from './index';
 import { lineText, RECEIPT_WIDTH, receiptLines, wrap } from './receipt';
-import { tickerLines } from './ticker';
 import { fmtCoords, fmtTemp, fmtTempShort, fmtWind, METRIC, signed } from './units';
 
 describe('cache keys (C10)', () => {
@@ -69,7 +67,7 @@ describe('receipt', () => {
     const v = judgeFixture('mumbai');
     const s = served(v, DRINKS, 'bar', 0, false);
     const text = receiptLines(v, s.drink, METRIC, s.stamp.text).map(lineText);
-    expect(text).toContain('THE GLOBE BAR');
+    expect(text).toContain('MAUSAM KA MAHAUL');
     expect(text).toContain('MUMBAI, IN');
     expect(text.some((l) => /^AQI \(US\)\s+55$/.test(l))).toBe(true);
     expect(text.some((l) => /^APPARENT\s+31\.5°$/.test(l))).toBe(true);
@@ -103,21 +101,6 @@ describe('served() — barista flip and second opinion without re-scoring', () =
     expect(s.drink.id).toBe(v.runnersUp[0]);
     expect(s.second).toBe(true);
     expect(served(v, DRINKS, 'bar', v.runnersUp.length + 1, false).second).toBe(false);
-  });
-});
-
-describe('register ticker', () => {
-  const RE =
-    /^(LAST ORDERS|FIRST COFFEE) IN [A-Z .'-]+ · \d{2}:\d{2}$|^SUN SETTING OVER [A-Z .'-]+ · \d{2}:\d{2}$|^THE BAR IS OPEN · \d{2}:\d{2} UTC$/;
-  it('every line matches the format, at every hour of a day', () => {
-    for (let h = 0; h < 24; h++) {
-      const lines = tickerLines(new Date(Date.UTC(2026, 8, 5, h, 7)), cities);
-      expect(lines.length).toBeGreaterThan(0);
-      for (const l of lines) expect(l).toMatch(RE);
-    }
-  });
-  it('falls back to the UTC line with nobody in a window', () => {
-    expect(tickerLines(new Date(Date.UTC(2026, 8, 5, 12, 0)), [])).toEqual(['THE BAR IS OPEN · 12:00 UTC']);
   });
 });
 

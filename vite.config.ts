@@ -31,8 +31,8 @@ export default defineConfig({
       registerType: 'autoUpdate', // new builds take over on the next load
       injectRegister: null, // registered by hand, web only
       manifest: {
-        name: 'Barometer — weather first, then a drink',
-        short_name: 'Barometer',
+        name: 'Mausam ka Mahaul — weather, roads and the right drink',
+        short_name: 'Mausam',
         description: 'Live weather on a 3D planet that opens on India, then the drink it calls for — at your budget.',
         id: base,
         start_url: base,

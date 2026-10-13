@@ -1,8 +1,57 @@
-import type { ReactElement } from 'react';
+import { type ReactElement, useId, useState } from 'react';
 import { openDrawer } from '../../app/route';
 import { Knob, Lever, Seg } from '../../components/ui/Controls';
 import { TIER_LABEL, TIERS, type Tier } from '../../engine/budget';
 import { useSettings } from '../../state/settings';
+
+/** Optional live road speeds with the user's own free TomTom key. Stored on this device only. */
+function LiveRoads(): ReactElement {
+  const key = useSettings((s) => s.tomtomKey);
+  const set = useSettings((s) => s.set);
+  const [draft, setDraft] = useState(key);
+  const id = useId();
+  return (
+    <div className="field">
+      <label className="field__label" htmlFor={id}>
+        Live roads (optional)
+      </label>
+      <div className="field__group">
+        <input
+          id={id}
+          className="input"
+          type="password"
+          autoComplete="off"
+          spellCheck={false}
+          placeholder="TomTom API key"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value.trim())}
+        />
+        <button type="button" className="btn" disabled={draft === key} onClick={() => set({ tomtomKey: draft })}>
+          Save
+        </button>
+        {key && (
+          <button
+            type="button"
+            className="btn"
+            onClick={() => {
+              setDraft('');
+              set({ tomtomKey: '' });
+            }}
+          >
+            Remove
+          </button>
+        )}
+      </div>
+      <p className="field__desc">
+        Without a key, Roads shows an honest estimate from rush hours and the weather. With a free key from{' '}
+        <a href="https://developer.tomtom.com/" target="_blank" rel="noopener noreferrer">
+          developer.tomtom.com
+        </a>{' '}
+        it shows live speeds on the nearest road. The key stays on this device and is sent only to TomTom.
+      </p>
+    </div>
+  );
+}
 
 /** Settings: segmented controls, switches and a volume knob. */
 export function BackOffice(): ReactElement {
@@ -96,24 +145,30 @@ export function BackOffice(): ReactElement {
           He judges the weather and your choices, never people. Gentler tones down the shouting.
         </p>
       </div>
+      <LiveRoads />
       <div className="field">
-        <span className="field__label">AI garnish</span>
-        <Seg
-          label="AI garnish"
-          value="0"
-          options={[
-            { value: '0', label: '0 · Procedural' },
-            { value: '1', label: '1 · Keyless', disabled: true },
-            { value: '2', label: '2 · Own key', disabled: true },
-          ]}
-          onChange={() => undefined}
-        />
-        <p className="field__desc">
-          Rung 0 is the bartender: procedural, offline, deterministic. The language-model rungs are not stocked yet.
-        </p>
+        <span className="field__label">Saved places</span>
+        {s.saved.length === 0 ? (
+          <p className="field__desc">Tap the star beside a place name to keep it one tap away under the globe.</p>
+        ) : (
+          <div className="chips">
+            {s.saved.map((p) => (
+              <button
+                key={`${p.name}-${p.lat}`}
+                type="button"
+                className="chip chip--action"
+                aria-label={`Remove ${p.name}`}
+                onClick={() => s.toggleSaved(p)}
+              >
+                {p.name} ✕
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       <p className="attrib">
-        Weather by Open-Meteo.com (CC BY 4.0) · Air quality: CAMS ENSEMBLE (Copernicus) · Marine: DWD
+        Weather by Open-Meteo.com (CC BY 4.0) · Air quality: CAMS ENSEMBLE (Copernicus) · Marine: DWD · Live roads
+        (optional): TomTom
         <br />
         Planet: NASA Earth Observatory (public domain) · Places: Natural Earth (public domain)
         <br />

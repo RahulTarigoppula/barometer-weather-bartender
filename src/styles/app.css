@@ -1,4 +1,4 @@
-/* Barometer — a planet in space. Weather first, then the bartender. */
+/* Mausam ka Mahaul — a planet in space. Weather first, then the bartender. */
 
 /* ═══ base ═══ */
 *,
@@ -1462,31 +1462,6 @@ a {
   padding: var(--space-4) var(--page-inset) calc(var(--space-5) + env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
 }
-.ticker {
-  overflow: hidden;
-  margin-bottom: var(--space-3);
-  padding: 8px 0;
-  border-radius: var(--radius-full);
-  background: rgba(255, 153, 51, 0.06);
-  border: 1px solid rgba(255, 153, 51, 0.18);
-}
-.ticker__tape {
-  display: inline-block;
-  padding-left: 16px;
-  white-space: nowrap;
-  font-size: var(--text-xs);
-  letter-spacing: 0.1em;
-  color: #ffc58a;
-  animation: tape var(--tape-dur, 30s) linear infinite;
-}
-@keyframes tape {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
 .footer__credits {
   margin: 4px 0 0;
   font-size: var(--text-xs);
@@ -1648,7 +1623,6 @@ a {
 /* ═══ reduced motion ═══ */
 @media (prefers-reduced-motion: reduce) {
   .wx,
-  .ticker__tape,
   .icecube,
   .steam,
   .pin__pulse,
@@ -1661,7 +1635,6 @@ a {
   }
 }
 :root[data-motion="less"] .wx,
-:root[data-motion="less"] .ticker__tape,
 :root[data-motion="less"] .icecube,
 :root[data-motion="less"] .steam,
 :root[data-motion="less"] .pin__pulse,

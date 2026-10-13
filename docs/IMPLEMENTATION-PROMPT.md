@@ -45,8 +45,14 @@ The source planning documents disagreed in a handful of places. These are the bi
 | C31 | Budget ranges | **Four tiers — Extreme Cheap, Budget, Mid-range, High-end** (`src/engine/budget.ts`): per drink, an Indian-market pour, where to drink it and a per-glass ₹ band scaled by base (beer cheaper, agave dearer), ≈ $ for non-Indian places; persisted, selectable on the card and in Settings, printed on the share card. The scoring engine is unchanged, so every golden fixture still holds. | Owner direction. Prices are indicative ranges, not quotes. |
 | C32 | Mocktail names | **Six alcohol-free twins take Indian names and recipes, same ids:** Nimbu Soda, Jaljeera Cooler, Aam Panna Slush, Kokum Soda, Filter Coffee Tonic, Adrak Nimbu Chai. | India focus without touching the scoring golden values. |
 | C33 | Colour tokens | Space colours are `--void-*`; `--space-*` stays the spacing scale. | Caught by lint: the first draft reused `--space-1` for both. |
+| C34 | Name | **Mausam ka Mahaul** ("the vibe of the weather"). Repository, package id, IndexedDB name and the History export tag stay `barometer` so links, installs and saved data survive. | The owner asked for a name with a story; *mausam* is the weather, *mahaul* the mood it creates — exactly what the app reads. "ka", not "ki": *mahaul* is masculine. |
+| C35 | The ticker | **Removed.** The footer is quiet credits only. | The owner disliked the scrolling news-ticker; it competed with the weather for attention. |
+| C36 | Traffic | **Two layers:** a pure, labelled *Estimate* (`engine/traffic.ts`: weekday/weekend rush curves, 12-metro severity, rain/downpour/fog/snow drag, 10 km trip minutes, the first hour it eases) and an **optional live** TomTom flow reading with the user's own key, stored locally, CSP-allowed only for `api.tomtom.com`. | No free, key-less, CORS-enabled live traffic API exists; an honest estimate beats a fake "live" badge. |
+| C37 | Forecast data | Forecast asks for 7 days plus hourly `weather_code`/`is_day` and daily `weather_code`/`precipitation_probability_max`; the next 25 hours and the days are stored on the verdict (`forecast`) so History re-prints the outlook without a request. | One request still serves the whole screen. |
+| C38 | India right now | Twelve cities in **one** batched forecast call and **one** batched air-quality call, cached 15 minutes in memory; their temperatures also label the globe. | Cheap enough for Open-Meteo's free tier; makes the India focus visible at a glance. |
+| C39 | Extras | Today's tips (US-AQI mask threshold 151, heat at feels-like ≥ 41 °C), snack pairing, daylight arc, saved places (≤ 8, star toggle). New cards are lazy chunks so the initial JS stays under 180 KB. | Practical, India-relevant, and each one is a pure tested function. |
 
-C13–C27 were recorded while building v0.9 (2026-10-12); C28–C33 are the v1.0 space/India redesign (2026-10-13). Everything else in this document is unconditional.
+C13–C27 were recorded while building v0.9 (2026-10-12); C28–C33 are the v1.0 space/India redesign (2026-10-13); C34–C39 are v1.1, Mausam ka Mahaul (2026-10-13). Everything else in this document is unconditional.
 
 ---
 
