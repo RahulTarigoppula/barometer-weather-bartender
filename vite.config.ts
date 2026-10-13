@@ -28,7 +28,7 @@ export default defineConfig({
     react(),
     visualizer({ filename: 'dist/stats.json', template: 'raw-data', gzipSize: true }),
     VitePWA({
-      registerType: 'prompt', // brass tag: "New bottles in stock. Restock?"
+      registerType: 'autoUpdate', // new builds take over on the next load
       injectRegister: null, // registered by hand, web only
       manifest: {
         name: 'Barometer — weather first, then a drink',
@@ -64,6 +64,8 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         navigateFallback: `${base}index.html`,
         cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.endsWith('.webp') || url.pathname.endsWith('countries-50m.json'),
