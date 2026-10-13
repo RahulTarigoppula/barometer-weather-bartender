@@ -15,9 +15,24 @@ import { speak, splitIntensifier } from '../../wit/speak';
 import { tearReceipt } from '../register/tear';
 import { Glassware, glassLabel } from '../verdict/Glassware';
 
-const Loud = ({ text }: { text: string }): ReactElement => (
+/** The shouted words, unless they repeat the stamp right above (then the line starts after them). */
+function loudSegments(text: string, stamp?: string): { text: string; loud: boolean }[] {
+  const norm = (x: string): string => x.replace(/[^a-z]/gi, '').toLowerCase();
+  const segs = splitIntensifier(text);
+  const first = segs[0];
+  if (!stamp || !first?.loud || norm(first.text) !== norm(stamp)) return segs;
+  const rest = segs.slice(1);
+  const lead = rest[0];
+  if (lead && !lead.loud) {
+    const t = lead.text.trimStart();
+    rest[0] = { ...lead, text: t.charAt(0).toUpperCase() + t.slice(1) };
+  }
+  return rest;
+}
+
+const Loud = ({ text, stamp }: { text: string; stamp?: string | undefined }): ReactElement => (
   <>
-    {splitIntensifier(text).map((seg, i) =>
+    {loudSegments(text, stamp).map((seg, i) =>
       seg.loud ? (
         // biome-ignore lint/suspicious/noArrayIndexKey: segments of one immutable sentence
         <strong key={i} className="loud">
@@ -176,7 +191,8 @@ function Pick({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }): R
         </div>
       </div>
       <p className="drink__line">
-        <Loud text={lines.drink} /> {lines.serve} <span className="drink__closer">{lines.closer}</span>
+        <Loud text={lines.drink} stamp={s.second ? undefined : s.stamp.text} /> {lines.serve}{' '}
+        <span className="drink__closer">{lines.closer}</span>
       </p>
       <p className="snack">
         <span className="snack__label">On the side</span> <b>{snack.name}</b>{' '}

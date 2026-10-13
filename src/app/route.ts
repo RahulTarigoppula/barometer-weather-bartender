@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
-export type Drawer = 'tab' | 'office' | 'about';
+export type Drawer = 'tab' | 'office' | 'about' | 'made';
 export type Route =
   | { name: 'bar' }
   | { name: 'verdict'; lat: number; lng: number }
@@ -15,6 +15,7 @@ export function parseRoute(hash: string): Route {
   if (h === '/tab') return { name: 'tab' };
   if (h === '/office') return { name: 'office' };
   if (h === '/about') return { name: 'about' };
+  if (h === '/made') return { name: 'made' };
   if (h === '/story') return { name: 'story' };
   const m = /^\/v\/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(h);
   if (m) {

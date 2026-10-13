@@ -27,6 +27,7 @@ const RoadsCard = lazy(() => import('../features/roads/RoadsCard').then((m) => (
 const IndiaNow = lazy(() => import('../features/india/IndiaNow').then((m) => ({ default: m.IndiaNow })));
 const Story = lazy(() => import('../features/story/Story').then((m) => ({ default: m.Story })));
 const CosmosZoom = lazy(() => import('../features/story/CosmosZoom').then((m) => ({ default: m.CosmosZoom })));
+const Made = lazy(() => import('../features/about/Made').then((m) => ({ default: m.Made })));
 const About = lazy(() => import('../features/about/About').then((m) => ({ default: m.About })));
 
 const root = document.documentElement;
@@ -155,7 +156,7 @@ export function App(): ReactElement {
     void registerServiceWorker((update) => useBar.getState().patch({ restock: update }));
     void onBackButton(() => {
       const r = parseRoute(window.location.hash);
-      if (r.name === 'tab' || r.name === 'office' || r.name === 'about') {
+      if (r.name === 'tab' || r.name === 'office' || r.name === 'about' || r.name === 'made') {
         close();
         return true;
       }
@@ -239,6 +240,9 @@ export function App(): ReactElement {
         </Drawer>
         <Drawer open={route.name === 'about'} title="Our story & credits" onClose={close} wide>
           <About />
+        </Drawer>
+        <Drawer open={route.name === 'made'} title="How MkM is made" onClose={close} wide>
+          <Made />
         </Drawer>
       </Suspense>
       <Toast />

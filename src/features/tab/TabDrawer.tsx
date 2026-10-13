@@ -1,15 +1,25 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { type ChangeEvent, type ReactElement, useRef, useState } from 'react';
 import { drinkById } from '../../data/menu';
+import type { Verdict } from '../../engine/types';
 import { fmtTempShort } from '../../engine/units';
 import { downloadText } from '../../platform/share';
 import { db } from '../../state/db';
 import { useSettings } from '../../state/settings';
 import { useBar } from '../../state/store';
 import { repour } from '../verdict/pour';
+import { iconFor } from '../weather/icons';
 import { clearTab, exportTab, importTab, isStale, WrongTabError } from './repo';
 
-/** The Tab: every verdict, newest first, on this device only. A row re-flies the globe. */
+const placeName = (v: Verdict): string =>
+  v.place.nearestCity && v.place.nearestCity.distanceKm < 25 ? v.place.nearestCity.name : v.place.label;
+
+function RowIcon({ wmo, isDay }: { wmo: number; isDay: boolean }): ReactElement {
+  const Icon = iconFor(wmo, isDay);
+  return <Icon className="tabrow__icon" size={22} strokeWidth={1.6} aria-hidden="true" />;
+}
+
+/** History: every place you looked at, newest first, on this device only. A row flies the globe back. */
 export function TabList({ onPick }: { onPick: () => void }): ReactElement {
   const rows = useLiveQuery(() => db.verdicts.orderBy('createdAt').reverse().limit(200).toArray(), []);
   const unit = useSettings((s) => s.units.temp);
@@ -24,9 +34,9 @@ export function TabList({ onPick }: { onPick: () => void }): ReactElement {
     if (!f) return;
     try {
       const n = await importTab(JSON.parse(await f.text()));
-      showToast(`${n} rounds added to the Tab.`);
+      showToast(`${n} places added to your history.`);
     } catch (err) {
-      showToast(err instanceof WrongTabError ? err.message : 'That file is not a Tab I can read.');
+      showToast(err instanceof WrongTabError ? err.message : 'That file is not a history I can read.');
     }
   };
 
@@ -34,9 +44,9 @@ export function TabList({ onPick }: { onPick: () => void }): ReactElement {
     <>
       {rows === undefined ? null : rows.length === 0 ? (
         <p className="empty-note">
-          No tab yet.
+          Nothing here yet.
           <br />
-          Go somewhere.
+          Spin the planet and go somewhere.
         </p>
       ) : (
         <ul className="tablist">
@@ -50,12 +60,13 @@ export function TabList({ onPick }: { onPick: () => void }): ReactElement {
                   void repour(v);
                 }}
               >
-                <span className="tabrow__id">#{String(v.id ?? 0).padStart(4, '0')}</span>
-                <span>
-                  <span className="tabrow__place">{v.place.short}</span>
+                <RowIcon wmo={v.features.wmo} isDay={v.features.isDay} />
+                <span className="tabrow__main">
+                  <span className="tabrow__place">{placeName(v)}</span>
                   <span className="tabrow__sub">
+                    {new Date(v.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} ·{' '}
                     {v.localTime} local · {drinkById(v.drinkId)?.name ?? v.drinkId}
-                    {isStale(v, now) ? ' · re-pour' : ''}
+                    {isStale(v, now) ? ' · will refresh' : ''}
                   </span>
                 </span>
                 <span className="tabrow__temp">{fmtTempShort(v.features.apparentC, unit)}</span>
@@ -69,7 +80,9 @@ export function TabList({ onPick }: { onPick: () => void }): ReactElement {
           type="button"
           className="plate plate--ghost"
           disabled={!rows?.length}
-          onClick={async () => downloadText(JSON.stringify(await exportTab(Date.now()), null, 2), 'globe-bar-tab.json')}
+          onClick={async () =>
+            downloadText(JSON.stringify(await exportTab(Date.now()), null, 2), 'mausam-history.json')
+          }
         >
           Export JSON
         </button>
@@ -79,14 +92,14 @@ export function TabList({ onPick }: { onPick: () => void }): ReactElement {
         <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => void onImport(e)} />
         {confirm ? (
           <span className="confirm">
-            <span className="caps">Clear every round?</span>
+            <span className="caps">Clear all of your history?</span>
             <button
               type="button"
               className="plate"
               onClick={async () => {
                 await clearTab();
                 setConfirm(false);
-                showToast('Tab cleared. Fresh start.');
+                showToast('History cleared. Fresh start.');
               }}
             >
               Confirm
@@ -102,11 +115,11 @@ export function TabList({ onPick }: { onPick: () => void }): ReactElement {
             disabled={!rows?.length}
             onClick={() => setConfirm(true)}
           >
-            Clear tab
+            Clear history
           </button>
         )}
       </div>
-      <p className="attrib">Stored on this device in IndexedDB. Nothing leaves the bar.</p>
+      <p className="attrib">Kept only on this device. Nothing leaves your phone.</p>
     </>
   );
 }

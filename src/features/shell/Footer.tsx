@@ -23,6 +23,10 @@ export function Footer(): ReactElement {
         (CC BY 4.0) · Planet: NASA Earth Observatory · Places: Natural Earth · Free, private, no tracking ·{' '}
         <button type="button" className="link" onClick={() => openDrawer('about')}>
           Our story &amp; credits
+        </button>{' '}
+        ·{' '}
+        <button type="button" className="link" onClick={() => openDrawer('made')}>
+          How it’s made: every source, every rule
         </button>
       </p>
       <p className="footer__signoff">Built by Rahul, between episodes and chapters.</p>

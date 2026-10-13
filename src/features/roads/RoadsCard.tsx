@@ -58,6 +58,16 @@ function Roads({ v }: { v: Verdict }): ReactElement {
   const liveIx = live.state === 'ok' ? liveIndex(live.flow.currentKmh, live.flow.freeFlowKmh) : null;
   const ix = liveIx ?? o.index;
   const lvl = levelOf(ix);
+  // When the roads are busy, the calmest waking hour ahead is the one to aim for.
+  const best =
+    lvl === 'light'
+      ? undefined
+      : o.next
+          .filter((h) => h.hour >= 6 && h.hour <= 23)
+          .reduce<(typeof o.next)[number] | undefined>(
+            (a, b) => (a === undefined || b.index < a.index ? b : a),
+            undefined,
+          );
   const where = o.metro ? `${o.metro.name} roads` : india ? 'Town roads' : 'Local roads';
   return (
     <section className="card roads" aria-label="Roads">
@@ -102,14 +112,19 @@ function Roads({ v }: { v: Verdict }): ReactElement {
         {o.reason && <p className="chip chip--warn">{o.reason}</p>}
         <p className="roads__advice">{o.advice}</p>
       </div>
-      <div className="roads__strip" role="list" aria-label="Next 12 hours">
+      <div className="roads__strip" role="list" aria-label="Now and the next 12 hours">
+        <div className="roads__hour roads__hour--now" role="listitem" title={`Now · ${LEVEL_LABEL[lvl]}`}>
+          <span className="roads__bar" data-level={lvl} style={{ height: `${Math.max(8, ix)}%` }} />
+          <span className="roads__h">Now</span>
+        </div>
         {o.next.map((h) => (
           <div
             key={h.hour}
-            className="roads__hour"
+            className={`roads__hour${best?.hour === h.hour ? ' roads__hour--best' : ''}`}
             role="listitem"
             title={`${hh(h.hour)}:00 · ${LEVEL_LABEL[h.level]}`}
           >
+            {best?.hour === h.hour && <span className="roads__best">Best</span>}
             <span className="roads__bar" data-level={h.level} style={{ height: `${Math.max(8, h.index)}%` }} />
             <span className="roads__h num">{hh(h.hour)}</span>
           </div>

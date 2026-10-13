@@ -54,7 +54,10 @@ export function About(): ReactElement {
           }}
         >
           Watch the story again
-        </button>
+        </button>{' '}
+        <a className="btn" href="#/made">
+          How MkM is made
+        </a>
       </section>
       <p>
         Free, offline-capable and non-commercial. It talks to Open-Meteo for weather and air, and to TomTom only if you

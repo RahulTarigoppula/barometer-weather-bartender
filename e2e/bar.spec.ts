@@ -137,7 +137,7 @@ test('history remembers and re-shows a place without a request', async ({ page }
   const tab = page.getByRole('dialog', { name: 'History' });
   await expect(tab).toBeVisible();
   const row = tab.locator('.tabrow').first();
-  await expect(row).toContainText('MUMBAI, IN');
+  await expect(row).toContainText('Mumbai');
   const before = seen.meteo.length;
   await row.click();
   await expect(drink(page)).toHaveText('Mojito');
@@ -178,7 +178,7 @@ test('the outlook, the roads and India right now', async ({ page }) => {
   const roads = page.getByRole('region', { name: 'Roads' });
   await expect(roads).toContainText('Mumbai roads');
   await expect(roads).toContainText('Estimate');
-  await expect(roads.getByRole('listitem')).toHaveCount(12);
+  await expect(roads.getByRole('listitem')).toHaveCount(13);
   const india = page.getByRole('region', { name: 'India right now' });
   await expect(india.locator('.city')).toHaveCount(12);
   expect(seen.india).toHaveLength(2); // one forecast + one air-quality call for twelve cities

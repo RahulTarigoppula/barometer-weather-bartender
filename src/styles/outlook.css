@@ -1204,3 +1204,140 @@ button.drink__glass:focus-visible {
   font-size: var(--text-sm);
   color: #ffd2a1;
 }
+
+/* ═══ how MkM is made ═══ */
+.made__title {
+  margin: var(--space-5) 0 var(--space-3) !important;
+  font-size: 1.3rem;
+}
+.made__sources {
+  display: grid;
+  gap: var(--space-3);
+}
+.made__source {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+}
+.made__source header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: 8px;
+}
+.made__source header a {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 520;
+  color: var(--ink);
+}
+.made__licence {
+  flex: 0 0 auto;
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(61, 220, 151, 0.12);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 600;
+}
+.made__source dl,
+.made__algos {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+.made__source dt,
+.made__algos dt {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.made__source dd,
+.made__algos dd {
+  margin: 2px 0 0;
+  color: var(--ink-muted);
+}
+.made__algos > div {
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+.made__algos dt {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 520;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
+
+/* ═══ history rows, rebuilt ═══ */
+.tabrow {
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.tabrow__icon {
+  color: var(--sky);
+}
+.tabrow__main {
+  min-width: 0;
+}
+.tabrow__place {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tabrow__temp {
+  font-size: 1rem;
+  font-weight: 700;
+}
+.tablist li + li {
+  border-top: 1px solid var(--line);
+}
+.drawer__title {
+  font-family: var(--font-display);
+  font-weight: 480;
+}
+
+/* ═══ roads: a "now" anchor and the best hour to leave ═══ */
+.roads__strip {
+  grid-template-columns: repeat(13, minmax(0, 1fr));
+}
+.roads__hour {
+  position: relative;
+}
+.roads__hour--now .roads__bar {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
+}
+.roads__hour--now .roads__h {
+  color: var(--ink);
+  font-weight: 700;
+}
+.roads__hour--best .roads__bar {
+  box-shadow: 0 0 0 2px var(--green);
+}
+.roads__best {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  translate: -50% 0;
+  padding: 0 5px;
+  border-radius: var(--radius-full);
+  background: var(--green);
+  color: #052014;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
