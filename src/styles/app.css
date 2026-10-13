@@ -896,9 +896,7 @@ a {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   margin-top: 8px;
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: 0.06em;
+  font-size: 11px;
   color: var(--ink-faint);
   text-align: center;
 }

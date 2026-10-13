@@ -424,7 +424,8 @@ export function createCosmos(canvas: HTMLCanvasElement, opts: { reduced: boolean
       if (!x || !bx) continue;
       x.scale(dpr, dpr);
       bx.scale(dpr, dpr);
-      const base = h * (0.5 + L * 0.085);
+      const portrait = h > w * 1.3;
+      const base = h * ((portrait ? 0.42 : 0.5) + L * (portrait ? 0.075 : 0.085));
       const amp = h * (0.09 - L * 0.008);
       const f1 = 1.5 + rnd() * 1.5;
       const f2 = 4 + rnd() * 3;

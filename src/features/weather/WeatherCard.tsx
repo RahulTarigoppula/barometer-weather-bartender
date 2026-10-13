@@ -37,6 +37,17 @@ function clockPlus(localTime: string, minutes: number): string {
   return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
 }
 
+/** The comfort scale in plain words (the engine's labels stay as they are). */
+const RING_WORD: Record<string, string> = {
+  ARCTIC: 'Arctic',
+  FREEZING: 'Freezing',
+  CHILLY: 'Chilly',
+  FAIR: 'Pleasant',
+  MUGGY: 'Muggy',
+  SOUP: 'Sticky',
+  SCORCHING: 'Scorching',
+};
+
 const UV_LABEL: Record<string, string> = {
   low: 'Low',
   moderate: 'Moderate',
@@ -77,7 +88,7 @@ function Comfort({ v }: { v: Verdict }): ReactElement {
       aria-valuemin={-120}
       aria-valuemax={120}
       aria-valuenow={v.dialAngle}
-      aria-valuetext={`Feels like ${v.features.apparentC.toFixed(1)} degrees, tag: ${v.dial.toLowerCase()}`}
+      aria-valuetext={`Feels like ${v.features.apparentC.toFixed(1)} degrees: ${(RING_WORD[v.dial] ?? v.dial).toLowerCase()}`}
     >
       <div className="comfort__bar">
         <span className="comfort__needle" style={{ left: `${pct}%` }} />
@@ -85,7 +96,7 @@ function Comfort({ v }: { v: Verdict }): ReactElement {
       <div className="comfort__labels" aria-hidden="true">
         {RING.map((r) => (
           <span key={r} className={r === v.dial ? 'is-on' : undefined}>
-            {r}
+            {RING_WORD[r]}
           </span>
         ))}
       </div>
