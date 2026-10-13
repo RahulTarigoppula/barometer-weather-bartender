@@ -25,6 +25,7 @@ const Forecast = lazy(() => import('../features/weather/Forecast').then((m) => (
 const RoadsCard = lazy(() => import('../features/roads/RoadsCard').then((m) => ({ default: m.RoadsCard })));
 const IndiaNow = lazy(() => import('../features/india/IndiaNow').then((m) => ({ default: m.IndiaNow })));
 const Story = lazy(() => import('../features/story/Story').then((m) => ({ default: m.Story })));
+const CosmosZoom = lazy(() => import('../features/story/CosmosZoom').then((m) => ({ default: m.CosmosZoom })));
 const About = lazy(() => import('../features/about/About').then((m) => ({ default: m.About })));
 
 const root = document.documentElement;
@@ -149,6 +150,11 @@ export function App(): ReactElement {
   const [hydrated, setHydrated] = useState(() => useSettings.persist.hasHydrated());
   useEffect(() => useSettings.persist.onFinishHydration(() => setHydrated(true)), []);
   const showStory = route.name === 'story' || (hydrated && !storySeen && !navigator.webdriver);
+  const cosmos = useBar((s) => s.cosmos);
+  const closeCosmos = useCallback(() => useBar.getState().patch({ cosmos: false }), []);
+  useEffect(() => {
+    useBar.getState().patch({ stagePaused: showStory || cosmos });
+  }, [showStory, cosmos]);
   const endStory = useCallback(() => {
     useSettings.getState().set({ storySeen: true });
     if (parseRoute(window.location.hash).name === 'story') {
@@ -198,6 +204,11 @@ export function App(): ReactElement {
         </Drawer>
       </Suspense>
       <Toast />
+      {cosmos && !showStory && (
+        <Suspense fallback={<div className="cosmos" />}>
+          <CosmosZoom onClose={closeCosmos} />
+        </Suspense>
+      )}
       {showStory && (
         <Suspense fallback={<div className="story-intro" />}>
           <Story onDone={endStory} />

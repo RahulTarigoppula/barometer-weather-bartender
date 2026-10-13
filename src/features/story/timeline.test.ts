@@ -2,8 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { ease, ramp, SCENES, sceneAt, TOTAL } from './timeline';
 
 describe('the opening story', () => {
-  it('runs galaxy → solar → planets → earth → title → meaning → app in about half a minute', () => {
-    expect(SCENES.map((s) => s.id)).toEqual(['galaxy', 'solar', 'planets', 'earth', 'title', 'meaning', 'app']);
+  it('runs galaxy → solar → planets → earth → memory → title → meaning → app in well under a minute', () => {
+    expect(SCENES.map((s) => s.id)).toEqual([
+      'galaxy',
+      'solar',
+      'planets',
+      'earth',
+      'memory',
+      'title',
+      'meaning',
+      'app',
+    ]);
     expect(TOTAL).toBeGreaterThanOrEqual(28);
     expect(TOTAL).toBeLessThanOrEqual(40);
     for (const s of SCENES) expect(s.end - s.start).toBeGreaterThanOrEqual(3);
@@ -12,7 +21,8 @@ describe('the opening story', () => {
   it('finds the scene and progress at any time, clamped', () => {
     expect(sceneAt(0).scene.id).toBe('galaxy');
     expect(sceneAt(-5).p).toBe(0);
-    const mid = sceneAt(SCENES[1]!.start + 2.5);
+    const solar = SCENES[1]!;
+    const mid = sceneAt((solar.start + solar.end) / 2);
     expect(mid.scene.id).toBe('solar');
     expect(mid.p).toBeCloseTo(0.5);
     expect(sceneAt(TOTAL + 10).scene.id).toBe('app');

@@ -11,6 +11,8 @@ export interface GlobeController {
   setPin(pin: { lat: number; lng: number; n: number } | null): void;
   nudge(dLat: number, dLng: number): void;
   zoom(factor: number): void;
+  /** The camera is as far out as the planet view goes (the next step out is the universe). */
+  atFarLimit(): boolean;
   /** Back to the India view. */
   home(): void;
   center(): { lat: number; lng: number };

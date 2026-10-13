@@ -481,6 +481,7 @@ export function createThreeGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeCont
       const len = Math.max(controls.minDistance, Math.min(controls.maxDistance, camera.position.length() * f));
       camera.position.setLength(len);
     },
+    atFarLimit: () => camera.position.length() >= controls.maxDistance * 0.97,
     home() {
       touched = false;
       flyTo(HOME_VIEW.lat, HOME_VIEW.lng, cb.reduced() ? 0 : 1200, home);

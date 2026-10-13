@@ -4,15 +4,16 @@ import { createCosmos } from './cosmos';
 import { SCENES, sceneAt, TOTAL } from './timeline';
 
 const FADE = 1.2; // the last seconds fade the story into the app
+const CHIPS = ['The weather, right now', 'Today’s tips', 'The right drink, at your budget', 'The roads'];
 
-/** The opening story. Full screen, skippable (button or Esc), about half a minute. */
+/** The opening story. Full screen, skippable (button or Esc), under forty seconds. */
 export function Story({ onDone }: { onDone: () => void }): ReactElement {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const skipRef = useRef<HTMLButtonElement>(null);
-  const reduced = useReduced();
-  const [index, setIndex] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLSpanElement>(null);
+  const reduced = useReduced();
+  const [index, setIndex] = useState(0);
   const done = useRef(false);
 
   const finish = useCallback(() => {
@@ -30,9 +31,17 @@ export function Story({ onDone }: { onDone: () => void }): ReactElement {
     let raf = 0;
     let last = performance.now();
     let t = 0;
+    let shown = 0;
     if (import.meta.env.DEV) {
-      (window as unknown as { __storySeek?: (s: number) => void }).__storySeek = (s) => {
+      const w = window as unknown as Record<string, unknown>;
+      w.__storySeek = (s: number) => {
         t = s;
+      };
+      // Average draw cost in ms at a given story time, for performance checks.
+      w.__storyBench = (s: number, n = 60) => {
+        const t0 = performance.now();
+        for (let i = 0; i < n; i++) cosmos.draw(s + i / 60);
+        return (performance.now() - t0) / n;
       };
     }
     const frame = (now: number): void => {
@@ -40,8 +49,11 @@ export function Story({ onDone }: { onDone: () => void }): ReactElement {
       t += Math.min(0.25, (now - last) / 1000);
       last = now;
       cosmos.draw(t);
-      const s = sceneAt(t);
-      setIndex(s.index);
+      const i = sceneAt(t).index;
+      if (i !== shown) {
+        shown = i;
+        setIndex(i);
+      }
       if (barRef.current) barRef.current.style.transform = `scaleX(${t / TOTAL})`;
       if (rootRef.current) rootRef.current.style.opacity = String(1 - Math.max(0, (t - (TOTAL - FADE)) / FADE));
       if (t >= TOTAL) {
@@ -67,7 +79,7 @@ export function Story({ onDone }: { onDone: () => void }): ReactElement {
   }, [finish]);
 
   const scene = SCENES[index] ?? SCENES[0];
-  const big = scene?.id === 'title';
+  const id = scene?.id;
   return (
     <div className="story-intro" role="dialog" aria-modal="true" aria-label="Our story" ref={rootRef}>
       <canvas
@@ -77,8 +89,8 @@ export function Story({ onDone }: { onDone: () => void }): ReactElement {
         aria-label="From the Milky Way to the Sun, past the planets, down to Earth and India"
       />
       <div className="story-intro__scrim" aria-hidden="true" />
-      <div className={`story-intro__text${big ? ' story-intro__text--title' : ''}`} key={scene?.id} aria-live="polite">
-        {big ? (
+      <div className={`story-intro__text story-intro__text--${id}`} key={id} aria-live="polite">
+        {id === 'title' ? (
           <>
             <p className="story-intro__dev" lang="hi">
               मौसम का माहौल
@@ -88,20 +100,19 @@ export function Story({ onDone }: { onDone: () => void }): ReactElement {
           </>
         ) : (
           <>
-            <p className="story-intro__line">{scene?.line}</p>
-            {scene?.id === 'app' ? (
+            <p className="story-intro__line" lang={id === 'memory' ? 'hi-Latn' : undefined}>
+              {scene?.line}
+            </p>
+            {id === 'app' && (
               <ul className="story-intro__chips">
-                {['The weather, right now', "Today's tips", 'The right drink, at your budget', 'The roads'].map(
-                  (c, i) => (
-                    <li key={c} style={{ animationDelay: `${250 + i * 220}ms` }}>
-                      {c}
-                    </li>
-                  ),
-                )}
+                {CHIPS.map((c, i) => (
+                  <li key={c} style={{ animationDelay: `${250 + i * 220}ms` }}>
+                    {c}
+                  </li>
+                ))}
               </ul>
-            ) : (
-              <p className="story-intro__sub">{scene?.sub}</p>
             )}
+            <p className="story-intro__sub">{scene?.sub}</p>
           </>
         )}
       </div>

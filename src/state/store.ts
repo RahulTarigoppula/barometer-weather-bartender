@@ -41,6 +41,10 @@ interface BarState {
   center: { lat: number; lng: number };
   /** India right now: Celsius by city name, for the globe labels. */
   cityTemps: Record<string, number>;
+  /** The zoom-out-to-the-universe view is open. */
+  cosmos: boolean;
+  /** A full-screen overlay covers the globe, so its render loop can rest. */
+  stagePaused: boolean;
 }
 
 interface BarActions {
@@ -66,6 +70,8 @@ export const useBar = create<BarState & BarActions>()((set) => ({
   lastDrinkId: undefined,
   center: HOME,
   cityTemps: {},
+  cosmos: false,
+  stagePaused: false,
   patch: (p) => set(p),
   showToast: (text) => set({ toast: { id: ++toastSeq, text } }),
 }));

@@ -198,6 +198,7 @@ export function createFallbackGlobe(el: HTMLElement, cb: GlobeCallbacks): GlobeC
     zoom() {
       // the canvas globe has one size; zoom is a WebGL nicety
     },
+    atFarLimit: () => true,
     home: () => goTo(HOME_VIEW.lat, HOME_VIEW.lng, cb.reduced() ? 0 : 800),
     center: () => ({ lat: -rotate[1], lng: ((((-rotate[0] + 180) % 360) + 360) % 360) - 180 }),
     pause(p) {

@@ -1,4 +1,4 @@
-import { Home, Minus, Plus } from 'lucide-react';
+import { Home, Minus, Orbit, Plus } from 'lucide-react';
 import { type KeyboardEvent, type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { unlockAudio } from '../../audio/sfx';
 import { fmtTempShort } from '../../engine/units';
@@ -120,14 +120,34 @@ export function GlobeStage(): ReactElement {
     for (const g of [fallback.current, webgl.current]) g?.setCityTemps?.(out);
   }, [cityTemps, tempUnit, status]);
 
-  // Pause the render loop when the tab is hidden.
+  // Pause the render loop when the tab is hidden or a full-screen overlay covers the planet.
+  const stagePaused = useBar((s) => s.stagePaused);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `status` flips when a new globe mounts
   useEffect(() => {
-    const onVis = (): void => {
-      for (const g of [fallback.current, webgl.current]) g?.pause(document.hidden);
+    const apply = (): void => {
+      for (const g of [fallback.current, webgl.current]) g?.pause(document.hidden || stagePaused);
     };
-    document.addEventListener('visibilitychange', onVis);
-    return () => document.removeEventListener('visibilitychange', onVis);
-  }, []);
+    apply();
+    document.addEventListener('visibilitychange', apply);
+    return () => document.removeEventListener('visibilitychange', apply);
+  }, [stagePaused, status]);
+
+  // Past the planet's far limit is the universe: zoom out (button, key or two wheel notches) to open it.
+  const openCosmos = useCallback(() => patch({ cosmos: true }), [patch]);
+  // Coming back from the universe lands on India, the way the story does.
+  const cosmosOpen = useBar((s) => s.cosmos);
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (wasOpen.current && !cosmosOpen) active.current?.home();
+    wasOpen.current = cosmosOpen;
+  }, [cosmosOpen]);
+  const wheelAtLimit = useRef(0);
+  const zoomOut = useCallback(() => {
+    const g = active.current;
+    if (!g) return;
+    if (g.atFarLimit()) openCosmos();
+    else g.zoom(1.18);
+  }, [openCosmos]);
 
   const onKey = (e: KeyboardEvent<HTMLDivElement>): void => {
     const g = active.current;
@@ -138,7 +158,7 @@ export function GlobeStage(): ReactElement {
     else if (k === 'ArrowUp') g.nudge(5, 0);
     else if (k === 'ArrowDown') g.nudge(-5, 0);
     else if (k === '+' || k === '=') g.zoom(0.85);
-    else if (k === '-' || k === '_') g.zoom(1.18);
+    else if (k === '-' || k === '_') zoomOut();
     else if (k === 'h' || k === 'H') g.home();
     else if (k === 'Enter' || k === ' ') {
       unlockAudio();
@@ -162,6 +182,16 @@ export function GlobeStage(): ReactElement {
           unlockAudio();
           haptic('light');
         }}
+        onWheel={(e) => {
+          const g = active.current;
+          if (e.deltaY > 0 && g?.atFarLimit()) {
+            wheelAtLimit.current += 1;
+            if (wheelAtLimit.current >= 3) {
+              wheelAtLimit.current = 0;
+              openCosmos();
+            }
+          } else wheelAtLimit.current = 0;
+        }}
       >
         <div ref={fallbackRef} className={`globe-layer${webglOn ? ' globe-layer--hidden' : ''}`} />
         <div ref={webglRef} className={`globe-layer${webglOn ? '' : ' globe-layer--hidden'}`} />
@@ -173,8 +203,17 @@ export function GlobeStage(): ReactElement {
         <button type="button" className="icon-btn" aria-label="Zoom in" onClick={() => active.current?.zoom(0.85)}>
           <Plus size={18} strokeWidth={1.75} aria-hidden="true" />
         </button>
-        <button type="button" className="icon-btn" aria-label="Zoom out" onClick={() => active.current?.zoom(1.18)}>
+        <button type="button" className="icon-btn" aria-label="Zoom out" onClick={zoomOut}>
           <Minus size={18} strokeWidth={1.75} aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          className="icon-btn icon-btn--cosmos"
+          aria-label="Zoom out to the universe"
+          title="Zoom out to the universe"
+          onClick={openCosmos}
+        >
+          <Orbit size={18} strokeWidth={1.75} aria-hidden="true" />
         </button>
       </div>
       {status === 'seized' && (

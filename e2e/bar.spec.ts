@@ -207,10 +207,24 @@ test('the story plays from the footer, names the app, and can be skipped', async
   await page.getByRole('button', { name: /Watch our story/ }).click();
   const story = page.getByRole('dialog', { name: 'Our story' });
   await expect(story).toBeVisible();
-  await expect(story).toContainText('This is the Milky Way.');
+  await expect(story).toContainText('Look up.');
   await page.getByRole('button', { name: 'Skip story' }).click();
   await expect(story).toHaveCount(0);
   await expect(page).toHaveURL(/#\/v\/19\.07,72\.88$/);
+});
+
+test('zoom out from the planet to the Milky Way, and back', async ({ page }) => {
+  await routeWeather(page);
+  await page.goto('./#/v/19.07,72.88');
+  await expect(drink(page)).toHaveText('Mojito');
+  await page.getByRole('button', { name: 'Zoom out', exact: true }).click(); // the flat globe is already at its far limit
+  const cosmos = page.getByRole('dialog', { name: 'Zoom out to the universe' });
+  await expect(cosmos).toBeVisible();
+  await expect(cosmos).toContainText('The Solar System');
+  await cosmos.getByRole('slider', { name: 'Zoom from Earth to the Milky Way' }).fill('100');
+  await expect(cosmos).toContainText('The Milky Way', { timeout: 10_000 });
+  await cosmos.getByRole('button', { name: 'Back to Earth' }).click();
+  await expect(cosmos).toHaveCount(0, { timeout: 10_000 });
 });
 
 test('the CSP blocks any other host', async ({ page }) => {
