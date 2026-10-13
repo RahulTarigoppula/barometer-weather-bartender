@@ -33,7 +33,7 @@ export function tipsFor(f: Features, hours: HourPoint[] = []): Tip[] {
     out.push({
       id: 'mask',
       label: 'Mask outdoors',
-      detail: `Air is unhealthy (US AQI ${Math.round(aqi)}) — N95 if you go out`,
+      detail: `Air is unhealthy (US AQI ${Math.round(aqi)}). Wear an N95 outside`,
       tone: 'alert',
     });
   else if (aqi !== null && aqi >= 101)
@@ -54,7 +54,7 @@ export function tipsFor(f: Features, hours: HourPoint[] = []): Tip[] {
     out.push({
       id: 'sunscreen',
       label: 'Sunscreen',
-      detail: `UV ${Math.round(f.uv)} — SPF 30+, reapply`,
+      detail: `UV ${Math.round(f.uv)}: SPF 30+, reapply`,
       tone: 'warn',
     });
   if (f.apparentC <= 0)
@@ -65,7 +65,7 @@ export function tipsFor(f: Features, hours: HourPoint[] = []): Tip[] {
     out.push({
       id: 'wind',
       label: 'Gusty',
-      detail: `Gusts to ${Math.round(f.gustKmh)} km/h — secure loose things`,
+      detail: `Gusts to ${Math.round(f.gustKmh)} km/h. Secure loose things`,
       tone: 'warn',
     });
   if (f.wmo === 45 || f.wmo === 48)
@@ -92,7 +92,7 @@ export function snackFor(tags: TagScore[], drink: Drink): Snack {
     return { name: 'Samosa, straight from the kadhai', note: 'Hot enough to hold, too hot to bite. Bite anyway.' };
   if (has(tags, 'late')) return { name: 'Midnight Maggi', note: 'Two minutes. It is never two minutes.' };
   if (has(tags, 'scorching', 'hot', 'uv-extreme'))
-    return { name: 'Aloo chaat or a kulfi', note: 'Cold, sour, spicy — the heat respects it.' };
+    return { name: 'Aloo chaat or a kulfi', note: 'Cold, sour, spicy. The heat respects it.' };
   if (has(tags, 'oppressive', 'muggy')) return { name: 'Bhel puri', note: 'Light, tangy, no regrets in the humidity.' };
   if (has(tags, 'dawn', 'morning', 'brunch'))
     return { name: 'Poha with sev and lime', note: 'Breakfast that forgives the hour.' };

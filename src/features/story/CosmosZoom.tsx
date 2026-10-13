@@ -1,25 +1,34 @@
 import { Minus, Plus, X } from 'lucide-react';
 import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { useReduced } from '../../app/useReduced';
-import { createCosmos, EARTH_T } from './cosmos';
+import { createCosmos, EARTH_T, UNIVERSE_T } from './cosmos';
 import { sceneAt } from './timeline';
 
-type Level = 'earth' | 'solar' | 'galaxy';
-/** z = 0 is the Earth; z = 1 the whole galaxy with our Sun marked. */
-const FAR_T = 1.8;
-const tAt = (z: number): number => FAR_T + (EARTH_T - FAR_T) * (1 - z);
+type Level = 'earth' | 'solar' | 'galaxy' | 'universe';
+/** z = 0 is the Earth; z = 1 the known universe. */
+const tAt = (z: number): number => UNIVERSE_T + (EARTH_T - UNIVERSE_T) * (1 - z);
 const LEVEL: Record<Level, { name: string; fact: string }> = {
   earth: { name: 'Earth', fact: 'Zoom back in to return to the weather.' },
-  solar: { name: 'The Solar System', fact: 'Earth is the third planet — 150 million km from the Sun.' },
+  solar: { name: 'The Solar System', fact: 'Earth is the third planet, 150 million km from the Sun.' },
   galaxy: { name: 'The Milky Way', fact: 'About 100,000 light-years across. We are two-thirds of the way out.' },
+  universe: {
+    name: 'The known universe',
+    fact: 'Hundreds of billions of galaxies. Life has been found on exactly one planet.',
+  },
 };
 const levelAt = (z: number): Level => {
   const id = sceneAt(tAt(z)).scene.id;
-  return id === 'galaxy' ? 'galaxy' : id === 'solar' || id === 'planets' ? 'solar' : 'earth';
+  return id === 'universe'
+    ? 'universe'
+    : id === 'galaxy'
+      ? 'galaxy'
+      : id === 'solar' || id === 'planets'
+        ? 'solar'
+        : 'earth';
 };
 
 /**
- * Zoom out from the planet to the whole galaxy, and back. `z` is 0 at the Earth and 1 at the
+ * Zoom out from the planet to the known universe, and back. `z` is 0 at the Earth and 1 at the
  * full Milky Way; it maps onto the story's camera, run backwards. Wheel, pinch, keys, buttons or slider.
  */
 export function CosmosZoom({ onClose }: { onClose: () => void }): ReactElement {
@@ -141,7 +150,7 @@ export function CosmosZoom({ onClose }: { onClose: () => void }): ReactElement {
           min={0}
           max={100}
           value={Math.round(z * 100)}
-          aria-label="Zoom from Earth to the Milky Way"
+          aria-label="Zoom from Earth to the known universe"
           onChange={(e) => {
             target.current = Number(e.target.value) / 100;
           }}

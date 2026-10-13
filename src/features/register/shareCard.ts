@@ -126,7 +126,7 @@ export async function renderShareCard({ v, drink, stamp, jab, plan, dots, units,
   ctx.font = `400 26px ${MONO}`;
   ctx.fillStyle = C.ink;
   ctx.fillText(
-    `HUMIDITY ${Math.round(f.rh)}%   WIND ${fmtWind(f.windKmh, units.wind).toUpperCase()}   AQI ${f.euAqi === null ? '—' : Math.round(f.euAqi)}   UV ${Math.round(f.uv)}`,
+    `HUMIDITY ${Math.round(f.rh)}%   WIND ${fmtWind(f.windKmh, units.wind).toUpperCase()}   AQI ${f.euAqi === null ? 'n/a' : Math.round(f.euAqi)}   UV ${Math.round(f.uv)}`,
     x,
     y,
   );

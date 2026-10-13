@@ -13,7 +13,7 @@ export function Footer(): ReactElement {
           window.location.hash = '#/story';
         }}
       >
-        <Play size={14} strokeWidth={2} aria-hidden="true" /> Watch our story — why “Mausam ka Mahaul”
+        <Play size={14} strokeWidth={2} aria-hidden="true" /> Watch our story: why “Mausam ka Mahaul”
       </button>
       <p className="footer__credits">
         Weather by{' '}
@@ -26,7 +26,7 @@ export function Footer(): ReactElement {
         </button>
       </p>
       <p className="footer__credits">
-        Road outlook is an estimate unless you add a live key. Drink responsibly — prices are indicative per glass in
+        Road outlook is an estimate unless you add a live key. Drink responsibly. Prices are indicative per glass in
         Indian cities.
       </p>
     </footer>

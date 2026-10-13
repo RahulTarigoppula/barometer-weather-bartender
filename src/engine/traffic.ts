@@ -144,7 +144,7 @@ export function roadOutlook(input: {
     level(index) === 'light'
       ? 'Roads should be easy right now.'
       : eases
-        ? `Eases by ${hh(eases.hour)} — about ${tripMinutes(eases.index)} min for 10 km.`
+        ? `Eases by ${hh(eases.hour)}, about ${tripMinutes(eases.index)} min for 10 km.`
         : 'It stays busy for a while. Leave a buffer.';
   return {
     metro,

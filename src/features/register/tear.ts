@@ -31,7 +31,7 @@ export async function tearReceipt(): Promise<void> {
       units,
       version: __APP_VERSION__,
     });
-    const outcome = await shareFile(blob, cardFilename(v), `${s.drink.name} — Mausam ka Mahaul`);
+    const outcome = await shareFile(blob, cardFilename(v), `${s.drink.name} · Mausam ka Mahaul`);
     if (outcome === 'downloaded') useBar.getState().showToast('Card saved to your device.');
   } catch {
     useBar.getState().showToast('Could not make the card. Try again.');

@@ -28,7 +28,7 @@ import { iconFor } from './icons';
 
 /** "06:22" from the local clock plus a minute offset. */
 function clockPlus(localTime: string, minutes: number): string {
-  if (!Number.isFinite(minutes)) return '—';
+  if (!Number.isFinite(minutes)) return 'n/a';
   const [h = 0, m = 0] = localTime.split(':').map(Number);
   const t = (((h * 60 + m + Math.round(minutes)) % 1440) + 1440) % 1440;
   return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
@@ -168,7 +168,7 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
           <SaveStar name={name} lat={v.lat} lng={v.lng} />
         </div>
         {country && <p className="weather__country">{v.place.label === country ? '' : country}</p>}
-        {note === 'stale' && <p className="chip chip--warn">Offline — showing the last reading for this spot</p>}
+        {note === 'stale' && <p className="chip chip--warn">Offline. Showing the last reading for this spot</p>}
       </header>
       <div className="weather__now">
         <Icon className="weather__icon" size={88} strokeWidth={1.25} aria-hidden="true" />
@@ -201,7 +201,7 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
         <Tile
           icon={Gauge}
           label="Air quality"
-          value={f.euAqi === null ? '—' : String(Math.round(f.euAqi))}
+          value={f.euAqi === null ? 'n/a' : String(Math.round(f.euAqi))}
           note={`${AQI_LABEL[aqi] ?? ''}${f.usAqi === null ? '' : ` · US ${Math.round(f.usAqi)}`}`}
           tone={aqi}
         />

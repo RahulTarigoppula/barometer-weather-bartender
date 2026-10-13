@@ -2,7 +2,7 @@
   {
     "name": "Open-Meteo (forecast, air quality, marine, geocoding)",
     "licence": "CC BY 4.0",
-    "use": "Weather data — “Weather data by Open-Meteo.com”, non-commercial free tier",
+    "use": "Weather data (“Weather data by Open-Meteo.com”), non-commercial free tier",
     "url": "https://open-meteo.com/"
   },
   {
@@ -19,7 +19,7 @@
     "url": "https://www.naturalearthdata.com/"
   },
   {
-    "name": "NASA Earth Observatory — Blue Marble & Black Marble",
+    "name": "NASA Earth Observatory: Blue Marble & Black Marble",
     "licence": "Public domain",
     "use": "Globe day and night textures (no endorsement implied)",
     "url": "https://earthobservatory.nasa.gov/"
@@ -88,7 +88,7 @@
   {
     "name": "Sounds",
     "licence": "Original (MIT)",
-    "use": "Every bar sound is synthesised live with Web Audio — no recordings",
+    "use": "Every bar sound is synthesised live with Web Audio, no recordings",
     "url": "https://developer.mozilla.org/docs/Web/API/Web_Audio_API"
   }
 ]

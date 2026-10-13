@@ -135,10 +135,10 @@ function Pick({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }): R
       <p className="eyebrow">The bartender recommends</p>
       {v.suggestBarista && menu === 'bar' && (
         <button type="button" className="chip chip--action" onClick={() => setSettings({ menu: 'barista' })}>
-          It’s {hourWords(v.features.localHour)} there — switch to the coffee & mocktail menu?
+          It’s {hourWords(v.features.localHour)} there. Switch to the coffee & mocktail menu?
         </button>
       )}
-      {note === 'repoured' && <p className="chip">Refreshed — the first reading went stale</p>}
+      {note === 'repoured' && <p className="chip">Refreshed: the first reading went stale</p>}
       <blockquote className="drink__jab">“{lines.jab}”</blockquote>
       {lines.hedge && <p className="drink__hedge">{lines.hedge}</p>}
       <div className="drink__hero">

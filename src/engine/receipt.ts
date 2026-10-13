@@ -60,7 +60,7 @@ export function receiptLines(v: Verdict, drink: Drink, units: Units, stampText: 
     row('DEW POINT', t(f.dewPointC)),
     row('WIND', `${windValue(f.windKmh, units.wind)} ${windLabel(units.wind).toUpperCase()}`),
     row('UV', String(Math.round(f.uv))),
-    row('AQI (US)', f.usAqi === null ? '—' : String(Math.round(f.usAqi))),
+    row('AQI (US)', f.usAqi === null ? 'n/a' : String(Math.round(f.usAqi))),
   ];
   if (f.marine) {
     lines.push(row('SST', t(f.marine.sstC)), row('WAVES', `${f.marine.waveHeightM.toFixed(1)} M`));

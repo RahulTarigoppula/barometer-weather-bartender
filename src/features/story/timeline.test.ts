@@ -2,28 +2,33 @@ import { describe, expect, it } from 'vitest';
 import { ease, ramp, SCENES, sceneAt, TOTAL } from './timeline';
 
 describe('the opening story', () => {
-  it('runs galaxy → solar → planets → earth → memory → title → meaning → app in well under a minute', () => {
+  it('runs from the known universe down to life on Earth, then the name and the app, in under a minute', () => {
     expect(SCENES.map((s) => s.id)).toEqual([
+      'universe',
       'galaxy',
       'solar',
       'planets',
       'earth',
+      'life',
       'memory',
       'title',
       'meaning',
       'app',
     ]);
-    expect(TOTAL).toBeGreaterThanOrEqual(28);
-    expect(TOTAL).toBeLessThanOrEqual(40);
-    for (const s of SCENES) expect(s.end - s.start).toBeGreaterThanOrEqual(3);
+    expect(TOTAL).toBeGreaterThanOrEqual(35);
+    expect(TOTAL).toBeLessThanOrEqual(50);
+    for (const s of SCENES) expect(s.end - s.start).toBeGreaterThanOrEqual(3.5);
     expect(SCENES.find((s) => s.id === 'title')?.line).toBe('Mausam ka Mahaul');
   });
+  it('uses no em dashes anywhere in its copy', () => {
+    for (const s of SCENES) expect(`${s.line} ${s.sub}`).not.toMatch(/—/);
+  });
   it('finds the scene and progress at any time, clamped', () => {
-    expect(sceneAt(0).scene.id).toBe('galaxy');
+    expect(sceneAt(0).scene.id).toBe('universe');
     expect(sceneAt(-5).p).toBe(0);
-    const solar = SCENES[1]!;
-    const mid = sceneAt((solar.start + solar.end) / 2);
-    expect(mid.scene.id).toBe('solar');
+    const g = SCENES[1]!;
+    const mid = sceneAt((g.start + g.end) / 2);
+    expect(mid.scene.id).toBe('galaxy');
     expect(mid.p).toBeCloseTo(0.5);
     expect(sceneAt(TOTAL + 10).scene.id).toBe('app');
   });

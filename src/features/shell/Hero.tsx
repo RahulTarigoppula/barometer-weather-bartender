@@ -48,7 +48,7 @@ export function Hero(): ReactElement {
       <GlobeStage />
       <div className="hero__overlay">
         <p className="hero__hint">
-          Spin the planet. Tap anywhere for the weather, the roads — and the drink it calls for.
+          Spin the planet. Tap anywhere for the weather, the roads and the drink it calls for.
         </p>
         {saved.length > 0 && <Chips label="Your places" places={saved} active={active} starred />}
         <Chips label="Indian cities" places={INDIA_CITIES.slice(0, 12)} active={active} />

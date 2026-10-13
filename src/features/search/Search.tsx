@@ -77,7 +77,7 @@ export function Search(): ReactElement {
           type="search"
           autoComplete="off"
           spellCheck={false}
-          placeholder="Search a city — Indian places first"
+          placeholder="Search a city (Indian places first)"
           aria-label="Search for a place"
           role="combobox"
           aria-expanded={phase.kind === 'results'}

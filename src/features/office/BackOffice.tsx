@@ -112,7 +112,7 @@ export function BackOffice(): ReactElement {
           <Lever checked={s.sound} label="Sound" onChange={(sound) => set({ sound })} />
           <Knob value={Math.round(s.volume * 100)} label="Master volume" onChange={(v) => set({ volume: v / 100 })} />
         </div>
-        <p className="field__desc">Bar sounds only — a brass tink, a wooden shhk, a thermal feed. Never a UI beep.</p>
+        <p className="field__desc">Bar sounds only: a brass tink, a wooden shhk, a thermal feed. Never a UI beep.</p>
       </div>
       <div className="field">
         <span className="field__label">Haptics</span>

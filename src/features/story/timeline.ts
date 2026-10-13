@@ -1,6 +1,16 @@
-/** The opening story: galaxy → Sun → planets → Earth → the name → what it means → the app. */
+/** The opening story: the known universe, the Milky Way, the Sun, the planets, Earth, life, the name, the app. */
 
-export type SceneId = 'galaxy' | 'solar' | 'planets' | 'earth' | 'memory' | 'title' | 'meaning' | 'app';
+export type SceneId =
+  | 'universe'
+  | 'galaxy'
+  | 'solar'
+  | 'planets'
+  | 'earth'
+  | 'life'
+  | 'memory'
+  | 'title'
+  | 'meaning'
+  | 'app';
 
 export interface Scene {
   id: SceneId;
@@ -11,33 +21,45 @@ export interface Scene {
 }
 
 const LENGTHS: [SceneId, number, string, string][] = [
-  ['galaxy', 5, 'Look up.', 'Somewhere in this spiral of a hundred billion suns is the one we call home.'],
-  ['solar', 4.5, 'A small yellow star.', 'Eight worlds circle it. Seven of them are silent.'],
-  ['planets', 4.5, 'But the third one talks.', 'It thunders. It pours. It glows at golden hour.'],
   [
-    'earth',
-    4.5,
-    'And every morning, a billion of us ask it the same thing —',
-    '“Mausam kaisa hai?” How’s the weather today?',
+    'universe',
+    5,
+    'The known universe.',
+    'Hundreds of billions of galaxies across ninety-three billion light-years. Countless bounds of space and time.',
+  ],
+  ['galaxy', 4.5, 'One of them is ours.', 'The Milky Way. A hundred billion suns, and one we call home.'],
+  ['solar', 4, 'A small yellow star.', 'Eight worlds circle it. Seven are rock, ice and silence.'],
+  [
+    'planets',
+    4,
+    'But the third one breathes.',
+    'In all that space and time, it is the only place we know where life began.',
+  ],
+  ['earth', 4.5, 'Earth.', 'Oceans rise as clouds. Clouds come back as rain.'],
+  [
+    'life',
+    5.5,
+    'And from the rain, life.',
+    'Sandalwood and teak. Neelakurinji, which blooms once in twelve years. Wood and leaf found nowhere else in the known universe.',
   ],
   [
     'memory',
-    5,
+    4.5,
     '“Chhata le ja, baarish hogi.”',
-    'Take an umbrella, it’s going to rain. Every Indian home has that voice at the door — and it is almost always right.',
+    'Take an umbrella, it’s going to rain. Every Indian home has that voice at the door, and it is almost always right.',
   ],
   ['title', 4.5, 'Mausam ka Mahaul', 'मौसम का माहौल · the vibe of the weather'],
   [
     'meaning',
-    5.5,
+    5,
     'Mausam is the sky. Mahaul is what it does to us.',
     'The first rain and the smell of wet earth. Chai and pakoras. A jammed flyover. A rooftop at golden hour.',
   ],
   [
     'app',
-    5,
-    'So we built the friend who reads the sky for you.',
-    'Made with love by Rahul — for everyone who was ever told to carry an umbrella.',
+    4.5,
+    'So we built a friend who reads the sky for you.',
+    'Made with love by Rahul, for everyone who was ever told to carry an umbrella.',
   ],
 ];
 

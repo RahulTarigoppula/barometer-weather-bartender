@@ -145,17 +145,16 @@ export function App(): ReactElement {
 
   const restock = useBar((s) => s.restock);
 
-  // The opening story: once on first visit (never under automation), and on demand at #/story.
-  const storySeen = useSettings((s) => s.storySeen);
-  const [hydrated, setHydrated] = useState(() => useSettings.persist.hasHydrated());
-  useEffect(() => useSettings.persist.onFinishHydration(() => setHydrated(true)), []);
-  const showStory = route.name === 'story' || (hydrated && !storySeen && !navigator.webdriver);
+  // The opening story plays on every load (skippable; never under automation) and on demand at #/story.
+  const [storyDone, setStoryDone] = useState(() => navigator.webdriver);
+  const showStory = route.name === 'story' || !storyDone;
   const cosmos = useBar((s) => s.cosmos);
   const closeCosmos = useCallback(() => useBar.getState().patch({ cosmos: false }), []);
   useEffect(() => {
     useBar.getState().patch({ stagePaused: showStory || cosmos });
   }, [showStory, cosmos]);
   const endStory = useCallback(() => {
+    setStoryDone(true);
     useSettings.getState().set({ storySeen: true });
     if (parseRoute(window.location.hash).name === 'story') {
       const v = currentVerdict(useBar.getState());
@@ -175,7 +174,7 @@ export function App(): ReactElement {
           <main className="panel" id="main">
             {restock && (
               <button type="button" className="chip chip--action" onClick={restock}>
-                A new version is ready — refresh
+                A new version is ready. Refresh
               </button>
             )}
             <WeatherCard />

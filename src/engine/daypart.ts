@@ -109,9 +109,9 @@ export function dayPartIntensity(dayPart: DayPart, hour: number, minute: number)
 
 export const dayPartBase = (dayPart: DayPart): number => (dayPart === 'brunch' || dayPart === 'late' ? 0.6 : 0.4);
 
-/** "5h42m" / "23m" / "—". */
+/** "5h42m" / "23m" / "n/a". */
 export function fmtDuration(minutes: number): string {
-  if (!Number.isFinite(minutes) || minutes < 0) return '—';
+  if (!Number.isFinite(minutes) || minutes < 0) return 'n/a';
   const total = Math.round(minutes);
   const h = Math.floor(total / 60);
   const mm = total % 60;

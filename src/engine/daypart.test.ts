@@ -82,7 +82,7 @@ describe('sunset copy hooks', () => {
     const m = judgeFixture('lisbon-golden').features.minutesToSunset;
     expect(fmtDuration(m)).toBe('23m');
     expect(sunsetSoon(m)).toBe(true);
-    expect(fmtDuration(Number.POSITIVE_INFINITY)).toBe('—');
+    expect(fmtDuration(Number.POSITIVE_INFINITY)).toBe('n/a');
   });
   it('late peaks at 01:30', () => {
     expect(dayPartIntensity('late', 1, 30)).toBe(1);

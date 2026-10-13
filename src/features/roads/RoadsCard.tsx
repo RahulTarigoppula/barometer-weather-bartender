@@ -117,10 +117,10 @@ function Roads({ v }: { v: Verdict }): ReactElement {
       </div>
       <p className="credit">
         {live.state === 'refused'
-          ? 'Your TomTom key was refused — check it in Settings. Showing the estimate.'
+          ? 'Your TomTom key was refused. Check it in Settings. Showing the estimate.'
           : live.state === 'ok'
             ? 'Live speed on the nearest road by TomTom · the hourly strip is an estimate.'
-            : 'Estimate from typical rush hours and today’s weather — not live.'}{' '}
+            : 'Estimate from typical rush hours and today’s weather, not live.'}{' '}
         {!key && (
           <button type="button" className="link" onClick={() => openDrawer('office')}>
             Add a free live key

@@ -60,7 +60,7 @@ exports[`flattened output rules > pin, then guard: every fixture line 1`] = `
     "time": "16:40 local · dew point 17.3°",
   },
   {
-    "closer": "Drink faster — the light will not wait.",
+    "closer": "Drink faster. The light will not wait.",
     "drink": "«ICED» Gin & Tonic.",
     "jab": "24.3° and nobody is complaining but me. You could have a picnic. You won't, but you could.",
     "place": "In Lisbon, Portugal. A capital city, and still no excuse.",

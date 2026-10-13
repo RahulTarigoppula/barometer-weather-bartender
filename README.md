@@ -106,11 +106,11 @@ App code, illustrations (bottles, glassware, dial, cradle, pin, neon) and the ba
 
 | Source | Licence | Used for |
 |---|---|---|
-| [Open-Meteo (forecast, air quality, marine, geocoding)](https://open-meteo.com/) | CC BY 4.0 | Weather data — "Weather data by Open-Meteo.com", non-commercial free tier |
+| [Open-Meteo (forecast, air quality, marine, geocoding)](https://open-meteo.com/) | CC BY 4.0 | Weather data ("Weather data by Open-Meteo.com"), non-commercial free tier |
 | [CAMS ENSEMBLE (Copernicus)](https://atmosphere.copernicus.eu/) | CC BY 4.0 | Air quality, via Open-Meteo |
 | [DWD](https://www.dwd.de/) | CC BY 4.0 | Marine data, via Open-Meteo |
 | [Natural Earth](https://www.naturalearthdata.com/) | Public domain | Offline reverse geocoding; India's outline from the India point-of-view dataset |
-| [NASA Earth Observatory — Blue Marble & Black Marble](https://earthobservatory.nasa.gov/) | Public domain | Globe day and night textures (no endorsement implied) |
+| [NASA Earth Observatory: Blue Marble & Black Marble](https://earthobservatory.nasa.gov/) | Public domain | Globe day and night textures (no endorsement implied) |
 | [three-globe example textures](https://github.com/vasturiano/three-globe) | MIT | First-paint day texture (NASA-derived) |
 | [rasmusab/iba-cocktails](https://github.com/rasmusab/iba-cocktails) | MIT | IBA recipe quantities; method text rewritten in-house |
 | [alfg/opendrinks](https://github.com/alfg/opendrinks) | MIT | Recipe quantities incl. alcohol-free entries; method text rewritten in-house |
@@ -122,7 +122,7 @@ App code, illustrations (bottles, glassware, dial, cradle, pin, neon) and the ba
 | [React, Zustand, Dexie](https://react.dev/) | MIT / Apache-2.0 | UI, state and the Tab |
 | [Lucide](https://lucide.dev/) | ISC | Interface and weather icons |
 | [Capacitor](https://capacitorjs.com/) | MIT | Android shell and native plugins |
-| [Sounds](https://developer.mozilla.org/docs/Web/API/Web_Audio_API) | Original (MIT) | Every bar sound is synthesised live with Web Audio — no recordings |
+| [Sounds](https://developer.mozilla.org/docs/Web/API/Web_Audio_API) | Original (MIT) | Every bar sound is synthesised live with Web Audio, no recordings |
 
 **Never used:** BigDataCloud (its policy forbids map-click coordinates), TheCocktailDB (its test key is not licensed for published apps), PlanetPixelEmporium textures, Pixabay audio, GPL code.
 
