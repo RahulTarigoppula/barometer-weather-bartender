@@ -227,6 +227,19 @@ test('zoom out from the planet to the known universe, and back', async ({ page }
   await expect(cosmos).toHaveCount(0, { timeout: 10_000 });
 });
 
+test('weather first everywhere: the mahaul line, the page mood, four tiles and more on request', async ({ page }) => {
+  await routeWeather(page);
+  await page.goto('./#/v/19.07,72.88');
+  await expect(drink(page)).toHaveText('Mojito');
+  await expect(page.locator('.mahaul')).toContainText('over Mumbai tonight');
+  await expect(page.locator('html')).toHaveAttribute('data-hour', 'night');
+  const tiles = weather(page).locator('.tile');
+  await expect(tiles).toHaveCount(4);
+  await page.getByRole('button', { name: /More details/ }).click();
+  await expect(tiles).toHaveCount(8);
+  await expect(weather(page)).toContainText('Sunrise');
+});
+
 test('the CSP blocks any other host', async ({ page }) => {
   await routeWeather(page);
   await page.goto('./#/v/19.07,72.88');

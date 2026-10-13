@@ -1,5 +1,5 @@
 import { Droplets } from 'lucide-react';
-import type { ReactElement } from 'react';
+import { type PointerEvent, type ReactElement, useState } from 'react';
 import { fmtDuration } from '../../engine/daypart';
 import { dayName, hourLabel, sunArc, tempPath, weekRange } from '../../engine/outlook';
 import type { Verdict } from '../../engine/types';
@@ -14,27 +14,51 @@ const H = 96;
 
 function Hours({ v }: { v: Verdict }): ReactElement | null {
   const temp = useSettings((s) => s.units.temp);
+  const [hover, setHover] = useState<number | null>(null);
   const hours = (v.forecast?.hours ?? []).slice(0, 24);
   if (hours.length < 2) return null;
   const { line, area, points } = tempPath(hours, W, H, 14);
+  const scrub = (e: PointerEvent<HTMLDivElement>): void => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const k = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+    setHover(Math.round(k * (hours.length - 1)));
+  };
+  const hv = hover === null ? null : hours[hover];
+  const hp = hover === null ? null : points[hover];
   const every = 3;
   return (
     <section className="fc fc--hours" aria-label="Next 24 hours">
       <h3 className="h3">Next 24 hours</h3>
       <div className="hours" role="list">
-        <svg className="hours__chart" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="hoursFill" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0" stopColor="var(--sky)" stopOpacity="0.35" />
-              <stop offset="1" stopColor="var(--sky)" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <path d={area} fill="url(#hoursFill)" />
-          <path d={line} fill="none" stroke="var(--sky)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
-          {points.map(([x, y], i) =>
-            i % every === 0 ? <circle key={hours[i]?.time} cx={x} cy={y} r="3.5" fill="var(--sky)" /> : null,
+        <div
+          className="hours__plot"
+          onPointerMove={scrub}
+          onPointerDown={scrub}
+          onPointerLeave={() => setHover(null)}
+          aria-hidden="true"
+        >
+          <svg className="hours__chart" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="hoursFill" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stopColor="var(--sky)" stopOpacity="0.35" />
+                <stop offset="1" stopColor="var(--sky)" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d={area} fill="url(#hoursFill)" />
+            <path d={line} fill="none" stroke="var(--sky)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+            {points.map(([x, y], i) =>
+              i % every === 0 ? <circle key={hours[i]?.time} cx={x} cy={y} r="3.5" fill="var(--sky)" /> : null,
+            )}
+          </svg>
+          {hv && hp && (
+            <div className="hours__mark" style={{ left: `${(hp[0] / W) * 100}%` }}>
+              <span className="hours__dot" style={{ top: `${(hp[1] / H) * 100}%` }} />
+              <span className="hours__tip num">
+                {hourLabel(hv.time, hover ?? 0)} · {fmtTempShort(hv.tempC, temp)} · {Math.round(hv.precipProb)}% rain
+              </span>
+            </div>
           )}
-        </svg>
+        </div>
         <div className="hours__cols">
           {hours.map((h, i) => {
             if (i % every !== 0) return null;

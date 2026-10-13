@@ -82,3 +82,6 @@ const LABEL: Record<number, string> = {
   99: 'storm with heavy hail',
 };
 export const wmoLabel = (code: number): string => LABEL[code] ?? 'unclassified sky';
+
+/** "clear sky" → "Clear sky". */
+export const sentence = (s: string): string => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);

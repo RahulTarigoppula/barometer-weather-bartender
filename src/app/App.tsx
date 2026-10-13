@@ -39,6 +39,27 @@ function useRoomAttributes(): void {
   useEffect(() => {
     root.dataset.grade = verdict?.gradeFamily ?? 'none';
     root.dataset.daylight = verdict ? (verdict.features.isDay ? 'day' : 'night') : 'night';
+    // The mahaul of the page: the local hour and the sky over the place you are looking at.
+    const part = verdict?.features.dayPart;
+    root.dataset.hour =
+      part === 'dawn'
+        ? 'dawn'
+        : part === 'golden' || (part === 'evening' && (verdict?.features.minutesToSunset ?? -999) > -75)
+          ? 'dusk'
+          : verdict?.features.isDay
+            ? 'day'
+            : 'night';
+    const g = verdict?.gradeFamily;
+    root.dataset.sky =
+      g === 'rain' || g === 'storm'
+        ? 'rain'
+        : g === 'fog'
+          ? 'fog'
+          : (verdict?.features.usAqi ?? 0) > 150
+            ? 'haze'
+            : g === 'snow' || g === 'cold'
+              ? 'cold'
+              : 'clear';
     void syncStatusBar('night');
   }, [verdict]);
 

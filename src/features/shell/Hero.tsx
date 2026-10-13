@@ -6,6 +6,7 @@ import { useSettings } from '../../state/settings';
 import { currentVerdict, useBar } from '../../state/store';
 import { GlobeStage } from '../globe/GlobeStage';
 import { pour } from '../verdict/pour';
+import { NowPeek } from './NowPeek';
 
 function Chips({
   label,
@@ -47,6 +48,7 @@ export function Hero(): ReactElement {
     <section className="hero" aria-label="Globe">
       <GlobeStage />
       <div className="hero__overlay">
+        <NowPeek />
         <p className="hero__hint">
           Spin the planet. Tap anywhere for the weather, the roads and the drink it calls for.
         </p>

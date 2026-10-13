@@ -464,3 +464,242 @@
   font-variation-settings: "opsz" 96;
   letter-spacing: -0.02em;
 }
+
+/* ═══ the mahaul of the page: hour and sky tint the space behind everything ═══ */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 1.6s var(--ease-in-out),
+    background 1.6s var(--ease-in-out);
+}
+:root[data-hour="dawn"] body::after {
+  opacity: 1;
+  background:
+    radial-gradient(90% 55% at 70% -10%, rgba(255, 168, 120, 0.2), transparent 70%),
+    radial-gradient(60% 40% at 10% 0%, rgba(140, 120, 220, 0.12), transparent 70%);
+}
+:root[data-hour="day"] body::after {
+  opacity: 1;
+  background:
+    radial-gradient(100% 60% at 60% -15%, rgba(110, 175, 255, 0.2), transparent 70%),
+    radial-gradient(50% 40% at 95% 5%, rgba(255, 230, 170, 0.1), transparent 70%);
+}
+:root[data-hour="dusk"] body::after {
+  opacity: 1;
+  background:
+    radial-gradient(90% 55% at 80% -10%, rgba(255, 120, 80, 0.2), transparent 70%),
+    radial-gradient(70% 50% at 10% 0%, rgba(150, 80, 190, 0.16), transparent 70%);
+}
+:root[data-hour="night"] body::after {
+  opacity: 1;
+  background: radial-gradient(80% 50% at 50% -10%, rgba(70, 90, 180, 0.12), transparent 70%);
+}
+/* The sky layers over the hour. */
+:root[data-sky="rain"] body {
+  background-color: #070b14;
+}
+:root[data-sky="rain"] body::after {
+  background:
+    radial-gradient(110% 60% at 50% -10%, rgba(120, 140, 170, 0.22), transparent 70%),
+    linear-gradient(180deg, rgba(60, 75, 100, 0.12), transparent 60%);
+}
+:root[data-sky="fog"] body::after {
+  background: linear-gradient(180deg, rgba(190, 190, 200, 0.12), transparent 55%);
+}
+:root[data-sky="haze"] body::after {
+  background:
+    radial-gradient(110% 60% at 50% -10%, rgba(210, 170, 110, 0.18), transparent 70%),
+    linear-gradient(180deg, rgba(160, 130, 90, 0.08), transparent 60%);
+}
+:root[data-sky="cold"] body::after {
+  background: radial-gradient(100% 60% at 50% -10%, rgba(170, 215, 255, 0.18), transparent 70%);
+}
+
+/* ═══ weather first on a phone: the peek card over the planet ═══ */
+.peek {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px 12px 12px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 16, 32, 0.62);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.8);
+  color: var(--ink);
+  text-decoration: none;
+  animation: rise 700ms var(--ease-out) both;
+}
+.peek:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.peek__icon {
+  color: var(--sky);
+}
+.peek__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.peek__place {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 480;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.peek__sky {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.peek__temp {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.peek__go {
+  color: var(--ink-faint);
+}
+@media (max-width: 1099px) {
+  .hero {
+    height: clamp(400px, 58svh, 620px);
+  }
+  .hero__hint {
+    display: none;
+  }
+}
+@media (min-width: 1100px) {
+  .peek {
+    display: none;
+  }
+}
+
+button.peek {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* ═══ the 24-hour chart answers your finger ═══ */
+.hours__plot {
+  position: relative;
+  touch-action: pan-y;
+  cursor: crosshair;
+}
+.hours__mark {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dashed rgba(124, 196, 255, 0.5);
+  pointer-events: none;
+}
+.hours__dot {
+  position: absolute;
+  left: -5px;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(124, 196, 255, 0.35);
+}
+.hours__tip {
+  position: absolute;
+  top: -6px;
+  left: 0;
+  translate: -50% -100%;
+  padding: 4px 9px;
+  border-radius: var(--radius-full);
+  background: rgba(10, 16, 32, 0.92);
+  border: 1px solid var(--line-strong);
+  font-size: 11px;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+/* ═══ fewer tiles, more on request ═══ */
+.tiles__more {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--sky);
+}
+
+/* ═══ section rhythm: serif headings, cards arrive one after another ═══ */
+.h3 {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 460;
+  letter-spacing: -0.01em;
+}
+.panel > .card,
+.panel > div > .card {
+  animation: rise 640ms var(--ease-out) both;
+}
+.panel > :nth-child(2) {
+  animation-delay: 60ms;
+}
+.panel > :nth-child(3) {
+  animation-delay: 120ms;
+}
+.panel > :nth-child(4) {
+  animation-delay: 180ms;
+}
+.panel > :nth-child(5) {
+  animation-delay: 240ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel > .card,
+  .peek {
+    animation: none;
+  }
+}
+
+/* ═══ the place stays in sight while you scroll ═══ */
+.topbar__now {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  justify-content: center;
+  margin: 2px 0 -2px;
+  padding: 6px 12px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  animation: rise 260ms var(--ease-out) both;
+}
+.topbar__now b {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1rem;
+}
+.topbar__now .num {
+  font-weight: 700;
+}
+.topbar__nowsky {
+  color: var(--ink-muted);
+}
+.peek__temp {
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+}

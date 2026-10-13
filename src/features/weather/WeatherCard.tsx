@@ -10,7 +10,7 @@ import {
   Umbrella,
   Wind,
 } from 'lucide-react';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { useReduced } from '../../app/useReduced';
 import { DRINKS } from '../../data/menu';
 import { usAqiBand, uvBand } from '../../engine/comfort';
@@ -146,6 +146,22 @@ function SaveStar({ name, lat, lng }: { name: string; lat: number; lng: number }
 
 function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }): ReactElement {
   const units = useSettings((s) => s.units);
+  const [more, setMore] = useState(false);
+  // Tell the top bar when the place name scrolls away, so it can keep a compact reminder.
+  const placeRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    const el = placeRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(
+      ([e]) => useBar.getState().patch({ headHidden: e ? !e.isIntersecting && e.boundingClientRect.top < 0 : false }),
+      { rootMargin: '-72px 0px 0px 0px' },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      useBar.getState().patch({ headHidden: false });
+    };
+  }, []);
   const f = v.features;
   const Icon = iconFor(f.wmo, f.isDay);
   const t = (c: number): string => fmtTemp(c, units.temp);
@@ -202,7 +218,9 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
           {f.isDay ? 'Daytime' : 'Night'} · {v.localTime} local · {fmtDate(f.localDate)}
         </p>
         <div className="weather__title">
-          <h1 className="weather__place">{name}</h1>
+          <h1 className="weather__place" ref={placeRef}>
+            {name}
+          </h1>
           <SaveStar name={name} lat={v.lat} lng={v.lng} />
         </div>
         {country && <p className="weather__country">{v.place.label === country ? '' : country}</p>}
@@ -230,13 +248,6 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
         </ul>
       )}
       <div className="tiles">
-        <Tile icon={Droplets} label="Humidity" value={`${Math.round(f.rh)}%`} note={`Dew point ${t(f.dewPointC)}`} />
-        <Tile
-          icon={Wind}
-          label="Wind"
-          value={`${windValue(f.windKmh, units.wind)} ${windLabel(units.wind)}`}
-          note={`Gusts ${windValue(f.gustKmh, units.wind)}`}
-        />
         <Tile
           icon={Gauge}
           label="Air quality"
@@ -244,22 +255,36 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
           note={`${aqi.label} · US AQI`}
           tone={aqi.tone}
         />
-        <Tile icon={Sun} label="UV index" value={String(Math.round(f.uv))} note={UV_LABEL[uv]} tone={`uv-${uv}`} />
         <Tile
           icon={Umbrella}
           label="Rain chance"
           value={`${Math.round(f.precipProb)}%`}
           note={`${f.precipMm.toFixed(1)} mm now`}
         />
+        <Tile icon={Droplets} label="Humidity" value={`${Math.round(f.rh)}%`} note={`Dew point ${t(f.dewPointC)}`} />
         <Tile
-          icon={Thermometer}
-          label="Pressure"
-          value={`${Math.round(f.pressureHpa)}`}
-          note={`hPa · cloud ${Math.round(f.cloudCover)}%`}
+          icon={Wind}
+          label="Wind"
+          value={`${windValue(f.windKmh, units.wind)} ${windLabel(units.wind)}`}
+          note={`Gusts ${windValue(f.gustKmh, units.wind)}`}
         />
-        <Tile icon={Sunrise} label="Sunrise" value={sunrise} />
-        <Tile icon={Sunset} label="Sunset" value={sunset} note={nextSun} />
+        {more && (
+          <>
+            <Tile icon={Sun} label="UV index" value={String(Math.round(f.uv))} note={UV_LABEL[uv]} tone={`uv-${uv}`} />
+            <Tile
+              icon={Thermometer}
+              label="Pressure"
+              value={`${Math.round(f.pressureHpa)}`}
+              note={`hPa · cloud ${Math.round(f.cloudCover)}%`}
+            />
+            <Tile icon={Sunrise} label="Sunrise" value={sunrise} />
+            <Tile icon={Sunset} label="Sunset" value={sunset} note={nextSun} />
+          </>
+        )}
       </div>
+      <button type="button" className="link tiles__more" aria-expanded={more} onClick={() => setMore(!more)}>
+        {more ? 'Fewer details' : 'More details: UV, pressure, sunrise and sunset'}
+      </button>
       {f.marine && (
         <p className="weather__marine num">
           Sea surface {t(f.marine.sstC)} · waves {f.marine.waveHeightM.toFixed(1)} m

@@ -2,9 +2,11 @@ import { History, Settings } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { openDrawer } from '../../app/route';
 import { play } from '../../audio/sfx';
+import { fmtTempShort } from '../../engine/units';
+import { sentence, wmoLabel } from '../../engine/wmo';
 import { haptic } from '../../platform/haptics';
 import { useSettings } from '../../state/settings';
-import { useBar } from '../../state/store';
+import { currentVerdict, useBar } from '../../state/store';
 import { Search, WhereAmI } from '../search/Search';
 
 /** BAR ↔ BARISTA: alcoholic or alcohol-free menu. */
@@ -31,6 +33,29 @@ export function MenuSwitch(): ReactElement {
       <span className="switch__opt" data-active={barista}>
         Barista
       </span>
+    </button>
+  );
+}
+
+/** Once the place name scrolls away, a slim line keeps it, and the temperature, in sight. */
+function NowLine(): ReactElement | null {
+  const hidden = useBar((s) => s.headHidden);
+  const v = useBar((s) => currentVerdict(s));
+  const temp = useSettings((s) => s.units.temp);
+  if (!hidden || !v) return null;
+  const name =
+    v.place.nearestCity?.distanceKm !== undefined && v.place.nearestCity.distanceKm < 25
+      ? v.place.nearestCity.name
+      : v.place.label;
+  return (
+    <button
+      type="button"
+      className="topbar__now"
+      onClick={() => document.querySelector('.weather')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+    >
+      <b>{name}</b>
+      <span className="num">{fmtTempShort(v.features.tempC, temp)}</span>
+      <span className="topbar__nowsky">{sentence(wmoLabel(v.features.wmo))}</span>
     </button>
   );
 }
@@ -62,6 +87,7 @@ export function TopBar(): ReactElement {
           <Settings size={18} strokeWidth={1.75} aria-hidden="true" />
         </button>
       </div>
+      <NowLine />
     </header>
   );
 }

@@ -45,6 +45,8 @@ interface BarState {
   cosmos: boolean;
   /** A full-screen overlay covers the globe, so its render loop can rest. */
   stagePaused: boolean;
+  /** The place name has scrolled out of view: the top bar shows a compact reminder. */
+  headHidden: boolean;
 }
 
 interface BarActions {
@@ -72,6 +74,7 @@ export const useBar = create<BarState & BarActions>()((set) => ({
   cityTemps: {},
   cosmos: false,
   stagePaused: false,
+  headHidden: false,
   patch: (p) => set(p),
   showToast: (text) => set({ toast: { id: ++toastSeq, text } }),
 }));
