@@ -1,3 +1,4 @@
+import { Play } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { openDrawer } from '../../app/route';
 
@@ -5,6 +6,15 @@ import { openDrawer } from '../../app/route';
 export function Footer(): ReactElement {
   return (
     <footer className="footer">
+      <button
+        type="button"
+        className="btn footer__story"
+        onClick={() => {
+          window.location.hash = '#/story';
+        }}
+      >
+        <Play size={14} strokeWidth={2} aria-hidden="true" /> Watch our story — why “Mausam ka Mahaul”
+      </button>
       <p className="footer__credits">
         Weather by{' '}
         <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">

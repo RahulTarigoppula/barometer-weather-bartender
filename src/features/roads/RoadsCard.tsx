@@ -134,6 +134,6 @@ function Roads({ v }: { v: Verdict }): ReactElement {
 /** How the roads look right now, and when they ease. */
 export function RoadsCard(): ReactElement | null {
   const v = useBar((s) => currentVerdict(s));
-  if (!v || v.place.kind !== 'land') return null;
+  if (v?.place.kind !== 'land') return null;
   return <Roads v={v} />;
 }

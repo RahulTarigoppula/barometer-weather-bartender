@@ -1,4 +1,4 @@
-import { lazy, type ReactElement, Suspense, useCallback, useEffect } from 'react';
+import { lazy, type ReactElement, Suspense, useCallback, useEffect, useState } from 'react';
 import { configureAudio, setBeds, unlockAudio } from '../audio/sfx';
 import { Drawer } from '../components/ui/Drawer';
 import { Toast } from '../components/ui/Toast';
@@ -24,6 +24,7 @@ const BackOffice = lazy(() => import('../features/office/BackOffice').then((m) =
 const Forecast = lazy(() => import('../features/weather/Forecast').then((m) => ({ default: m.Forecast })));
 const RoadsCard = lazy(() => import('../features/roads/RoadsCard').then((m) => ({ default: m.RoadsCard })));
 const IndiaNow = lazy(() => import('../features/india/IndiaNow').then((m) => ({ default: m.IndiaNow })));
+const Story = lazy(() => import('../features/story/Story').then((m) => ({ default: m.Story })));
 const About = lazy(() => import('../features/about/About').then((m) => ({ default: m.About })));
 
 const root = document.documentElement;
@@ -143,6 +144,19 @@ export function App(): ReactElement {
 
   const restock = useBar((s) => s.restock);
 
+  // The opening story: once on first visit (never under automation), and on demand at #/story.
+  const storySeen = useSettings((s) => s.storySeen);
+  const [hydrated, setHydrated] = useState(() => useSettings.persist.hasHydrated());
+  useEffect(() => useSettings.persist.onFinishHydration(() => setHydrated(true)), []);
+  const showStory = route.name === 'story' || (hydrated && !storySeen && !navigator.webdriver);
+  const endStory = useCallback(() => {
+    useSettings.getState().set({ storySeen: true });
+    if (parseRoute(window.location.hash).name === 'story') {
+      const v = currentVerdict(useBar.getState());
+      window.location.replace(v ? verdictHash(v.lat, v.lng) : '#/');
+    }
+  }, []);
+
   return (
     <>
       <a className="btn skip" href="#main">
@@ -184,6 +198,11 @@ export function App(): ReactElement {
         </Drawer>
       </Suspense>
       <Toast />
+      {showStory && (
+        <Suspense fallback={<div className="story-intro" />}>
+          <Story onDone={endStory} />
+        </Suspense>
+      )}
     </>
   );
 }

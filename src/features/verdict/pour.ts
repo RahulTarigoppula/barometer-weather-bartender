@@ -125,7 +125,7 @@ export async function pour(latIn: number, lngIn: number): Promise<void> {
 
 /** Re-print a stored verdict from The Tab: no request unless it is older than 15 minutes. */
 export async function repour(v: Verdict): Promise<void> {
-  if (isStale(v, Date.now())) {
+  if (isStale(v, Date.now()) || !v.forecast) {
     await pour(v.lat, v.lng);
     const c = useBar.getState().coaster;
     if (c.kind === 'verdict') useBar.getState().patch({ coaster: { ...c, note: 'repoured' } });

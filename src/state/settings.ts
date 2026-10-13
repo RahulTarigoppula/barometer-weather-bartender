@@ -26,6 +26,8 @@ export interface Settings {
   saved: SavedPlace[];
   /** Optional TomTom key for live road speeds. Stays on this device. */
   tomtomKey: string;
+  /** The opening story has played once on this device. */
+  storySeen: boolean;
 }
 
 interface SettingsStore extends Settings {
@@ -44,6 +46,7 @@ export const DEFAULT_SETTINGS: Settings = {
   gentler: false,
   saved: [],
   tomtomKey: '',
+  storySeen: false,
 };
 
 export const MAX_SAVED = 8;

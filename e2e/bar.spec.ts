@@ -200,6 +200,19 @@ test('a starred place shows up first under the globe', async ({ page }) => {
   );
 });
 
+test('the story plays from the footer, names the app, and can be skipped', async ({ page }) => {
+  await routeWeather(page);
+  await page.goto('./#/v/19.07,72.88');
+  await expect(drink(page)).toHaveText('Mojito');
+  await page.getByRole('button', { name: /Watch our story/ }).click();
+  const story = page.getByRole('dialog', { name: 'Our story' });
+  await expect(story).toBeVisible();
+  await expect(story).toContainText('This is the Milky Way.');
+  await page.getByRole('button', { name: 'Skip story' }).click();
+  await expect(story).toHaveCount(0);
+  await expect(page).toHaveURL(/#\/v\/19\.07,72\.88$/);
+});
+
 test('the CSP blocks any other host', async ({ page }) => {
   await routeWeather(page);
   await page.goto('./#/v/19.07,72.88');

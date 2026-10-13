@@ -5,6 +5,7 @@ export type Route =
   | { name: 'bar' }
   | { name: 'verdict'; lat: number; lng: number }
   | { name: 'bad-link' }
+  | { name: 'story' }
   | { name: Drawer };
 
 /** Hash routes: #/ · #/v/:lat,:lng · #/tab · #/office · #/about. No server rewrite needed on Pages. */
@@ -14,6 +15,7 @@ export function parseRoute(hash: string): Route {
   if (h === '/tab') return { name: 'tab' };
   if (h === '/office') return { name: 'office' };
   if (h === '/about') return { name: 'about' };
+  if (h === '/story') return { name: 'story' };
   const m = /^\/v\/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(h);
   if (m) {
     const lat = Number(m[1]);
