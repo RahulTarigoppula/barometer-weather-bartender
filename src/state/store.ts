@@ -47,6 +47,8 @@ interface BarState {
   stagePaused: boolean;
   /** The place name has scrolled out of view: the top bar shows a compact reminder. */
   headHidden: boolean;
+  /** Scrubbing the next 24 hours: the index into the verdict's forecast hours, or null for now. */
+  peekHour: number | null;
 }
 
 interface BarActions {
@@ -75,6 +77,7 @@ export const useBar = create<BarState & BarActions>()((set) => ({
   cosmos: false,
   stagePaused: false,
   headHidden: false,
+  peekHour: null,
   patch: (p) => set(p),
   showToast: (text) => set({ toast: { id: ++toastSeq, text } }),
 }));

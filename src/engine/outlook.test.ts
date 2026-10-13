@@ -161,3 +161,28 @@ describe('the mahaul brief, casing', () => {
     expect(s.startsWith('Light drizzle over Pune this morning, 24°.')).toBe(true);
   });
 });
+
+describe('scrubbing the next 24 hours', () => {
+  const h = (time: string, wmo: number, isDay: boolean) => ({ time, tempC: 25, precipProb: 0, wmo, isDay });
+  it('reads the light from the clock and the sky from the code', async () => {
+    const { hourMood, peekLabel } = await import('./outlook');
+    expect(hourMood(h('2026-09-06T06:00', 0, true))).toMatchObject({ hour: 'dawn', sky: 'clear', rain: 0 });
+    expect(hourMood(h('2026-09-06T13:00', 2, true))).toMatchObject({ hour: 'day', sky: 'clear' });
+    expect(hourMood(h('2026-09-06T18:00', 61, true))).toMatchObject({ hour: 'dusk', sky: 'rain', rain: 0.6 });
+    expect(hourMood(h('2026-09-06T23:00', 95, false))).toMatchObject({ hour: 'night', sky: 'rain', rain: 1 });
+    expect(hourMood(h('2026-09-06T10:00', 51, true)).rain).toBe(0.3);
+    expect(hourMood(h('2026-09-06T10:00', 45, true)).sky).toBe('fog');
+    expect(hourMood(h('2026-09-06T10:00', 71, true))).toMatchObject({ sky: 'cold', snow: true });
+    expect(peekLabel('2026-09-06T18:00', 0)).toBe('Now');
+    expect(peekLabel('2026-09-06T18:00', 7)).toBe('18:00 · in 7 h');
+  });
+});
+
+describe('twilight by the clock', () => {
+  it('keeps dusk glowing after the daylight flag flips', async () => {
+    const { hourMood } = await import('./outlook');
+    expect(hourMood({ time: '2026-10-13T18:00', tempC: 30, precipProb: 0, wmo: 0, isDay: false }).hour).toBe('dusk');
+    expect(hourMood({ time: '2026-10-13T20:00', tempC: 30, precipProb: 0, wmo: 0, isDay: false }).hour).toBe('night');
+    expect(hourMood({ time: '2026-10-13T05:00', tempC: 30, precipProb: 0, wmo: 0, isDay: false }).hour).toBe('dawn');
+  });
+});

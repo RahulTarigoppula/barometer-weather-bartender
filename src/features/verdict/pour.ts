@@ -4,7 +4,7 @@ import { getWeather } from '../../api/weather';
 import { play } from '../../audio/sfx';
 import { DRINKS, GRAMMAR } from '../../data/menu';
 import { judge, served } from '../../engine/index';
-import type { Verdict } from '../../engine/types';
+import type { PlaceHit, Verdict } from '../../engine/types';
 import { haptic } from '../../platform/haptics';
 import { useSettings } from '../../state/settings';
 import { type ErrorKind, useBar } from '../../state/store';
@@ -54,6 +54,7 @@ function present(v: Verdict, note: 'stale' | 'repoured' | null, slide: boolean):
   const bar = useBar.getState();
   bar.patch({
     coaster: { kind: 'verdict', verdict: v, note },
+    peekHour: null,
     lastDrinkId: v.drinkId,
     ...(slide ? { slide: bar.slide + 1 } : {}),
   });
@@ -61,11 +62,24 @@ function present(v: Verdict, note: 'stale' | 'repoured' | null, slide: boolean):
   announce(v);
 }
 
+/** A place we already know the name of (a chip, a surprise, a saved place) keeps that name. */
+export function named(place: PlaceHit, name?: string): PlaceHit {
+  if (!name || place.kind === 'ocean') return place;
+  const iso = place.country?.iso2 ?? place.nearestCity?.iso2;
+  const out: PlaceHit = {
+    ...place,
+    label: name,
+    short: `${name.toUpperCase().slice(0, 24)}${iso ? `, ${iso}` : ''}`,
+  };
+  if (place.nearestCity) out.nearestCity = { ...place.nearestCity, name, distanceKm: 0 };
+  return out;
+}
+
 /**
  * The orchestrator: pin + fly immediately, a blank coaster within one frame, then
  * geocode (offline) and weather (cached / Open-Meteo) in parallel, then judge().
  */
-export async function pour(latIn: number, lngIn: number): Promise<void> {
+export async function pour(latIn: number, lngIn: number, name?: string): Promise<void> {
   const my = ++seq;
   const bar = useBar.getState();
   if (!Number.isFinite(latIn) || !Number.isFinite(lngIn) || Math.abs(latIn) > 90 || Math.abs(lngIn) > 540) {
@@ -84,7 +98,7 @@ export async function pour(latIn: number, lngIn: number): Promise<void> {
 
   try {
     const geo = await loadGeo();
-    const place = geo.locate(lat, lng);
+    const place = named(geo.locate(lat, lng), name);
     const weather = await getWeather(lat, lng, { ocean: place.kind === 'ocean' });
     if (my !== seq) return; // a newer pour won
     const s = useSettings.getState();
@@ -126,7 +140,7 @@ export async function pour(latIn: number, lngIn: number): Promise<void> {
 /** Re-print a stored verdict from The Tab: no request unless it is older than 15 minutes. */
 export async function repour(v: Verdict): Promise<void> {
   if (isStale(v, Date.now()) || !v.forecast) {
-    await pour(v.lat, v.lng);
+    await pour(v.lat, v.lng, v.place.nearestCity?.distanceKm === 0 ? v.place.nearestCity.name : undefined);
     const c = useBar.getState().coaster;
     if (c.kind === 'verdict') useBar.getState().patch({ coaster: { ...c, note: 'repoured' } });
     return;
@@ -147,5 +161,5 @@ export async function pourFromHash(lat: number, lng: number, recent: Verdict | u
 export const DEFAULT_PLACE = { name: 'New Delhi', lat: 28.61, lng: 77.21 };
 
 export function backToBar(): void {
-  void pour(DEFAULT_PLACE.lat, DEFAULT_PLACE.lng);
+  void pour(DEFAULT_PLACE.lat, DEFAULT_PLACE.lng, DEFAULT_PLACE.name);
 }

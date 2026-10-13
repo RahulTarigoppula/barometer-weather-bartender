@@ -68,3 +68,15 @@ describe('TomTom live flow (optional, own key)', () => {
     await expect(fetchFlow(1, 1, 'k', async () => json({}, 403))).rejects.toThrow(/refused/);
   });
 });
+
+describe('surprise me', () => {
+  it('picks a storied place, never the one you are looking at', async () => {
+    const { pickSurprise, SURPRISES } = await import('../data/places');
+    expect(SURPRISES.length).toBeGreaterThanOrEqual(15);
+    for (const s of SURPRISES) expect(s.fact).not.toMatch(/—/);
+    const here = { lat: 25.3, lng: 91.58 };
+    for (let i = 0; i < 20; i++) expect(pickSurprise(i / 20, here).name).not.toBe('Mawsynram');
+    expect(pickSurprise(0).name).toBe(SURPRISES[0]?.name);
+    expect(pickSurprise(0.9999).name).toBe(SURPRISES.at(-1)?.name);
+  });
+});

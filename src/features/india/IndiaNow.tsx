@@ -80,7 +80,7 @@ export function IndiaNow(): ReactElement | null {
                 className="city"
                 onClick={() => {
                   unlockAudio();
-                  void pour(c.lat, c.lng);
+                  void pour(c.lat, c.lng, c.name);
                 }}
                 aria-label={`${c.name}: ${fmtTempShort(c.tempC, temp)}, ${wmoLabel(c.wmo)}${c.usAqi === null ? '' : `, US AQI ${Math.round(c.usAqi)}`}`}
               >

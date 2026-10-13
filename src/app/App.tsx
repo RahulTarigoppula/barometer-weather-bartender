@@ -3,6 +3,7 @@ import { configureAudio, setBeds, unlockAudio } from '../audio/sfx';
 import { Drawer } from '../components/ui/Drawer';
 import { Toast } from '../components/ui/Toast';
 import { cellKey } from '../engine/cache';
+import { hourMood } from '../engine/outlook';
 import { windowWeather } from '../engine/window';
 import { DrinkCard } from '../features/drink/DrinkCard';
 import { Footer } from '../features/shell/Footer';
@@ -33,6 +34,7 @@ const root = document.documentElement;
 /** Grade, menu and motion live on <html> as data attributes; the CSS does the rest. */
 function useRoomAttributes(): void {
   const verdict = useBar((s) => currentVerdict(s));
+  const peekHour = useBar((s) => s.peekHour);
   const { menu, motion, sound, volume, haptics } = useSettings();
   const reduced = useReduced();
 
@@ -60,8 +62,15 @@ function useRoomAttributes(): void {
             : g === 'snow' || g === 'cold'
               ? 'cold'
               : 'clear';
+    // Scrubbing the next 24 hours: the page takes the light and sky of that hour.
+    const peek = peekHour === null ? undefined : verdict?.forecast?.hours[peekHour];
+    if (peek) {
+      const m = hourMood(peek);
+      root.dataset.hour = m.hour;
+      if (m.sky !== 'clear' || root.dataset.sky !== 'haze') root.dataset.sky = m.sky;
+    }
     void syncStatusBar('night');
-  }, [verdict]);
+  }, [verdict, peekHour]);
 
   useEffect(() => {
     root.dataset.menu = menu;
@@ -94,7 +103,7 @@ async function openingPour(): Promise<void> {
   } catch {
     // no IndexedDB (private mode) — fall through
   }
-  return pour(DEFAULT_PLACE.lat, DEFAULT_PLACE.lng);
+  return pour(DEFAULT_PLACE.lat, DEFAULT_PLACE.lng, DEFAULT_PLACE.name);
 }
 
 function useRouting(): ReturnType<typeof parseRoute> {

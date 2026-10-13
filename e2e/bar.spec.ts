@@ -240,6 +240,22 @@ test('weather first everywhere: the mahaul line, the page mood, four tiles and m
   await expect(weather(page)).toContainText('Sunrise');
 });
 
+test('play: scrub the next day, cheers with the glass, surprise me', async ({ page }) => {
+  await routeWeather(page);
+  await page.goto('./#/v/19.07,72.88');
+  await expect(drink(page)).toHaveText('Mojito');
+  const scrub = page.getByRole('slider').first();
+  await scrub.fill('6');
+  await expect(page.locator('.scrub__label')).toContainText('in 6 h');
+  await expect(weather(page)).toContainText('chance of rain at');
+  await page.getByRole('button', { name: 'Back to now' }).click();
+  await expect(page.locator('.scrub__label')).toContainText('Drag to see');
+  await page.getByRole('button', { name: /Cheers with a Mojito/ }).click();
+  await expect(page.locator('.drink__cheers')).toBeVisible();
+  await page.getByRole('button', { name: 'Surprise me' }).click();
+  await expect(page.locator('.toast')).toContainText(':');
+});
+
 test('the CSP blocks any other host', async ({ page }) => {
   await routeWeather(page);
   await page.goto('./#/v/19.07,72.88');

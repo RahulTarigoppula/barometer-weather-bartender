@@ -10,24 +10,26 @@ import {
   Umbrella,
   Wind,
 } from 'lucide-react';
-import { type ReactElement, useEffect, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useId, useRef, useState } from 'react';
 import { useReduced } from '../../app/useReduced';
 import { DRINKS } from '../../data/menu';
 import { usAqiBand, uvBand } from '../../engine/comfort';
 import { fmtDuration } from '../../engine/daypart';
 import { served } from '../../engine/index';
-import { mahaulBrief, tipsFor } from '../../engine/outlook';
+import { hourMood, mahaulBrief, peekLabel, tipsFor } from '../../engine/outlook';
 import { fmtDate } from '../../engine/receipt';
 import { RING } from '../../engine/tags';
 import { LEVEL_LABEL, roadOutlook } from '../../engine/traffic';
-import type { Verdict } from '../../engine/types';
+import type { HourPoint, Verdict } from '../../engine/types';
 import { fmtTemp, fmtTempShort, windLabel, windValue } from '../../engine/units';
 import { LAYERS, windowWeather } from '../../engine/window';
 import { wmoLabel } from '../../engine/wmo';
+import { haptic } from '../../platform/haptics';
 import { samePlace, useSettings } from '../../state/settings';
 import { type ErrorKind, useBar } from '../../state/store';
 import { backToBar, pour } from '../verdict/pour';
 import { iconFor } from './icons';
+import { splash } from './splash';
 
 /** "06:22" from the local clock plus a minute offset. */
 function clockPlus(localTime: string, minutes: number): string {
@@ -104,9 +106,18 @@ function Comfort({ v }: { v: Verdict }): ReactElement {
   );
 }
 
-function Ambient({ v }: { v: Verdict }): ReactElement {
+function Ambient({ v, peek }: { v: Verdict; peek?: HourPoint | undefined }): ReactElement {
   const reduced = useReduced();
   const w = windowWeather(v);
+  if (peek) {
+    const m = hourMood(peek);
+    for (const l of ['rain', 'rain2', 'rain3', 'snow', 'glare'] as const) w.on.delete(l);
+    if (m.rain >= 0.3) w.on.add('rain2');
+    if (m.rain >= 0.6) w.on.add('rain');
+    if (m.rain >= 1) w.on.add('rain3');
+    if (m.snow) w.on.add('snow');
+    if (peek.isDay && m.sky === 'clear') w.on.add('glare');
+  }
   const [strike, setStrike] = useState(0);
   useEffect(() => {
     if (!w.lightning) return;
@@ -123,6 +134,68 @@ function Ambient({ v }: { v: Verdict }): ReactElement {
         />
       ))}
       <div key={strike} className={`wx wx--flash${strike ? (reduced ? ' wx--step' : ' wx--strike') : ''}`} />
+    </div>
+  );
+}
+
+const MOOD_COLOUR: Record<string, string> = {
+  night: '#1d2856',
+  dawn: '#e7a17c',
+  day: '#6cb2ff',
+  dusk: '#d8735f',
+  rain: '#6f7d96',
+};
+
+function Scrubber({ hours, value }: { hours: HourPoint[]; value: number | null }): ReactElement {
+  const id = useId();
+  const n = Math.min(24, hours.length);
+  const stops = hours
+    .slice(0, n)
+    .map((h, i) => {
+      const m = hourMood(h);
+      return `${MOOD_COLOUR[m.rain > 0 ? 'rain' : m.hour]} ${((i / (n - 1)) * 100).toFixed(1)}%`;
+    })
+    .join(', ');
+  const at = value === null ? undefined : hours[value];
+  return (
+    <div className="scrub">
+      <div className="scrub__head">
+        <label className="scrub__label" htmlFor={id}>
+          {at ? peekLabel(at.time, value ?? 0) : 'Drag to see the next 24 hours'}
+        </label>
+        {at && (
+          <button
+            type="button"
+            className="link scrub__back"
+            onClick={() => useBar.getState().patch({ peekHour: null })}
+          >
+            Back to now
+          </button>
+        )}
+      </div>
+      <input
+        id={id}
+        className="scrub__range"
+        type="range"
+        min={0}
+        max={n - 1}
+        step={1}
+        value={value ?? 0}
+        style={{ ['--scrub-track' as string]: `linear-gradient(90deg, ${stops})` }}
+        aria-valuetext={
+          at ? `${peekLabel(at.time, value ?? 0)}, ${Math.round(at.tempC)} degrees, ${wmoLabel(at.wmo)}` : 'Now'
+        }
+        onChange={(e) => {
+          const i = Number(e.target.value);
+          useBar.getState().patch({ peekHour: i === 0 ? null : i });
+          haptic('selection');
+        }}
+      />
+      <div className="scrub__ticks" aria-hidden="true">
+        <span>Now</span>
+        <span>{hours[Math.floor((n - 1) / 2)]?.time.slice(11, 16)}</span>
+        <span>{hours[n - 1]?.time.slice(11, 16)}</span>
+      </div>
     </div>
   );
 }
@@ -163,7 +236,10 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
     };
   }, []);
   const f = v.features;
-  const Icon = iconFor(f.wmo, f.isDay);
+  const peekHour = useBar((s) => s.peekHour);
+  const hours = v.forecast?.hours ?? [];
+  const ph = peekHour === null ? undefined : hours[peekHour];
+  const Icon = ph ? iconFor(ph.wmo, ph.isDay) : iconFor(f.wmo, f.isDay);
   const t = (c: number): string => fmtTemp(c, units.temp);
   const aqi = usAqiBand(f.usAqi);
   const { menu, gentler } = useSettings();
@@ -211,7 +287,7 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
   });
   return (
     <>
-      <Ambient v={v} />
+      <Ambient v={v} peek={ph} />
       <header className="weather__head">
         <p className="eyebrow">
           {v.place.country?.iso2 === 'IN' ? 'India · ' : ''}
@@ -230,13 +306,22 @@ function Report({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }):
       <div className="weather__now">
         <Icon className="weather__icon" size={88} strokeWidth={1.25} aria-hidden="true" />
         <div>
-          <p className="weather__temp num">{fmtTempShort(f.tempC, units.temp)}</p>
-          <p className="weather__cond">{wmoLabel(f.wmo)}</p>
-          <p className="weather__feels">
-            Feels like <b className="num">{t(f.apparentC)}</b>
+          <p className="weather__temp num" key={ph ? ph.time : 'now'}>
+            {fmtTempShort(ph ? ph.tempC : f.tempC, units.temp)}
           </p>
+          <p className="weather__cond">{wmoLabel(ph ? ph.wmo : f.wmo)}</p>
+          {ph ? (
+            <p className="weather__feels">
+              <b className="num">{Math.round(ph.precipProb)}%</b> chance of rain at {ph.time.slice(11, 16)}
+            </p>
+          ) : (
+            <p className="weather__feels">
+              Feels like <b className="num">{t(f.apparentC)}</b>
+            </p>
+          )}
         </div>
       </div>
+      {hours.length > 1 && <Scrubber hours={hours} value={peekHour} />}
       <Comfort v={v} />
       {tips.length > 0 && (
         <ul className="tips" aria-label="Today's tips">
@@ -373,8 +458,20 @@ function Skeleton(): ReactElement {
 /** Weather first: the place, the sky, and every number that matters, before the bartender speaks. */
 export function WeatherCard(): ReactElement {
   const coaster = useBar((s) => s.coaster);
+  const cardRef = useRef<HTMLElement>(null);
+  // Touch the weather: a decorative splash wherever the card itself (not a control) is tapped.
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    const onDown = (e: PointerEvent): void => {
+      if (e.target instanceof Element && e.target.closest('button, a, input, label, select')) return;
+      splash(card, e.clientX, e.clientY);
+    };
+    card.addEventListener('pointerdown', onDown);
+    return () => card.removeEventListener('pointerdown', onDown);
+  }, []);
   return (
-    <section className="card weather" aria-label="Weather" data-state={coaster.kind}>
+    <section className="card weather" aria-label="Weather" data-state={coaster.kind} ref={cardRef}>
       {coaster.kind === 'verdict' && <Report v={coaster.verdict} note={coaster.note} />}
       {(coaster.kind === 'pouring' || coaster.kind === 'empty') && <Skeleton />}
       {coaster.kind === 'error' && <ErrorReport {...coaster} />}

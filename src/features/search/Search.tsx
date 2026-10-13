@@ -54,7 +54,7 @@ export function Search(): ReactElement {
     unlockAudio();
     setQ('');
     setPhase({ kind: 'idle' });
-    void pour(r.lat, r.lng);
+    void pour(r.lat, r.lng, r.name);
   };
 
   const onKey = (e: KeyboardEvent<HTMLInputElement>): void => {

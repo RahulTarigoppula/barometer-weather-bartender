@@ -1,4 +1,5 @@
 import type { DayPoint, Drink, Features, HourPoint, Tag, TagScore } from './types';
+import { wmoKind } from './wmo';
 
 // ───────────── today's tips ─────────────
 export type TipId =
@@ -207,4 +208,29 @@ export function mahaulBrief(b: BriefInput): string {
   }
   out.push(`${when === 'tonight' || when === 'this evening' ? 'Tonight’s' : 'Today’s'} pour: ${b.drink}.`);
   return out.join(' ');
+}
+
+// ───────────── scrubbing the next 24 hours ─────────────
+export type HourMood = 'dawn' | 'day' | 'dusk' | 'night';
+export type SkyMood = 'rain' | 'fog' | 'cold' | 'clear';
+
+/** The page mood for a forecast hour: the light from the clock and the daylight flag, the sky from the code. */
+export function hourMood(h: HourPoint): { hour: HourMood; sky: SkyMood; rain: number; snow: boolean } {
+  const hh = Number(h.time.slice(11, 13));
+  // Twilight by the clock (the daylight flag flips at sunset, but the sky glows for an hour after).
+  const hour: HourMood = hh >= 17 && hh <= 19 ? 'dusk' : hh >= 5 && hh <= 7 ? 'dawn' : h.isDay ? 'day' : 'night';
+  const kind = wmoKind(h.wmo);
+  const wet = ['drizzle', 'freezing-drizzle', 'rain', 'showers', 'freezing-rain', 'downpour', 'storm', 'hail'];
+  const snowy = ['snow', 'heavy-snow', 'snow-grains', 'snow-showers', 'heavy-snow-showers'];
+  const rain =
+    kind === 'downpour' || kind === 'storm' ? 1 : wet.includes(kind) ? (kind.includes('drizzle') ? 0.3 : 0.6) : 0;
+  const snow = snowy.includes(kind);
+  const sky: SkyMood = rain > 0 ? 'rain' : kind === 'fog' ? 'fog' : snow ? 'cold' : 'clear';
+  return { hour, sky, rain, snow };
+}
+
+/** "18:00 · in 7 h" for the scrubber; index 0 is now. */
+export function peekLabel(time: string, index: number): string {
+  if (index === 0) return 'Now';
+  return `${time.slice(11, 16)} · in ${index} h`;
 }

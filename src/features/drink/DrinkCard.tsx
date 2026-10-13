@@ -1,5 +1,5 @@
 import { ChevronDown, GlassWater, RefreshCw, Share2 } from 'lucide-react';
-import { type ReactElement, useMemo } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import { play } from '../../audio/sfx';
 import { Seg } from '../../components/ui/Controls';
 import { DRINKS, GRAMMAR } from '../../data/menu';
@@ -119,6 +119,7 @@ function Pick({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }): R
   const twin = twinOf(DRINKS, s.drink, s.drink.alcoholic ? 'barista' : 'bar');
   const india = v.place.country?.iso2 === 'IN';
   const snack = snackFor(v.tags, s.drink);
+  const [cheers, setCheers] = useState(0);
 
   const second = (): void => {
     patch({ opinion: (opinion + 1) % (v.runnersUp.length + 1) });
@@ -142,9 +143,27 @@ function Pick({ v, note }: { v: Verdict; note: 'stale' | 'repoured' | null }): R
       <blockquote className="drink__jab">“{lines.jab}”</blockquote>
       {lines.hedge && <p className="drink__hedge">{lines.hedge}</p>}
       <div className="drink__hero">
-        <div className="drink__glass">
-          <Glassware key={`${s.drink.id}-${v.createdAt}`} drink={s.drink} size={92} />
-        </div>
+        <button
+          type="button"
+          className="drink__glass"
+          aria-label={`Cheers with a ${s.drink.name}`}
+          title="Cheers!"
+          onClick={() => {
+            setCheers((n) => n + 1);
+            play('clink', { rate: 1.05 });
+            play('clink', { delay: 0.12, rate: 0.92 });
+            haptic('light');
+          }}
+        >
+          <span className="drink__tilt" key={cheers} data-cheers={cheers > 0 ? 'true' : undefined}>
+            <Glassware key={`${s.drink.id}-${v.createdAt}`} drink={s.drink} size={92} />
+          </span>
+          {cheers > 0 && (
+            <span className="drink__cheers" key={`c${cheers}`} aria-hidden="true">
+              Cheers!
+            </span>
+          )}
+        </button>
         <div>
           <span className="stamp" data-ink={s.stamp.ink} data-tier={s.stamp.tier}>
             {s.second ? 'Second opinion' : s.stamp.text}
