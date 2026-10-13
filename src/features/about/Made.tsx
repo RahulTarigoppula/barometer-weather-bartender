@@ -177,6 +177,38 @@ export function Made(): ReactElement {
         ))}
       </dl>
 
+      <h3 className="h3 made__title">What stays on your device, and for how long</h3>
+      <dl className="made__algos">
+        <div>
+          <dt>Weather readings</dt>
+          <dd>
+            Kept in your browser for at most a day, so a repeat look costs no request and works offline. Stored under a
+            one-way SHA-256 key, so the cache does not show which places you looked up.
+          </dd>
+        </div>
+        <div>
+          <dt>History</dt>
+          <dd>
+            The last 100 places at most, none older than 30 days, rounded to about a kilometre. Never your exact
+            location. You can switch history off in Settings, which also clears it.
+          </dd>
+        </div>
+        <div>
+          <dt>Settings and saved places</dt>
+          <dd>Your units, budget, menu and starred places, in this browser only.</dd>
+        </div>
+        <div>
+          <dt>Your TomTom key, if you add one</dt>
+          <dd>
+            Stays in this browser and is sent only to TomTom. It cannot be hashed, because TomTom needs to read it.
+          </dd>
+        </div>
+        <div>
+          <dt>Forget everything</dt>
+          <dd>One button in Settings wipes all of the above, and the app’s offline files, from this device.</dd>
+        </div>
+      </dl>
+
       <h3 className="h3 made__title">What it never does</h3>
       <p>
         No accounts, no analytics, no cookies, no tracking, no ads. Weather requests go to Open-Meteo with your

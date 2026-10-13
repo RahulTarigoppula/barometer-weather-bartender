@@ -2,7 +2,9 @@ import { type ReactElement, useId, useState } from 'react';
 import { openDrawer } from '../../app/route';
 import { Knob, Lever, Seg } from '../../components/ui/Controls';
 import { TIER_LABEL, TIERS, type Tier } from '../../engine/budget';
+import { forgetEverything } from '../../platform/privacy';
 import { useSettings } from '../../state/settings';
+import { clearTab } from '../tab/repo';
 
 /** Optional live road speeds with the user's own free TomTom key. Stored on this device only. */
 function LiveRoads(): ReactElement {
@@ -49,6 +51,53 @@ function LiveRoads(): ReactElement {
         </a>{' '}
         it shows live speeds on the nearest road. The key stays on this device and is sent only to TomTom.
       </p>
+    </div>
+  );
+}
+
+/** Privacy, in your hands: keep history or not, and forget everything in one tap. */
+function Privacy(): ReactElement {
+  const keep = useSettings((s) => s.keepHistory);
+  const set = useSettings((s) => s.set);
+  const [sure, setSure] = useState(false);
+  return (
+    <div className="field">
+      <span className="field__label">Privacy</span>
+      <Lever
+        checked={keep}
+        label="Keep history on this device"
+        onChange={(on) => {
+          set({ keepHistory: on });
+          if (!on) void clearTab();
+        }}
+      />
+      <p className="field__desc">
+        Nothing about you ever leaves this device: MkM has no server and no account. History stays in this browser,
+        rounded to about a kilometre, for 30 days at most. Weather is kept for a day under a one-way hash. Turning
+        history off also clears it.
+      </p>
+      {sure ? (
+        <span className="confirm">
+          <span className="caps">Forget everything on this device?</span>
+          <button
+            type="button"
+            className="plate"
+            onClick={async () => {
+              await forgetEverything();
+              window.location.replace(window.location.pathname);
+            }}
+          >
+            Yes, forget
+          </button>
+          <button type="button" className="plate plate--ghost" onClick={() => setSure(false)}>
+            Keep it
+          </button>
+        </span>
+      ) : (
+        <button type="button" className="btn" onClick={() => setSure(true)}>
+          Forget everything
+        </button>
+      )}
     </div>
   );
 }
@@ -145,6 +194,7 @@ export function BackOffice(): ReactElement {
           He judges the weather and your choices, never people. Gentler tones down the shouting.
         </p>
       </div>
+      <Privacy />
       <LiveRoads />
       <div className="field">
         <span className="field__label">Saved places</span>

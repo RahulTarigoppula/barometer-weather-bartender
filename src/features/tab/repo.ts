@@ -1,5 +1,6 @@
 import { FRESH_MS } from '../../engine/cache';
 import type { Verdict } from '../../engine/types';
+import { roundForStorage } from '../../platform/privacy';
 import { type BarDB, db } from '../../state/db';
 
 export class WrongTabError extends Error {
@@ -16,9 +17,10 @@ export interface TabExport {
   verdicts: Verdict[];
 }
 
+/** Stores a place in history, rounded to about a kilometre (never the exact GPS point). */
 export async function addToTab(v: Verdict, database: BarDB = db): Promise<number> {
   const { id: _drop, ...row } = v;
-  return database.verdicts.add(row);
+  return database.verdicts.add({ ...row, lat: roundForStorage(row.lat), lng: roundForStorage(row.lng) });
 }
 
 export const isStale = (v: Pick<Verdict, 'createdAt'>, now: number): boolean => now - v.createdAt > FRESH_MS;

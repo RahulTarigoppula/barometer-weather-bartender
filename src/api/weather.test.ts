@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { addToTab, clearTab, exportTab, importTab, isStale, parseTab, WrongTabError } from '../features/tab/repo';
-import { BarDB, pruneWeatherCache } from '../state/db';
+import { BarDB, pruneHistory, pruneWeatherCache } from '../state/db';
 import { judgeFixture, loadFixture, rawFixture } from '../test/helpers';
 import type { FetchLike } from './openMeteo';
 import { clearWeatherMemory, getWeather } from './weather';
@@ -72,10 +72,35 @@ describe('the two-tier weather cache', () => {
     await addToTab(judgeFixture('mumbai'), database);
     const snapshot = loadFixture('mumbai').snapshot;
     for (let i = 0; i < 5; i++) await database.weatherCache.put({ key: `k${i}`, fetchedAt: i, snapshot });
-    expect(await pruneWeatherCache(3, database)).toBe(2);
+    expect(await pruneWeatherCache(3, database, 10)).toBe(2);
     expect(await database.weatherCache.count()).toBe(3);
-    expect(await pruneWeatherCache(3, database)).toBe(0);
+    expect(await pruneWeatherCache(3, database, 10)).toBe(0);
     expect(await database.verdicts.count()).toBe(1);
+    // A day later every reading has expired.
+    expect(await pruneWeatherCache(3, database, 10 + 86_400_001)).toBe(3);
+    expect(await database.weatherCache.count()).toBe(0);
+  });
+  it('stores weather under a one-way key, and history rounded to about a kilometre', async () => {
+    const database = fresh();
+    const r = await getWeather(19.07, 72.88, { ocean: false, now: 1_000, fetchImpl: counting().f, database });
+    expect(r.cached).toBe(false);
+    await new Promise((res) => setTimeout(res, 20));
+    const keys = await database.weatherCache.toCollection().primaryKeys();
+    expect(keys).toHaveLength(1);
+    expect(String(keys[0])).toMatch(/^[0-9a-f]{24}$/);
+    expect(String(keys[0])).not.toContain('19');
+    await addToTab({ ...judgeFixture('mumbai'), lat: 19.07612, lng: 72.88431 }, database);
+    const row = await database.verdicts.toCollection().first();
+    expect([row?.lat, row?.lng]).toEqual([19.08, 72.88]);
+  });
+  it('history keeps at most 100 places and nothing older than 30 days', async () => {
+    const database = fresh();
+    const now = 100 * 86_400_000;
+    const v = judgeFixture('mumbai');
+    await database.verdicts.bulkAdd(Array.from({ length: 110 }, (_, i) => ({ ...v, createdAt: now - i * 1000 })));
+    await database.verdicts.add({ ...v, createdAt: now - 31 * 86_400_000 });
+    expect(await pruneHistory(database, now)).toBe(11);
+    expect(await database.verdicts.count()).toBe(100);
   });
 });
 

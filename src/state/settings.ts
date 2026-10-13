@@ -28,6 +28,8 @@ export interface Settings {
   tomtomKey: string;
   /** The opening story has played once on this device. */
   storySeen: boolean;
+  /** Keep a history of places on this device. Off means nothing is remembered between visits. */
+  keepHistory: boolean;
 }
 
 interface SettingsStore extends Settings {
@@ -47,6 +49,7 @@ export const DEFAULT_SETTINGS: Settings = {
   saved: [],
   tomtomKey: '',
   storySeen: false,
+  keepHistory: true,
 };
 
 export const MAX_SAVED = 8;

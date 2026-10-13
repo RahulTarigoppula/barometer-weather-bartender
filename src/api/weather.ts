@@ -1,5 +1,6 @@
 import { cellKey, isFresh, isUsableStale } from '../engine/cache';
 import type { WeatherSnapshot } from '../engine/types';
+import { hashKey } from '../platform/privacy';
 import { type BarDB, db } from '../state/db';
 import { type FetchLike, fetchWeather, ModelsSilentError } from './openMeteo';
 
@@ -25,7 +26,8 @@ async function readCache(key: string, database: BarDB): Promise<WeatherSnapshot 
   const hit = memory.get(key);
   if (hit) return hit;
   try {
-    const row = await database.weatherCache.get(key);
+    // On disk the key is a one-way hash: the cache does not reveal which places you looked up.
+    const row = await database.weatherCache.get(await hashKey(key));
     if (row) memory.set(key, row.snapshot);
     return row?.snapshot;
   } catch {
@@ -49,7 +51,15 @@ export async function getWeather(lat: number, lng: number, opts: GetWeatherOptio
       ...(opts.fetchImpl ? { fetchImpl: opts.fetchImpl } : {}),
     });
     memory.set(key, snapshot);
-    void database.weatherCache.put({ key, fetchedAt: snapshot.fetchedAt, snapshot }).catch(() => undefined);
+    void hashKey(key)
+      .then((hashed) =>
+        database.weatherCache.put({
+          key: hashed,
+          fetchedAt: snapshot.fetchedAt,
+          snapshot: { ...snapshot, cellKey: hashed },
+        }),
+      )
+      .catch(() => undefined);
     return { snapshot, stale: false, cached: false };
   } catch (e) {
     if (e instanceof ModelsSilentError && cached && isUsableStale(cached.fetchedAt, now)) {

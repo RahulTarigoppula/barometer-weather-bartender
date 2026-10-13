@@ -127,7 +127,7 @@ export async function pour(latIn: number, lngIn: number, name?: string): Promise
     present(v, weather.stale ? 'stale' : null, false);
     upgradeCoastlines();
     try {
-      await addToTab(v);
+      if (useSettings.getState().keepHistory) await addToTab(v);
     } catch {
       if (!warnedTabFull) {
         warnedTabFull = true;

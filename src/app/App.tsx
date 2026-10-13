@@ -13,7 +13,7 @@ import { DEFAULT_PLACE, pour, pourFromHash, repour, verdictHash } from '../featu
 import { WeatherCard } from '../features/weather/WeatherCard';
 import { hideSplash, onBackButton, registerServiceWorker, syncStatusBar } from '../platform/chrome';
 import { setHapticsEnabled } from '../platform/haptics';
-import { db, pruneWeatherCache } from '../state/db';
+import { db, pruneHistory, pruneWeatherCache } from '../state/db';
 import { useSettings } from '../state/settings';
 import { currentVerdict, useBar } from '../state/store';
 import { closeDrawer, parseRoute, useHash } from './route';
@@ -152,6 +152,7 @@ export function App(): ReactElement {
 
   useEffect(() => {
     void pruneWeatherCache().catch(() => undefined);
+    void pruneHistory().catch(() => undefined);
     void hideSplash();
     void registerServiceWorker((update) => useBar.getState().patch({ restock: update }));
     void onBackButton(() => {

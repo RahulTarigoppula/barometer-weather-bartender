@@ -102,7 +102,18 @@ npm run test:e2e       # Playwright against `vite preview` (Open-Meteo always mo
 
 ## Privacy
 
-No analytics, telemetry, crash reporting, accounts or cookies, in any build. On open, the app fetches the weather for New Delhi (or the last place you looked at) and one batched reading for twelve Indian cities. The coordinates you tap are sent only to Open-Meteo (required to get weather), rounded to 0.01°; search terms go to Open-Meteo's geocoder. "Where am I" asks for your location only when tapped, and resolves it offline. If you add a TomTom key, the coordinates of the place you are viewing go to TomTom for the live road speed, nothing else does. A Content-Security-Policy restricts the page to its own origin, the four Open-Meteo hosts and api.tomtom.com. Weather is cached for 15 minutes per 0.25° cell, so repeat taps make no request at all.
+MkM has no server, no accounts, no analytics, no cookies and no tracking. Nothing about you is ever sent to us, because there is no "us" to send it to. The only network calls go to Open-Meteo (weather, air, sea, search), with your coordinates rounded to about a kilometre, and to TomTom only if you add your own key.
+
+What your browser keeps, and for how long:
+
+| What | Kept for | How |
+|---|---|---|
+| Weather readings | 1 day at most | IndexedDB, keyed by a one-way SHA-256 hash so the cache does not reveal which places you looked up |
+| History | 30 days, 100 places at most | IndexedDB, rounded to about 1 km, never your exact location; can be switched off in Settings |
+| Settings and saved places | Until you change them | localStorage |
+| Your TomTom key (optional) | Until you remove it | localStorage; sent only to TomTom, so it cannot be hashed |
+
+"Forget everything" in Settings wipes all of it, plus the app's offline files, from the device. A Content-Security-Policy keeps the page from talking to anything except its own origin, the Open-Meteo hosts and api.tomtom.com.
 
 Open-Meteo's free tier is for non-commercial use; this project has no ads, sponsorships or store listing, and never will.
 
